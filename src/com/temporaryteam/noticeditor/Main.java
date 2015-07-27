@@ -18,10 +18,10 @@ public class Main extends Application {
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-	private ObservableList<Notice> noticeData = FXCollections.observableArrayList();
+	private Notice currentNotice;
 
 	public void Main() {
-		noticeData.add(new Notice("Hello, world!"));
+		currentNotice = new Notice("Hello, world!");
 	}
 	
 	@Override
@@ -43,6 +43,8 @@ public class Main extends Application {
 			Scene scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			NoticeController controller = loader.getController();
+			controller.setMain(this);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -56,12 +58,8 @@ public class Main extends Application {
 		return primaryStage;
 	}
 
-	public ObservableList<Notice> getNoticeData() {
-		return noticeData;
-	}
-
 	public Notice getCurrentNotice() {
-		return noticeData.get(0);
+		return currentNotice;
 	}
 
 	public static void main(String[] args) {
