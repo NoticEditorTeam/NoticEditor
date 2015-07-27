@@ -29,7 +29,6 @@ public class Main extends Application {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("NoticEditor");
 		initRootLayout();
-		showNotice();
 	}
 
 	
@@ -46,22 +45,6 @@ public class Main extends Application {
 			primaryStage.show();
 		}
 		catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Shows notice
-	 */
-	public void showNotice() {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/Notice.fxml"));
-			AnchorPane notice = (AnchorPane) loader.load();
-			rootLayout.setCenter(notice);
-			NoticeController controller = loader.getController();
-			controller.setMain(this);
-		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}

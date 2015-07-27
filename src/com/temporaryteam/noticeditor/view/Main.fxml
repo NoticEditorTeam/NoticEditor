@@ -5,13 +5,17 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="440.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="440.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.view.NoticeController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu mnemonicParsing="false" onAction="#handleMenu" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenu" text="New" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenu" text="Open" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenu" text="Save" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleMenu" text="Save As" />
+              <MenuItem fx:id="exitItem" mnemonicParsing="false" onAction="#handleMenu" text="Close" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
@@ -27,4 +31,7 @@
         </menus>
       </MenuBar>
    </top>
+   <center>
+      <TextArea fx:id="noticeArea" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>
