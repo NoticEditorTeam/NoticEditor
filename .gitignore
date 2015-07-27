@@ -1,3 +1,5 @@
-dist/*
-build/*
+/dist
+/build
+
 .vimrc
+*.swp
