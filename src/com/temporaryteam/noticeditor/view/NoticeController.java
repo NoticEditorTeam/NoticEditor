@@ -37,12 +37,20 @@ public class NoticeController {
 
 	private Main main;
 	private File openedFile;
+	private FileChooser chooser;
 	
 	/**
 	 * The constructor. Must be called before initialization method
 	 */
 	public NoticeController() {
 		openedFile = null;
+		chooser = new FileChooser();
+		chooser.setTitle("Select notice to open");
+		chooser.getExtensionFilters().addAll(
+			new ExtensionFilter("Text files", "*.txt"),
+			new ExtensionFilter("PDF files", "*.pdf"),
+			new ExtensionFilter("HTML files", "*.html"),
+			new ExtensionFilter("All files", "*"));
 	}
 
 	/**
@@ -68,13 +76,6 @@ public class NoticeController {
 				File toSave = null;
 				File selected = null;
 				if(openedFile==null) {
-					FileChooser chooser = new FileChooser();
-					chooser.setTitle("Select notice to open");
-					chooser.getExtensionFilters().addAll(
-						new ExtensionFilter("Text files", "*.txt"),
-						new ExtensionFilter("PDF files", "*.pdf"),
-						new ExtensionFilter("HTML files", "*.html"),
-						new ExtensionFilter("All files", "*"));
 					selected = chooser.showSaveDialog(main.getPrimaryStage());
 					if(selected!=null) toSave = selected;
 				}
@@ -91,13 +92,6 @@ public class NoticeController {
 		}
 		else if((source.equals(openItem))||(source.equals(saveAsItem))) {
 			try {
-				FileChooser chooser = new FileChooser();
-				chooser.setTitle("Select notice to open");
-				chooser.getExtensionFilters().addAll(
-					new ExtensionFilter("Text files", "*.txt"),
-					new ExtensionFilter("PDF files", "*.pdf"),
-					new ExtensionFilter("HTML files", "*.html"),
-					new ExtensionFilter("All files", "*"));
 				File selected = null;
 				if(source.equals(openItem)) {
 					selected = chooser.showOpenDialog(main.getPrimaryStage());
