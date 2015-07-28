@@ -30,14 +30,19 @@ public class NoticeController {
 	private MenuItem saveItem;
 
 	@FXML
+	private MenuItem saveAsItem;
+
+	@FXML
 	private MenuItem exitItem;
 
 	private Main main;
+	private File openedFile;
 	
 	/**
 	 * The constructor. Must be called before initialization method
 	 */
 	public NoticeController() {
+		openedFile = null;
 	}
 
 	/**
@@ -56,8 +61,35 @@ public class NoticeController {
 		MenuItem source = (MenuItem)event.getSource();
 		if(source.equals(newItem)) {
 			noticeArea.setText(main.toString());
+			openedFile = null;
 		}
-		else if((source.equals(openItem))||(source.equals(saveItem))) {
+		else if(source.equals(saveItem)) {
+			try {
+				File toSave = null;
+				File selected = null;
+				if(openedFile==null) {
+					FileChooser chooser = new FileChooser();
+					chooser.setTitle("Select notice to open");
+					chooser.getExtensionFilters().addAll(
+						new ExtensionFilter("Text files", "*.txt"),
+						new ExtensionFilter("PDF files", "*.pdf"),
+						new ExtensionFilter("HTML files", "*.html"),
+						new ExtensionFilter("All files", "*"));
+					selected = chooser.showSaveDialog(main.getPrimaryStage());
+					if(selected!=null) toSave = selected;
+				}
+				else toSave = openedFile;
+				if(toSave!=null) {
+					String notice = noticeArea.getText();
+					if(!toSave.exists()) toSave.createNewFile();
+					FileWriter writeFile = new FileWriter(toSave);
+					writeFile.write(notice);
+					writeFile.close();
+				}
+			} catch(IOException ioe) {
+			}
+		}
+		else if((source.equals(openItem))||(source.equals(saveAsItem))) {
 			try {
 				FileChooser chooser = new FileChooser();
 				chooser.setTitle("Select notice to open");
@@ -65,8 +97,14 @@ public class NoticeController {
 					new ExtensionFilter("Text files", "*.txt"),
 					new ExtensionFilter("PDF files", "*.pdf"),
 					new ExtensionFilter("HTML files", "*.html"),
-					new ExtensionFilter("All files", "*.*"));
-				File selected = chooser.showOpenDialog(main.getPrimaryStage());
+					new ExtensionFilter("All files", "*"));
+				File selected = null;
+				if(source.equals(openItem)) {
+					selected = chooser.showOpenDialog(main.getPrimaryStage());
+				}
+				else if(source.equals(saveAsItem)) {
+					selected = chooser.showSaveDialog(main.getPrimaryStage());
+				}
 				if(selected!=null) {
 					if(source.equals(openItem)) {
 						String notice = "";
@@ -75,14 +113,16 @@ public class NoticeController {
 							notice+=in.nextLine()+"\n";
 						}
 						noticeArea.setText(notice);
+						openedFile = selected;
 						in.close();
 					}
-					else if(source.equals(saveItem)) {
+					else if(source.equals(saveAsItem)) {
 						String notice = noticeArea.getText();
 						if(!selected.exists()) selected.createNewFile();
 						FileWriter writeFile = new FileWriter(selected);
 						writeFile.write(notice);
 						writeFile.close();
+						openedFile = selected;
 					}
 				}
 			} catch (IOException ioe) {
