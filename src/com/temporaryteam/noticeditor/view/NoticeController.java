@@ -1,9 +1,12 @@
 package com.temporaryteam.noticeditor.view;
 
+import org.pegdown.PegDownProcessor;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,6 +19,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.MenuItem;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
+
 import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.model.Notice;
 
@@ -50,6 +54,7 @@ public class NoticeController {
 	private FileChooser chooser;
 	private WebEngine engine;
 	private String input;
+	private PegDownProcessor processor;
 	
 	/**
 	 * The constructor. Must be called before initialization method
@@ -63,8 +68,16 @@ public class NoticeController {
 			new ExtensionFilter("PDF files", "*.pdf"),
 			new ExtensionFilter("HTML files", "*.html"),
 			new ExtensionFilter("All files", "*"));
+		processor = new PegDownProcessor();
 	}
 
+	/**
+	 * Method for operate with markdown
+	 */
+	private String operate(String source) {
+		return processor.markdownToHtml(source);
+	}
+	
 	/**
 	 * Initializes the controller class.
 	 */
@@ -73,7 +86,7 @@ public class NoticeController {
 		noticeArea.setText("Enter your notice here");
 		engine = viewer.getEngine();
 		engine.loadContent(noticeArea.getText());
-		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> engine.loadContent(newValue));
+		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> engine.loadContent(operate(newValue)));
 	}
 	
 	/**

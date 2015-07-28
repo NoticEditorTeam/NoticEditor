@@ -1,9 +1,10 @@
 JC=javac
-JCOPTS=-sourcepath $(SRC) -d $(BUILD) -g $(SRC)/$(MAIN_CLASS)
+JCOPTS=-classpath $(LIBS)/pegdown-1.5.0.jar -sourcepath $(SRC) -d $(BUILD) -g $(SRC)/$(MAIN_CLASS)
 PACKCMD=jar cfm $(DIST)/$(OUTPUT) $(MANIFEST) -C $(BUILD) .
 RM=rm -rf
 
 BUILD=./build
+LIBS=./libs
 DIST=./dist
 SRC=./src
 
@@ -22,11 +23,14 @@ init:
 
 clean:
 	$(RM) $(BUILD)/*
-	$(RM) $(DIST)$(OUTPUT)
+	$(RM) $(DIST)/$(OUTPUT)
 
 compile:
 	$(JC) $(JCOPTS)
 
 pack:
 	cp -rf $(XMLIN)/* $(XMLOUT)
+	for j in $(LIBS)/*.jar ; do \
+		unzip $$j -x META-INF/* -d $(BUILD) > /dev/null ; \
+	done
 	$(PACKCMD)
