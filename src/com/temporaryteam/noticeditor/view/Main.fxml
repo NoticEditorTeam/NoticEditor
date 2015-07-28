@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.web.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="440.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.view.NoticeController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="539.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.view.NoticeController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -25,13 +27,23 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem fx:id="aboutItem" mnemonicParsing="false" onAction="#handleMenu" text="About" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
    </top>
    <center>
-      <TextArea fx:id="noticeArea" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <SplitPane dividerPositions="0.2773333333333333" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <items>
+            <TreeView prefHeight="409.0" prefWidth="371.0" SplitPane.resizableWithParent="false" />
+            <SplitPane dividerPositions="0.5" prefHeight="409.0" prefWidth="390.0">
+              <items>
+                  <TextArea fx:id="noticeArea" prefHeight="409.0" prefWidth="216.0" />
+                  <WebView fx:id="viewer" prefHeight="409.0" prefWidth="312.0" />
+              </items>
+            </SplitPane>
+         </items>
+      </SplitPane>
    </center>
 </BorderPane>

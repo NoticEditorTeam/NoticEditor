@@ -4,14 +4,18 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.MenuItem;
+import javafx.scene.web.WebView;
+import javafx.scene.web.WebEngine;
 import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.model.Notice;
 
@@ -19,6 +23,9 @@ public class NoticeController {
 
 	@FXML
 	private TextArea noticeArea;
+
+	@FXML
+	private WebView viewer;
 
 	@FXML
 	private MenuItem newItem;
@@ -35,9 +42,14 @@ public class NoticeController {
 	@FXML
 	private MenuItem exitItem;
 
+	@FXML
+	private MenuItem aboutItem;
+
 	private Main main;
 	private File openedFile;
 	private FileChooser chooser;
+	private WebEngine engine;
+	private String input;
 	
 	/**
 	 * The constructor. Must be called before initialization method
@@ -59,6 +71,9 @@ public class NoticeController {
 	@FXML
 	private void initialize() {
 		noticeArea.setText("Enter your notice here");
+		engine = viewer.getEngine();
+		engine.loadContent(noticeArea.getText());
+		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> engine.loadContent(newValue));
 	}
 	
 	/**
@@ -68,7 +83,7 @@ public class NoticeController {
 	private void handleMenu(ActionEvent event) {
 		MenuItem source = (MenuItem)event.getSource();
 		if(source.equals(newItem)) {
-			noticeArea.setText(main.toString());
+			noticeArea.setText("");
 			openedFile = null;
 		}
 		else if(source.equals(saveItem)) {
@@ -130,10 +145,6 @@ public class NoticeController {
 	 */
 	public void setMain(Main main) {
 		this.main = main;
-/*		try {
-			noticeArea.setText(main.getCurrentNotice().getNotice());
-		} catch(IndexOutOfBoundsException e) {
-		}*/
 	}
 	
 }
