@@ -44,6 +44,9 @@ public class NoticeController {
 	private MenuItem saveAsItem;
 
 	@FXML
+	private MenuItem exportHTMLItem;
+
+	@FXML
 	private MenuItem exitItem;
 
 	@FXML
@@ -148,6 +151,18 @@ public class NoticeController {
 					}
 				}
 			} catch (IOException ioe) {
+			}
+		}
+		else if(source.equals(exportHTMLItem)) {
+			try {
+				String notice = noticeArea.getText();
+				notice = processor.markdownToHtml(notice);
+				File selected = chooser.showSaveDialog(main.getPrimaryStage());
+				if(!selected.exists()) selected.createNewFile();
+				FileWriter writeFile = new FileWriter(selected);
+				writeFile.write(notice);
+				writeFile.close();
+			} catch(IOException ioe) {
 			}
 		}
 		else if(source.equals(exitItem)) Platform.exit();
