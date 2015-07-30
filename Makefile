@@ -1,5 +1,5 @@
 JC=javac
-JCOPTS=-classpath $(LIBS)/pegdown-1.5.0.jar -sourcepath $(SRC) -d $(BUILD) -g $(SRC)/$(MAIN_CLASS)
+JCOPTS=-classpath $(LIBS)/pegdown-1.5.0.jar:$(LIBS)/org.json-chargebee-1.0.jar -sourcepath $(SRC) -d $(BUILD) -g $(SRC)/$(MAIN_CLASS)
 PACKCMD=jar cfm $(DIST)/$(OUTPUT) $(MANIFEST) -C $(BUILD) .
 RM=rm -rf
 

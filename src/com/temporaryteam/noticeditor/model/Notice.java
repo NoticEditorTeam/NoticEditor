@@ -1,39 +1,36 @@
 package com.temporaryteam.noticeditor.model;
 
-import javafx.beans.property.StringProperty;
-import javafx.beans.property.SimpleStringProperty;
+import org.json.JSONObject;
+import org.json.JSONException;
 
-/**
- * Model class for a Notice.
- */
 public class Notice {
 
-	private final StringProperty notice;
+	private String notice;
 
-	/**
-	 * Default constructor.
-	 */
 	public Notice() {
-		this(null);
+		notice = null;
 	}
 
-	/*
-	 * Constructor with notice.
-	 */
 	public Notice(String notice) {
-		this.notice = new SimpleStringProperty(notice);
+		this.notice = notice;
 	}
 
 	public String getNotice() {
-		return notice.get();
-	}
-
-	public void setNotice(String newNotice) {
-		notice.set(newNotice);
-	}
-
-	public StringProperty getNoticeProperty() {
 		return notice;
+	}
+
+	public void setNotice(String notice) {
+		this.notice = notice;
+	}
+
+	public JSONObject toJson() throws JSONException {
+		JSONObject obj = new JSONObject();
+		obj.put("content", notice);
+		return obj;
+	}
+
+	public void fromJson(JSONObject jsobj) throws JSONException {
+		notice = jsobj.getString("content");
 	}
 
 }

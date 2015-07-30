@@ -1,5 +1,8 @@
 package com.temporaryteam.noticeditor.view;
 
+import org.json.JSONObject;
+import org.json.JSONException;
+
 import org.pegdown.PegDownProcessor;
 
 import java.io.File;
@@ -22,6 +25,7 @@ import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.model.Notice;
+import com.temporaryteam.noticeditor.model.NoticeCategory;
 
 public class NoticeController {
 
@@ -58,6 +62,7 @@ public class NoticeController {
 	private WebEngine engine;
 	private String input;
 	private PegDownProcessor processor;
+	private NoticeCategory currentNotice;
 	
 	/**
 	 * The constructor. Must be called before initialization method
@@ -75,6 +80,12 @@ public class NoticeController {
 	}
 
 	/**
+	 * Method for generating TreeView items
+	 */
+	private void generateTreeItems() {
+	}
+
+	/**
 	 * Method for operate with markdown
 	 */
 	private String operate(String source) {
@@ -88,6 +99,7 @@ public class NoticeController {
 	private void initialize() {
 		noticeArea.setText("Enter your notice here");
 		engine = viewer.getEngine();
+		currentNotice = new NoticeCategory("", new Notice("Enter your notice here"));
 		engine.loadContent(noticeArea.getText());
 		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> engine.loadContent(operate(newValue)));
 	}
@@ -100,6 +112,7 @@ public class NoticeController {
 		MenuItem source = (MenuItem)event.getSource();
 		if(source.equals(newItem)) {
 			noticeArea.setText("");
+			currentNotice = new NoticeCategory("", new Notice(""));
 			openedFile = null;
 		}
 		else if(source.equals(saveItem)) {
@@ -112,13 +125,14 @@ public class NoticeController {
 				}
 				else toSave = openedFile;
 				if(toSave!=null) {
-					String notice = noticeArea.getText();
 					if(!toSave.exists()) toSave.createNewFile();
 					FileWriter writeFile = new FileWriter(toSave);
-					writeFile.write(notice);
+					JSONObject obj = currentNotice.toJson();
+					obj.write(writeFile);
 					writeFile.close();
 				}
 			} catch(IOException ioe) {
+			} catch(JSONException e) {
 			}
 		}
 		else if((source.equals(openItem))||(source.equals(saveAsItem))) {
@@ -137,20 +151,24 @@ public class NoticeController {
 						while(in.hasNext()) {
 							notice+=in.nextLine()+"\n";
 						}
-						noticeArea.setText(notice);
+						JSONObject obj = new JSONObject(notice);
+						currentNotice.fromJson(obj);
+						noticeArea.setText("");
 						openedFile = selected;
 						in.close();
+						generateTreeItems();
 					}
 					else if(source.equals(saveAsItem)) {
-						String notice = noticeArea.getText();
 						if(!selected.exists()) selected.createNewFile();
 						FileWriter writeFile = new FileWriter(selected);
-						writeFile.write(notice);
+						JSONObject obj = currentNotice.toJson();
+						obj.write(writeFile);
 						writeFile.close();
 						openedFile = selected;
 					}
 				}
 			} catch (IOException ioe) {
+			} catch (JSONException e) {
 			}
 		}
 		else if(source.equals(exportHTMLItem)) {
