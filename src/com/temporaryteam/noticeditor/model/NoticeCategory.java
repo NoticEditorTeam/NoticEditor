@@ -59,6 +59,11 @@ public class NoticeCategory {
 	public void setContent(Notice content) {
 		this.content = content;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 	
 	public JSONObject toJson() throws JSONException {
 		JSONObject obj = new JSONObject();

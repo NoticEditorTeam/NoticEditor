@@ -10,16 +10,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
@@ -56,6 +60,9 @@ public class NoticeController {
 	@FXML
 	private MenuItem aboutItem;
 
+	@FXML
+	private TreeView<String> noticeTree;
+
 	private Main main;
 	private File openedFile;
 	private FileChooser chooser;
@@ -80,16 +87,17 @@ public class NoticeController {
 	}
 
 	/**
-	 * Method for generating TreeView items
-	 */
-	private void generateTreeItems() {
-	}
-
-	/**
 	 * Method for operate with markdown
 	 */
 	private String operate(String source) {
 		return processor.markdownToHtml(source);
+	}
+	
+	/**
+	 * Generate node
+	 */
+	private NoticeTreeItem<String> createNode(NoticeCategory notice) {
+		return new NoticeTreeItem<String>(notice);
 	}
 	
 	/**
@@ -100,6 +108,7 @@ public class NoticeController {
 		noticeArea.setText("Enter your notice here");
 		engine = viewer.getEngine();
 		currentNotice = new NoticeCategory("", new Notice("Enter your notice here"));
+		noticeTree.setRoot(createNode(currentNotice));
 		engine.loadContent(noticeArea.getText());
 		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> engine.loadContent(operate(newValue)));
 	}
@@ -113,6 +122,7 @@ public class NoticeController {
 		if(source.equals(newItem)) {
 			noticeArea.setText("");
 			currentNotice = new NoticeCategory("", new Notice(""));
+			noticeTree.setRoot(createNode(currentNotice));
 			openedFile = null;
 		}
 		else if(source.equals(saveItem)) {
@@ -156,7 +166,7 @@ public class NoticeController {
 						noticeArea.setText("");
 						openedFile = selected;
 						in.close();
-						generateTreeItems();
+						noticeTree.setRoot(createNode(currentNotice));
 					}
 					else if(source.equals(saveAsItem)) {
 						if(!selected.exists()) selected.createNewFile();

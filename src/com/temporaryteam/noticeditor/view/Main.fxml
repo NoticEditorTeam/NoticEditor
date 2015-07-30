@@ -35,9 +35,9 @@
       </MenuBar>
    </top>
    <center>
-      <SplitPane dividerPositions="0.2773333333333333" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.26059850374064836" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <items>
-            <TreeView prefHeight="409.0" prefWidth="371.0" SplitPane.resizableWithParent="false" />
+            <TreeView fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0" />
             <SplitPane dividerPositions="0.5" prefHeight="409.0" prefWidth="390.0">
               <items>
                   <TextArea fx:id="noticeArea" prefHeight="409.0" prefWidth="216.0" />
