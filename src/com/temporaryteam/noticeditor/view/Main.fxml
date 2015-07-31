@@ -37,15 +37,7 @@
    <center>
       <SplitPane dividerPositions="0.26059850374064836" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <items>
-            <TreeView fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0">
-               <contextMenu>
-                  <ContextMenu>
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="New Branch" />
-                        <MenuItem mnemonicParsing="false" text="New Notice" />
-                    </items>
-                  </ContextMenu>
-               </contextMenu></TreeView>
+            <TreeView fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0" />
             <SplitPane dividerPositions="0.5" prefHeight="409.0" prefWidth="390.0">
               <items>
                   <TextArea fx:id="noticeArea" prefHeight="409.0" prefWidth="216.0" />

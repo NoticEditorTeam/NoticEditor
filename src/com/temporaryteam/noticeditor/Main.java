@@ -1,6 +1,5 @@
 package com.temporaryteam.noticeditor;
 
-import com.temporaryteam.noticeditor.model.Notice;
 import com.temporaryteam.noticeditor.view.NoticeController;
 
 import java.io.IOException;
@@ -18,10 +17,8 @@ public class Main extends Application {
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
-	private Notice currentNotice;
 
 	public void Main() {
-		currentNotice = new Notice("Hello, world!");
 	}
 	
 	@Override
@@ -56,10 +53,6 @@ public class Main extends Application {
 	 */
 	public Stage getPrimaryStage() {
 		return primaryStage;
-	}
-
-	public Notice getCurrentNotice() {
-		return currentNotice;
 	}
 
 	public static void main(String[] args) {

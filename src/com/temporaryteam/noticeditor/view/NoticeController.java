@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 import javafx.util.Callback;
 import javafx.application.Platform;
@@ -30,7 +31,6 @@ import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
-import com.temporaryteam.noticeditor.model.Notice;
 import com.temporaryteam.noticeditor.model.NoticeCategory;
 
 public class NoticeController {
@@ -63,15 +63,6 @@ public class NoticeController {
 	private MenuItem aboutItem;
 
 	@FXML
-	private MenuItem newBranchItem;
-
-	@FXML
-	private MenuItem newNoticeItem;
-
-	@FXML
-	private MenuItem deleteItem;
-
-	@FXML
 	private TreeView<String> noticeTree;
 
 	private Main main;
@@ -98,6 +89,14 @@ public class NoticeController {
 	}
 
 	/**
+	 * Rebuild tree
+	 */
+	public void rebuild(String str) {
+		currentNotice = new NoticeCategory("", str);
+		noticeTree.setRoot(createNode(currentNotice));
+	}
+
+	/**
 	 * Method for operate with markdown
 	 */
 	private String operate(String source) {
@@ -118,8 +117,8 @@ public class NoticeController {
 	private void initialize() {
 		noticeArea.setText("Enter your notice here");
 		engine = viewer.getEngine();
-		currentNotice = new NoticeCategory("", new Notice("Enter your notice here"));
-		noticeTree.setRoot(createNode(currentNotice));
+		rebuild("Enter your notice here");
+		NoticeController controller = this;
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
 			public TreeCell<String> call(TreeView<String> p) {
@@ -131,16 +130,6 @@ public class NoticeController {
 	}
 	
 	/**
-	 * Context menu handler
-	 */
-	@FXML
-	private void handleContextMenu(ActionEvent event) {
-		MenuItem source = (MenuItem)event.getSource();
-		if(source.equals(newBranchItem)) {
-		}
-	}
-
-	/**
 	 * Handler
 	 */
 	@FXML
@@ -148,8 +137,7 @@ public class NoticeController {
 		MenuItem source = (MenuItem)event.getSource();
 		if(source.equals(newItem)) {
 			noticeArea.setText("");
-			currentNotice = new NoticeCategory("", new Notice(""));
-			noticeTree.setRoot(createNode(currentNotice));
+			rebuild("");
 			openedFile = null;
 		}
 		else if(source.equals(saveItem)) {
