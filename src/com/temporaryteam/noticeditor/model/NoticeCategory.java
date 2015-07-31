@@ -60,11 +60,6 @@ public class NoticeCategory {
 		this.content = content;
 	}
 
-	@Override
-	public String toString() {
-		return name;
-	}
-	
 	public JSONObject toJson() throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("name", name);

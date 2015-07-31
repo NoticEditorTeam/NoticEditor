@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import javafx.util.Callback;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,6 +23,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.web.WebView;
@@ -59,6 +61,15 @@ public class NoticeController {
 
 	@FXML
 	private MenuItem aboutItem;
+
+	@FXML
+	private MenuItem newBranchItem;
+
+	@FXML
+	private MenuItem newNoticeItem;
+
+	@FXML
+	private MenuItem deleteItem;
 
 	@FXML
 	private TreeView<String> noticeTree;
@@ -109,10 +120,26 @@ public class NoticeController {
 		engine = viewer.getEngine();
 		currentNotice = new NoticeCategory("", new Notice("Enter your notice here"));
 		noticeTree.setRoot(createNode(currentNotice));
+		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+			@Override
+			public TreeCell<String> call(TreeView<String> p) {
+				return new EditNoticeTreeCell();
+			}
+		});
 		engine.loadContent(noticeArea.getText());
 		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> engine.loadContent(operate(newValue)));
 	}
 	
+	/**
+	 * Context menu handler
+	 */
+	@FXML
+	private void handleContextMenu(ActionEvent event) {
+		MenuItem source = (MenuItem)event.getSource();
+		if(source.equals(newBranchItem)) {
+		}
+	}
+
 	/**
 	 * Handler
 	 */
