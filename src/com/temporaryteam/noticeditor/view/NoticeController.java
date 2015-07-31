@@ -92,8 +92,17 @@ public class NoticeController {
 	 * Rebuild tree
 	 */
 	public void rebuild(String str) {
-		currentNotice = new NoticeCategory("", str);
+		ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
+		list.add(new NoticeCategory("", str));
+		currentNotice = new NoticeCategory("", list);
 		noticeTree.setRoot(createNode(currentNotice));
+	}
+
+	/**
+	 * Open notice in TextArea
+	 */
+	public void open(String notice) {
+		noticeArea.setText(notice);
 	}
 
 	/**
@@ -122,7 +131,9 @@ public class NoticeController {
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
 			public TreeCell<String> call(TreeView<String> p) {
-				return new EditNoticeTreeCell();
+				EditNoticeTreeCell cell = new EditNoticeTreeCell();
+				cell.setController(controller);
+				return cell;
 			}
 		});
 		engine.loadContent(noticeArea.getText());

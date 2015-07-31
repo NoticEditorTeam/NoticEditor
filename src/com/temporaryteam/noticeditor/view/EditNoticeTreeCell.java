@@ -1,16 +1,61 @@
 package com.temporaryteam.noticeditor.view;
 
+import java.util.ArrayList;
+
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
+import com.temporaryteam.noticeditor.model.NoticeCategory;
+
 public class EditNoticeTreeCell extends TreeCell<String> {
 
 	private TextField noticeName;
+	private ContextMenu menu;
+	private ContextMenu openMenu;
+	private NoticeController controller;
 
 	public EditNoticeTreeCell() {
+		menu = new ContextMenu();
+		openMenu = new ContextMenu();
+		MenuItem addBranchItem = new MenuItem("Add branch");
+		MenuItem addNoticeItem = new MenuItem("Add notice");
+		MenuItem deleteItem = new MenuItem("Delete");
+		MenuItem openItem = new MenuItem("Open notice");
+		menu.getItems().addAll(addBranchItem, addNoticeItem, deleteItem);
+		openMenu.getItems().add(openItem);
+		addBranchItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
+				ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
+				NoticeCategory branch = new NoticeCategory("New branch", list);
+				NoticeTreeItem newBranch = new NoticeTreeItem<String>(branch);
+				getTreeItem().getChildren().add(newBranch);
+				getNoticeTreeItem().getNotice().getSubCategories().add(branch);
+			}
+		});
+		addNoticeItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
+				NoticeCategory notice = new NoticeCategory("New notice", "Your notice");
+				NoticeTreeItem newNotice = new NoticeTreeItem<String>(notice);
+				getTreeItem().getChildren().add(newNotice);
+				getNoticeTreeItem().getNotice().getSubCategories().add(notice);
+			}
+		});
+		deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
+			}
+		});
+		openItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent t) {
+				controller.open(getNoticeTreeItem().getNotice().getContent());
+			}
+		});
 	}
 
 	@Override
@@ -53,12 +98,14 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 			} else {
 				setText(getString());
 				setGraphic(getTreeItem().getGraphic());
+				if(!getTreeItem().isLeaf()) setContextMenu(menu);
+				else setContextMenu(openMenu);
 			}
 		}
 	}
 	
 	private NoticeTreeItem getNoticeTreeItem() {
-		return (NoticeTreeItem)getTreeItem();
+		return (NoticeTreeItem<String>)getTreeItem();
 	}
 
 	private void createTextField() {
@@ -78,4 +125,13 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	private String getString() {
 		return ((getItem() == null) ? "" : getItem().toString());
 	}
+
+	public NoticeController getController() {
+		return controller;
+	}
+	
+	public void setController(NoticeController controller) {
+		this.controller = controller;
+	}
+
 }
