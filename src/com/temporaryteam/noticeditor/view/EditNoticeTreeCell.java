@@ -62,8 +62,8 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		deleteItem2.setOnAction(handler);
 		openItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
-				controller.open(getNoticeTreeItem().getNotice().getContent());
 				controller.setCurrentTreeItem(getNoticeTreeItem());
+				controller.open(getNoticeTreeItem().getNotice().getContent());
 			}
 		});
 	}
