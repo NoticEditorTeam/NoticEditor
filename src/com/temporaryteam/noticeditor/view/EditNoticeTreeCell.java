@@ -27,9 +27,10 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		MenuItem addBranchItem = new MenuItem("Add branch");
 		MenuItem addNoticeItem = new MenuItem("Add notice");
 		MenuItem deleteItem = new MenuItem("Delete");
+		MenuItem deleteItem2 = new MenuItem("Delete");
 		MenuItem openItem = new MenuItem("Open notice");
 		branchMenu.getItems().addAll(addBranchItem, addNoticeItem, deleteItem);
-		noticeMenu.getItems().addAll(openItem, deleteItem);
+		noticeMenu.getItems().addAll(openItem, deleteItem2);
 		addBranchItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
 				ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
@@ -47,7 +48,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 				getNoticeTreeItem().getNotice().getSubCategories().add(notice);
 			}
 		});
-		deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
 				NoticeCategory notice = getNoticeTreeItem().getNotice();
 				NoticeTreeItem deletingNotice = getNoticeTreeItem();
@@ -56,7 +57,9 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 				notice = null;
 				deletingNotice = null;
 			}
-		});
+		};
+		deleteItem.setOnAction(handler);
+		deleteItem2.setOnAction(handler);
 		openItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
 				controller.open(getNoticeTreeItem().getNotice().getContent());
