@@ -26,7 +26,7 @@ public class NoticeCategory {
 	public NoticeCategory(String name, ArrayList<NoticeCategory> subcategories) {
 		this.name = name;
 		this.subcategories = subcategories;
-		content = "";
+		content = null;
 	}
 
 	public String getName() {
@@ -56,7 +56,8 @@ public class NoticeCategory {
 	public JSONObject toJson() throws JSONException {
 		JSONObject obj = new JSONObject();
 		obj.put("name", name);
-		obj.put("content", content);
+		if(content!=null) obj.put("content", content);
+		else obj.put("content", "");
 		ArrayList vect = new ArrayList<JSONObject>();
 		if(subcategories!=null) for(NoticeCategory subcategory : subcategories) vect.add(subcategory.toJson());
 		obj.put("subcategories", new JSONArray(vect));
@@ -65,16 +66,18 @@ public class NoticeCategory {
 
 	public void fromJson(JSONObject jsobj) throws JSONException {
 		name = jsobj.getString("name");
+		content = jsobj.getString("content");
+		if(content == "") content = null;
 		JSONArray arr = jsobj.getJSONArray("subcategories");
 		subcategories = new ArrayList<NoticeCategory>();
-		NoticeCategory category = new NoticeCategory();
+		NoticeCategory category;
 		if(arr.length()!=0) {
 			for(int i = 0; i<arr.length(); i++) {
+				category = new NoticeCategory();
 				category.fromJson(arr.getJSONObject(i));
 				subcategories.add(category);
 			}
 		}
 		else subcategories = null;
-		content = jsobj.getString("content");
 	}
 }
