@@ -17,19 +17,19 @@ import com.temporaryteam.noticeditor.model.NoticeCategory;
 public class EditNoticeTreeCell extends TreeCell<String> {
 
 	private TextField noticeName;
-	private ContextMenu menu;
-	private ContextMenu openMenu;
+	private ContextMenu branchMenu;
+	private ContextMenu noticeMenu;
 	private NoticeController controller;
 
 	public EditNoticeTreeCell() {
-		menu = new ContextMenu();
-		openMenu = new ContextMenu();
+		branchMenu = new ContextMenu();
+		noticeMenu = new ContextMenu();
 		MenuItem addBranchItem = new MenuItem("Add branch");
 		MenuItem addNoticeItem = new MenuItem("Add notice");
 		MenuItem deleteItem = new MenuItem("Delete");
 		MenuItem openItem = new MenuItem("Open notice");
-		menu.getItems().addAll(addBranchItem, addNoticeItem, deleteItem);
-		openMenu.getItems().add(openItem);
+		branchMenu.getItems().addAll(addBranchItem, addNoticeItem, deleteItem);
+		noticeMenu.getItems().addAll(openItem, deleteItem);
 		addBranchItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
 				ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
@@ -49,11 +49,18 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		});
 		deleteItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
+				NoticeCategory notice = getNoticeTreeItem().getNotice();
+				NoticeTreeItem deletingNotice = getNoticeTreeItem();
+				if(!(deletingNotice.getParent()==null)) deletingNotice.getParent().getChildren().remove(deletingNotice);
+				deleteNode(notice);
+				notice = null;
+				deletingNotice = null;
 			}
 		});
 		openItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
 				controller.open(getNoticeTreeItem().getNotice().getContent());
+				controller.setCurrentTreeItem(getNoticeTreeItem());
 			}
 		});
 	}
@@ -98,8 +105,8 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 			} else {
 				setText(getString());
 				setGraphic(getTreeItem().getGraphic());
-				if(!getTreeItem().isLeaf()) setContextMenu(menu);
-				else setContextMenu(openMenu);
+				if(!getTreeItem().isLeaf()) setContextMenu(branchMenu);
+				else setContextMenu(noticeMenu);
 			}
 		}
 	}
@@ -108,6 +115,18 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		return (NoticeTreeItem<String>)getTreeItem();
 	}
 
+	private void deleteNode(NoticeCategory node) {
+		if(node.getSubCategories()==null) {
+			node.setContent(null);
+		}
+		else {
+			for(NoticeCategory category : node.getSubCategories()) {
+				deleteNode(category);
+			}
+			node.setSubCategories(null);
+		}
+	}
+	
 	private void createTextField() {
 		noticeName = new TextField(getString());
 		noticeName.setOnKeyReleased(new EventHandler<KeyEvent>() {

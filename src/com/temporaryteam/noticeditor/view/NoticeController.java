@@ -72,7 +72,8 @@ public class NoticeController {
 	private String input;
 	private PegDownProcessor processor;
 	private NoticeCategory currentNotice;
-	
+	private NoticeTreeItem currentTreeItem;
+
 	/**
 	 * The constructor. Must be called before initialization method
 	 */
@@ -88,6 +89,14 @@ public class NoticeController {
 		processor = new PegDownProcessor();
 	}
 
+	public NoticeTreeItem getCurrentTreeItem() {
+		return currentTreeItem;
+	}
+
+	public void setCurrentTreeItem(NoticeTreeItem newCurrentTreeItem) {
+		currentTreeItem = newCurrentTreeItem;
+	}
+	
 	/**
 	 * Rebuild tree
 	 */
@@ -137,7 +146,10 @@ public class NoticeController {
 			}
 		});
 		engine.loadContent(noticeArea.getText());
-		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> engine.loadContent(operate(newValue)));
+		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> {
+			engine.loadContent(operate(newValue));
+			if(currentTreeItem!=null) currentTreeItem.getNotice().setContent(newValue);
+		});
 	}
 	
 	/**
@@ -205,6 +217,7 @@ public class NoticeController {
 				}
 			} catch (IOException ioe) {
 			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 		}
 		else if(source.equals(exportHTMLItem)) {
