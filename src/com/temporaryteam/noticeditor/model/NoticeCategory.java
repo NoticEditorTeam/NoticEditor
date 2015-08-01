@@ -2,6 +2,8 @@ package com.temporaryteam.noticeditor.model;
 
 import java.util.ArrayList;
 
+import org.pegdown.PegDownProcessor;
+
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,6 +53,18 @@ public class NoticeCategory {
 
 	public void setContent(String content) {
 		this.content = content;
+	}
+
+	public String toHTML(PegDownProcessor processor) {
+		String html = "";
+		if((content==null)||(subcategories!=null)) {
+			for(NoticeCategory category : subcategories) {
+				html+=("<a href=\"" + category.getName() +".html\">" + category.getName() + ".html</a>");
+			}
+		} else {
+			html+=processor.markdownToHtml(content);
+		}
+		return html;
 	}
 
 	public JSONObject toJson() throws JSONException {

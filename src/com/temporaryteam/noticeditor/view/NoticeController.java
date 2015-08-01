@@ -98,6 +98,24 @@ public class NoticeController {
 	}
 	
 	/**
+	 * Write node
+	 */
+	public void writeNode(NoticeCategory node, String name) throws IOException {
+		File write;
+		if(openedFile!=null) write = new File(openedFile.getParent() + "/" + name);
+		else write = chooser.showSaveDialog(main.getPrimaryStage());
+		if(!write.exists()) write.createNewFile();
+		FileWriter writeHTML = new FileWriter(write);
+		writeHTML.write(node.toHTML(processor));
+		writeHTML.close();
+		if(node.getSubCategories()!=null) {
+			for(NoticeCategory subcategory : node.getSubCategories()) {
+				writeNode(subcategory, (subcategory.getName() + ".html"));
+			}
+		}
+	}
+
+	/**
 	 * Rebuild tree
 	 */
 	public void rebuild(String str) {
@@ -222,13 +240,7 @@ public class NoticeController {
 		}
 		else if(source.equals(exportHTMLItem)) {
 			try {
-				String notice = noticeArea.getText();
-				notice = processor.markdownToHtml(notice);
-				File selected = chooser.showSaveDialog(main.getPrimaryStage());
-				if(!selected.exists()) selected.createNewFile();
-				FileWriter writeFile = new FileWriter(selected);
-				writeFile.write(notice);
-				writeFile.close();
+				writeNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), "index.html");
 			} catch(IOException ioe) {
 			}
 		}
