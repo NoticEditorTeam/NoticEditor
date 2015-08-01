@@ -120,8 +120,8 @@ public class NoticeController {
 	 */
 	public void rebuild(String str) {
 		ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
-		list.add(new NoticeCategory("", str));
-		currentNotice = new NoticeCategory("", list);
+		list.add(new NoticeCategory("Default notice", str));
+		currentNotice = new NoticeCategory("Default notice", list);
 		noticeTree.setRoot(createNode(currentNotice));
 	}
 

@@ -11,6 +11,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 import com.temporaryteam.noticeditor.model.NoticeCategory;
 
@@ -28,9 +29,8 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		MenuItem addNoticeItem = new MenuItem("Add notice");
 		MenuItem deleteItem = new MenuItem("Delete");
 		MenuItem deleteItem2 = new MenuItem("Delete");
-		MenuItem openItem = new MenuItem("Open notice");
 		branchMenu.getItems().addAll(addBranchItem, addNoticeItem, deleteItem);
-		noticeMenu.getItems().addAll(openItem, deleteItem2);
+		noticeMenu.getItems().add(deleteItem2);
 		addBranchItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
 				ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
@@ -60,10 +60,12 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		};
 		deleteItem.setOnAction(handler);
 		deleteItem2.setOnAction(handler);
-		openItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent t) {
-				controller.setCurrentTreeItem(getNoticeTreeItem());
-				controller.open(getNoticeTreeItem().getNotice().getContent());
+		setOnMouseReleased(new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent t) {
+				if(getNoticeTreeItem().getNotice().getContent()!=null) {
+					controller.setCurrentTreeItem(getNoticeTreeItem());
+					controller.open(getNoticeTreeItem().getNotice().getContent());
+				}
 			}
 		});
 	}
