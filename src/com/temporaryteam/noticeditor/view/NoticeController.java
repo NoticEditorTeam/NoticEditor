@@ -331,9 +331,7 @@ public class NoticeController {
 				if(toWrite.exists()) toWrite.delete();
 				toWrite.mkdir();
 				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName(), toWrite);
-				System.out.println("1");
-				pack(toWrite, (openedFile.getParent() + "/" + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName() + ".zip"));
-				System.out.println("2");
+				pack(toWrite, (toWrite.getParent() + "/" + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName() + ".zip"));
 				toWrite.delete();
 			} catch(IOException ioe) {
 			}
