@@ -42,7 +42,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		});
 		addNoticeItem.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent t) {
-				NoticeCategory notice = new NoticeCategory("New notice", "Your notice");
+				NoticeCategory notice = new NoticeCategory("New notice", "");
 				NoticeTreeItem newNotice = new NoticeTreeItem<String>(notice);
 				getTreeItem().getChildren().add(newNotice);
 				getNoticeTreeItem().getNotice().getSubCategories().add(notice);

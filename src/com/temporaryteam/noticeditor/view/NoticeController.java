@@ -229,9 +229,9 @@ public class NoticeController {
 	 */
 	@FXML
 	private void initialize() {
-		noticeArea.setText("Enter your notice here");
+		noticeArea.setText("help");
 		engine = viewer.getEngine();
-		rebuild("Enter your notice here");
+		rebuild("help");
 		NoticeController controller = this;
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
@@ -255,8 +255,8 @@ public class NoticeController {
 	private void handleMenu(ActionEvent event) {
 		MenuItem source = (MenuItem)event.getSource();
 		if(source.equals(newItem)) {
-			noticeArea.setText("");
-			rebuild("");
+			noticeArea.setText("help");
+			rebuild("help");
 			openedFile = null;
 		}
 		else if(source.equals(saveItem)) {
