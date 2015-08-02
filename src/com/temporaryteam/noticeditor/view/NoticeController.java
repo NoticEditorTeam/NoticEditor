@@ -33,12 +33,7 @@ import javafx.geometry.Orientation;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
@@ -85,6 +80,9 @@ public class NoticeController {
 
 	@FXML
 	private MenuItem rotateItem;
+
+	@FXML
+	private CheckMenuItem wordWrapItem;
 
 	@FXML
 	private TreeView<String> noticeTree;
@@ -257,6 +255,7 @@ public class NoticeController {
 			engine.loadContent(operate(newValue));
 			if(currentTreeItem!=null) currentTreeItem.getNotice().setContent(newValue);
 		});
+		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
 	}
 	
 	/**

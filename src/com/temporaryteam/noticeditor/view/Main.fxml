@@ -25,6 +25,7 @@
           <Menu mnemonicParsing="false" onAction="#handleMenu" text="View">
             <items>
               <MenuItem fx:id="rotateItem" mnemonicParsing="false" onAction="#handleMenu" text="Rotate" />
+              <CheckMenuItem fx:id="wordWrapItem" mnemonicParsing="false" text="Word wrap" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
