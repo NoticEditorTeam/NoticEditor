@@ -17,6 +17,7 @@
                   <MenuItem fx:id="openItem" mnemonicParsing="false" onAction="#handleMenu" text="Open" />
                   <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#handleMenu" text="Save" />
                   <MenuItem fx:id="saveAsItem" mnemonicParsing="false" onAction="#handleMenu" text="Save As" />
+                  <MenuItem fx:id="zipItem" mnemonicParsing="false" onAction="#handleMenu" text="Save in zip" />
                   <MenuItem fx:id="exportHTMLItem" mnemonicParsing="false" onAction="#handleMenu" text="Export to HTML" />
               <MenuItem fx:id="exitItem" mnemonicParsing="false" onAction="#handleMenu" text="Close" />
             </items>

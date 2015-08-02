@@ -5,11 +5,21 @@ import org.json.JSONException;
 
 import org.pegdown.PegDownProcessor;
 
+import java.net.URI;
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Scanner;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javafx.util.Callback;
 import javafx.application.Platform;
@@ -52,6 +62,9 @@ public class NoticeController {
 
 	@FXML
 	private MenuItem saveAsItem;
+
+	@FXML
+	private MenuItem zipItem;
 
 	@FXML
 	private MenuItem exportHTMLItem;
@@ -97,6 +110,48 @@ public class NoticeController {
 		currentTreeItem = newCurrentTreeItem;
 	}
 	
+	/** 
+	 * Pack directory
+	 */
+	private void pack(File directory, String toSave)  throws IOException {
+		URI root = directory.toURI();
+		Deque<File> queue = new LinkedList<File>();
+		queue.push(directory);
+		OutputStream out = new FileOutputStream(new File(toSave));
+		Closeable res = out;
+		try {
+			ZipOutputStream zout = new ZipOutputStream(out);
+			res = zout;
+			while(!queue.isEmpty()) {
+				directory = queue.pop();
+				for(File child : directory.listFiles()) {
+					String name = root.relativize(child.toURI()).getPath();
+					if(child.isDirectory()) {
+						queue.push(child);
+						name = name.endsWith("/") ? name : (name + "/");
+						zout.putNextEntry(new ZipEntry(name));
+					} else {
+						zout.putNextEntry(new ZipEntry(name));
+						InputStream in = new FileInputStream(child);
+						try {
+							byte[] buffer = new byte[1024];
+							while(true) {
+								int readCount = in.read(buffer);
+								if(readCount<0) break;
+								zout.write(buffer, 0, readCount);
+							}
+						} finally {
+							in.close();
+						}
+						zout.closeEntry();
+					}
+				}
+			}
+		} finally {
+			res.close();
+		}
+	}
+
 	/**
 	 * Write node
 	 */
@@ -113,6 +168,29 @@ public class NoticeController {
 				writeNode(subcategory, (subcategory.getName() + ".html"));
 			}
 		}
+	}
+
+	/**
+	 * Write node in filesystem
+	 */
+	private void writeFSNode(NoticeCategory node, String name, File dir) throws IOException {
+		System.out.println("In " + node.getName() + " with name " + name);
+		if(node.getSubCategories()!=null) {
+			for(NoticeCategory cat : node.getSubCategories()) {
+				File newDir = new File(dir.getPath() + "/" + name);
+				if(newDir.exists()) newDir.delete();
+				newDir.mkdir();
+				writeFSNode(cat, cat.getName(), newDir);
+			}
+		}
+		else {
+			File toWrite = new File(dir.getPath() + "/" + name);
+			if(!toWrite.exists()) toWrite.createNewFile();
+			FileWriter writer = new FileWriter(toWrite);
+			writer.write(node.getContent());
+			writer.close();
+		}
+		System.out.println("Exit");
 	}
 
 	/**
@@ -242,6 +320,21 @@ public class NoticeController {
 		else if(source.equals(exportHTMLItem)) {
 			try {
 				writeNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), "index.html");
+			} catch(IOException ioe) {
+			}
+		}
+		else if(source.equals(zipItem)) {
+			try {
+				File toWrite;
+				if(openedFile!=null) toWrite = new File(openedFile.getParent() + "/." + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName());
+				else toWrite = chooser.showSaveDialog(main.getPrimaryStage());
+				if(toWrite.exists()) toWrite.delete();
+				toWrite.mkdir();
+				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName(), toWrite);
+				System.out.println("1");
+				pack(toWrite, (openedFile.getParent() + "/" + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName() + ".zip"));
+				System.out.println("2");
+				toWrite.delete();
 			} catch(IOException ioe) {
 			}
 		}
