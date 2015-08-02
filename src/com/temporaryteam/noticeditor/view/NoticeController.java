@@ -29,6 +29,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.scene.input.KeyEvent;
@@ -37,6 +38,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
@@ -44,6 +46,9 @@ import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.model.NoticeCategory;
 
 public class NoticeController {
+
+	@FXML
+	private SplitPane mainPanel;
 
 	@FXML
 	private TextArea noticeArea;
@@ -74,6 +79,9 @@ public class NoticeController {
 
 	@FXML
 	private MenuItem aboutItem;
+
+	@FXML
+	private MenuItem rotateItem;
 
 	@FXML
 	private TreeView<String> noticeTree;
@@ -335,6 +343,11 @@ public class NoticeController {
 				toWrite.delete();
 			} catch(IOException ioe) {
 			}
+		}
+		else if(source.equals(rotateItem) {
+			Orientation or = mainPanel.getOrientation();
+			if(or==Orientation.HORIZONTAL) mainPanel.setOrientation(Orientation.VERTICAL);
+			else mainPanel.setOrientation(Orientation.HORIZONTAL);
 		}
 		else if(source.equals(exitItem)) Platform.exit();
 	}
