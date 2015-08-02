@@ -204,8 +204,8 @@ public class NoticeController {
 		else if((source.equals(openItem))||(source.equals(saveAsItem))) {
 			try {
 				File selected = null;
+				if(openedFile!=null) chooser.setInitialDirectory(new File(openedFile.getParent()));
 				if(source.equals(openItem)) {
-					if(openedFile!=null) chooser.setInitialDirectory(new File(openedFile.getParent()));
 					selected = chooser.showOpenDialog(main.getPrimaryStage());
 				}
 				else if(source.equals(saveAsItem)) {
