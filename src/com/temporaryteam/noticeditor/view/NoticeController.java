@@ -121,7 +121,7 @@ public class NoticeController {
 	public void rebuild(String str) {
 		ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
 		list.add(new NoticeCategory("Default notice", str));
-		currentNotice = new NoticeCategory("Default notice", list);
+		currentNotice = new NoticeCategory("Default branch", list);
 		noticeTree.setRoot(createNode(currentNotice));
 	}
 
@@ -205,6 +205,7 @@ public class NoticeController {
 			try {
 				File selected = null;
 				if(source.equals(openItem)) {
+					if(openedFile!=null) chooser.setInitialDirectory(new File(openedFile.getParent()));
 					selected = chooser.showOpenDialog(main.getPrimaryStage());
 				}
 				else if(source.equals(saveAsItem)) {
