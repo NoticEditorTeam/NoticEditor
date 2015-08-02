@@ -192,7 +192,7 @@ public class NoticeController {
 			}
 		}
 		else {
-			File toWrite = new File(dir.getPath() + "/" + name);
+			File toWrite = new File(dir.getPath() + "/" + name + ".md");
 			if(!toWrite.exists()) toWrite.createNewFile();
 			FileWriter writer = new FileWriter(toWrite);
 			writer.write(node.getContent());
@@ -344,7 +344,7 @@ public class NoticeController {
 			} catch(IOException ioe) {
 			}
 		}
-		else if(source.equals(rotateItem) {
+		else if(source.equals(rotateItem)) {
 			Orientation or = mainPanel.getOrientation();
 			if(or==Orientation.HORIZONTAL) mainPanel.setOrientation(Orientation.VERTICAL);
 			else mainPanel.setOrientation(Orientation.HORIZONTAL);
