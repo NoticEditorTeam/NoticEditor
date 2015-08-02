@@ -51,6 +51,9 @@ public class NoticeController {
 	private SplitPane mainPanel;
 
 	@FXML
+	private SplitPane editorPanel;
+
+	@FXML
 	private TextArea noticeArea;
 
 	@FXML
@@ -345,9 +348,10 @@ public class NoticeController {
 			}
 		}
 		else if(source.equals(rotateItem)) {
-			Orientation or = mainPanel.getOrientation();
-			if(or==Orientation.HORIZONTAL) mainPanel.setOrientation(Orientation.VERTICAL);
-			else mainPanel.setOrientation(Orientation.HORIZONTAL);
+			Orientation or = editorPanel.getOrientation();
+			if (or == Orientation.HORIZONTAL) or = Orientation.VERTICAL;
+			else or = Orientation.HORIZONTAL;
+			editorPanel.setOrientation(or);
 		}
 		else if(source.equals(exitItem)) Platform.exit();
 	}
