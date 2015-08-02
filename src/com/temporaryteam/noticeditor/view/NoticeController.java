@@ -4,6 +4,7 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import org.pegdown.PegDownProcessor;
+import static org.pegdown.Extensions.*;
 
 import java.net.URI;
 import java.io.Closeable;
@@ -110,7 +111,7 @@ public class NoticeController {
 			new ExtensionFilter("PDF files", "*.pdf"),
 			new ExtensionFilter("HTML files", "*.html"),
 			new ExtensionFilter("All files", "*"));
-		processor = new PegDownProcessor();
+		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
 	}
 
 	public NoticeTreeItem getCurrentTreeItem() {
