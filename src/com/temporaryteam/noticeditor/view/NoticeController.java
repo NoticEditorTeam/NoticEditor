@@ -26,7 +26,9 @@ import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.model.NoticeCategory;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
-import java.net.URISyntaxException;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 public class NoticeController {
 	
@@ -149,7 +151,7 @@ public class NoticeController {
 	 * Rebuild tree
 	 */
 	public void rebuild(String str) {
-		ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
+		ArrayList<NoticeCategory> list = new ArrayList<>();
 		list.add(new NoticeCategory("Default notice", str));
 		currentNotice = new NoticeCategory("Default branch", list);
 		noticeTree.setRoot(createNode(currentNotice));
@@ -173,7 +175,7 @@ public class NoticeController {
 	 * Generate node
 	 */
 	private NoticeTreeItem<String> createNode(NoticeCategory notice) {
-		return new NoticeTreeItem<String>(notice);
+		return new NoticeTreeItem<>(notice);
 	}
 	
 	/**
@@ -200,7 +202,7 @@ public class NoticeController {
 		}
 		
 		rebuild("help");
-		NoticeController controller = this;
+		final NoticeController controller = this;
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
 			public TreeCell<String> call(TreeView<String> p) {
@@ -210,10 +212,14 @@ public class NoticeController {
 			}
 		});
 		engine.loadContent(noticeArea.getText());
-		noticeArea.textProperty().addListener((observable, oldValue, newValue) -> {
-			engine.loadContent(operate(newValue));
+		noticeArea.textProperty().addListener(new ChangeListener<String>() {
+
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        engine.loadContent(operate(newValue));
 			if(currentTreeItem!=null) currentTreeItem.getNotice().setContent(newValue);
-		});
+                    }
+                });
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
 	}
 	
