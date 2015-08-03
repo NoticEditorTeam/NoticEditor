@@ -8,6 +8,7 @@ import static org.pegdown.Extensions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import javafx.util.Callback;
@@ -255,14 +256,15 @@ public class NoticeController {
 		}
 		else if(source.equals(zipItem)) {
 			try {
-				File toWrite;
-				if(openedFile!=null) toWrite = new File(openedFile.getParent() + "/." + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName());
-				else toWrite = chooser.showSaveDialog(main.getPrimaryStage());
-				if(toWrite.exists()) toWrite.delete();
-				toWrite.mkdir();
-				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName(), toWrite);
-				IOUtil.pack(toWrite, (toWrite.getParent() + "/" + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName() + ".zip"));
-				IOUtil.removeDirectory(toWrite);
+				File destDir; // folder to save zip
+				if (openedFile != null) destDir = openedFile.getParentFile();
+				else destDir = chooser.showSaveDialog(main.getPrimaryStage()).getParentFile();
+				
+				String rootName = ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName();
+				File temporary = Files.createTempDirectory("noticeditor").toFile();
+				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), rootName, temporary);
+				IOUtil.pack(temporary, destDir.getPath() + "/" + rootName + ".zip");
+				IOUtil.removeDirectory(temporary);
 			} catch(IOException ioe) {
 			}
 		}

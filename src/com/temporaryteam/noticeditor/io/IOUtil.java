@@ -45,7 +45,7 @@ public final class IOUtil {
 	private static void removeDirectoryHelper(File file) {
 		if (file.isDirectory()) {
 			for (File f : file.listFiles()) {
-				f.delete();
+				removeDirectoryHelper(f);
 			}
 		}
 		file.delete();
