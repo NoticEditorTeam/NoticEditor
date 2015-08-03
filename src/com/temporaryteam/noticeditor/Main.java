@@ -2,16 +2,11 @@ package com.temporaryteam.noticeditor;
 
 import com.temporaryteam.noticeditor.view.NoticeController;
 
-import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public class Main extends Application {
 

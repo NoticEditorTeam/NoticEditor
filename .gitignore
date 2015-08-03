@@ -1,5 +1,5 @@
-/dist
 /build
-
+/dist
 .vimrc
 *.swp
+/nbproject/private/
