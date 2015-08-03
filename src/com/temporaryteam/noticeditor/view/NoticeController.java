@@ -24,16 +24,11 @@ import java.util.zip.ZipOutputStream;
 
 import javafx.util.Callback;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;

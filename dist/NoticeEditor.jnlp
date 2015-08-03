@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="NoticeEditor.jnlp">
+  <information>
+    <title>NoticeEditor</title>
+    <vendor>naik</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="NoticeEditor.jar" size="21465" download="eager" />
+    <jar href="lib/asm-4.1.jar" size="47359" download="eager" />
+    <jar href="lib/asm-analysis-4.1.jar" size="19812" download="eager" />
+    <jar href="lib/asm-tree-4.1.jar" size="22162" download="eager" />
+    <jar href="lib/asm-util-4.1.jar" size="37599" download="eager" />
+    <jar href="lib/org.json-chargebee-1.0.jar" size="40683" download="eager" />
+    <jar href="lib/parboiled-core-1.1.7.jar" size="186607" download="eager" />
+    <jar href="lib/parboiled-java-1.1.7.jar" size="73350" download="eager" />
+    <jar href="lib/pegdown-1.5.0.jar" size="72741" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="NoticeEditor" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="com.temporaryteam.noticeditor.Main"  name="NoticeEditor" />
+  <update check="always"/>
+</jnlp>
