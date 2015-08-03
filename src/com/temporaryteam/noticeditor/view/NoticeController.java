@@ -6,39 +6,24 @@ import org.json.JSONException;
 import org.pegdown.PegDownProcessor;
 import static org.pegdown.Extensions.*;
 
-import java.net.URI;
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Scanner;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javafx.util.Callback;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
+import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.model.NoticeCategory;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import java.net.URISyntaxException;
@@ -125,59 +110,14 @@ public class NoticeController {
 		currentTreeItem = newCurrentTreeItem;
 	}
 	
-	/** 
-	 * Pack directory
-	 */
-	private void pack(File directory, String toSave)  throws IOException {
-		URI root = directory.toURI();
-		Deque<File> queue = new LinkedList<File>();
-		queue.push(directory);
-		OutputStream out = new FileOutputStream(new File(toSave));
-		Closeable res = out;
-		try {
-			ZipOutputStream zout = new ZipOutputStream(out);
-			res = zout;
-			while(!queue.isEmpty()) {
-				directory = queue.pop();
-				for(File child : directory.listFiles()) {
-					String name = root.relativize(child.toURI()).getPath();
-					if(child.isDirectory()) {
-						queue.push(child);
-						name = name.endsWith("/") ? name : (name + "/");
-						zout.putNextEntry(new ZipEntry(name));
-					} else {
-						zout.putNextEntry(new ZipEntry(name));
-						InputStream in = new FileInputStream(child);
-						try {
-							byte[] buffer = new byte[1024];
-							while(true) {
-								int readCount = in.read(buffer);
-								if(readCount<0) break;
-								zout.write(buffer, 0, readCount);
-							}
-						} finally {
-							in.close();
-						}
-						zout.closeEntry();
-					}
-				}
-			}
-		} finally {
-			res.close();
-		}
-	}
-
 	/**
 	 * Write node
 	 */
 	public void writeNode(NoticeCategory node, String name) throws IOException {
-		File write;
-		if(openedFile!=null) write = new File(openedFile.getParent() + "/" + name);
-		else write = chooser.showSaveDialog(main.getPrimaryStage());
-		if(!write.exists()) write.createNewFile();
-		FileWriter writeHTML = new FileWriter(write);
-		writeHTML.write(node.toHTML(processor));
-		writeHTML.close();
+		File file;
+		if (openedFile != null) file = new File(openedFile.getParent() + "/" + name);
+		else file = chooser.showSaveDialog(main.getPrimaryStage());
+		IOUtil.writeContent(file, node.toHTML(processor));
 		if(node.getSubCategories()!=null) {
 			for(NoticeCategory subcategory : node.getSubCategories()) {
 				writeNode(subcategory, (subcategory.getName() + ".html"));
@@ -200,10 +140,7 @@ public class NoticeController {
 		}
 		else {
 			File toWrite = new File(dir.getPath() + "/" + name + ".md");
-			if(!toWrite.exists()) toWrite.createNewFile();
-			FileWriter writer = new FileWriter(toWrite);
-			writer.write(node.getContent());
-			writer.close();
+			IOUtil.writeContent(toWrite, node.getContent());
 		}
 		System.out.println("Exit");
 	}
@@ -294,21 +231,15 @@ public class NoticeController {
 		else if(source.equals(saveItem)) {
 			try {
 				File toSave = null;
-				File selected = null;
-				if(openedFile==null) {
-					selected = chooser.showSaveDialog(main.getPrimaryStage());
-					if(selected!=null) toSave = selected;
+				if (openedFile == null) {
+					File selected = chooser.showSaveDialog(main.getPrimaryStage());
+					if  (selected != null) toSave = selected;
 				}
 				else toSave = openedFile;
-				if(toSave!=null) {
-					if(!toSave.exists()) toSave.createNewFile();
-					FileWriter writeFile = new FileWriter(toSave);
-					JSONObject obj = currentNotice.toJson();
-					obj.write(writeFile);
-					writeFile.close();
+				if (toSave != null) {
+					IOUtil.writeJson(toSave, currentNotice.toJson());
 				}
-			} catch(IOException ioe) {
-			} catch(JSONException e) {
+			} catch(IOException | JSONException ioe) {
 			}
 		}
 		else if((source.equals(openItem))||(source.equals(saveAsItem))) {
@@ -323,29 +254,18 @@ public class NoticeController {
 				}
 				if(selected!=null) {
 					if(source.equals(openItem)) {
-						String notice = "";
-						Scanner in = new Scanner(selected);
-						while(in.hasNext()) {
-							notice+=in.nextLine()+"\n";
-						}
-						JSONObject obj = new JSONObject(notice);
+						JSONObject obj = new JSONObject(IOUtil.readContent(selected));
 						currentNotice.fromJson(obj);
 						noticeArea.setText("");
 						openedFile = selected;
-						in.close();
 						noticeTree.setRoot(createNode(currentNotice));
 					}
 					else if(source.equals(saveAsItem)) {
-						if(!selected.exists()) selected.createNewFile();
-						FileWriter writeFile = new FileWriter(selected);
-						JSONObject obj = currentNotice.toJson();
-						obj.write(writeFile);
-						writeFile.close();
+						IOUtil.writeJson(selected, currentNotice.toJson());
 						openedFile = selected;
 					}
 				}
-			} catch (IOException ioe) {
-			} catch (JSONException e) {
+			} catch (IOException | JSONException e) {
 				e.printStackTrace();
 			}
 		}
@@ -357,14 +277,15 @@ public class NoticeController {
 		}
 		else if(source.equals(zipItem)) {
 			try {
-				File toWrite;
-				if(openedFile!=null) toWrite = new File(openedFile.getParent() + "/." + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName());
-				else toWrite = chooser.showSaveDialog(main.getPrimaryStage());
-				if(toWrite.exists()) toWrite.delete();
-				toWrite.mkdir();
-				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName(), toWrite);
-				pack(toWrite, (toWrite.getParent() + "/" + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName() + ".zip"));
-				toWrite.delete();
+				File destDir; // folder to save zip
+				if (openedFile != null) destDir = openedFile.getParentFile();
+				else destDir = chooser.showSaveDialog(main.getPrimaryStage()).getParentFile();
+				
+				String rootName = ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName();
+				File temporary = Files.createTempDirectory("noticeditor").toFile();
+				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), rootName, temporary);
+				IOUtil.pack(temporary, destDir.getPath() + "/" + rootName + ".zip");
+				IOUtil.removeDirectory(temporary);
 			} catch(IOException ioe) {
 			}
 		}
