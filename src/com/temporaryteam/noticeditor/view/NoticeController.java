@@ -40,9 +40,11 @@ import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.model.NoticeCategory;
+import com.temporaryteam.noticeditor.model.PreviewStyles;
+import java.net.URISyntaxException;
 
 public class NoticeController {
-
+	
 	@FXML
 	private SplitPane mainPanel;
 
@@ -84,6 +86,9 @@ public class NoticeController {
 
 	@FXML
 	private CheckMenuItem wordWrapItem;
+	
+	@FXML
+    private Menu previewStyleMenu;
 
 	@FXML
 	private TreeView<String> noticeTree;
@@ -219,7 +224,7 @@ public class NoticeController {
 	public void open(String notice) {
 		noticeArea.setText(notice);
 	}
-
+	
 	/**
 	 * Method for operate with markdown
 	 */
@@ -241,6 +246,22 @@ public class NoticeController {
 	private void initialize() {
 		noticeArea.setText("help");
 		engine = viewer.getEngine();
+		
+		// Set preview styles menu items
+		ToggleGroup previewStyleGroup = new ToggleGroup();
+		for (PreviewStyles style : PreviewStyles.values()) {
+			final String cssPath = style.getCssPath();
+			RadioMenuItem item = new RadioMenuItem(style.getName());
+			item.setToggleGroup(previewStyleGroup);
+			if (cssPath == null) item.setSelected(true);
+			item.setOnAction((e) -> {
+				String path = cssPath;
+				if (path != null) path = getClass().getResource(path).toExternalForm();
+				engine.setUserStyleSheetLocation(path);
+			});
+			previewStyleMenu.getItems().add(item);
+		}
+		
 		rebuild("help");
 		NoticeController controller = this;
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
