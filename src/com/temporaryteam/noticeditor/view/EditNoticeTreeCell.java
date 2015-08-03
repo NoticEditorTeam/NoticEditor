@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -31,26 +32,23 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		branchMenu.getItems().addAll(addBranchItem, addNoticeItem, deleteItem);
 		noticeMenu.getItems().add(deleteItem2);
 		addBranchItem.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
 			public void handle(ActionEvent t) {
-				ArrayList<NoticeCategory> list = new ArrayList<>();
+				ArrayList<NoticeCategory> list = new ArrayList<NoticeCategory>();
 				NoticeCategory branch = new NoticeCategory("New branch", list);
-				NoticeTreeItem newBranch = new NoticeTreeItem(branch);
+				NoticeTreeItem newBranch = new NoticeTreeItem<String>(branch);
 				getTreeItem().getChildren().add(newBranch);
 				getNoticeTreeItem().getNotice().getSubCategories().add(branch);
 			}
 		});
 		addNoticeItem.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
 			public void handle(ActionEvent t) {
 				NoticeCategory notice = new NoticeCategory("New notice", "");
-				NoticeTreeItem newNotice = new NoticeTreeItem(notice);
+				NoticeTreeItem newNotice = new NoticeTreeItem<String>(notice);
 				getTreeItem().getChildren().add(newNotice);
 				getNoticeTreeItem().getNotice().getSubCategories().add(notice);
 			}
 		});
 		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
-                        @Override
 			public void handle(ActionEvent t) {
 				NoticeCategory notice = getNoticeTreeItem().getNotice();
 				NoticeTreeItem deletingNotice = getNoticeTreeItem();
@@ -63,7 +61,6 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		deleteItem.setOnAction(handler);
 		deleteItem2.setOnAction(handler);
 		setOnMouseReleased(new EventHandler<MouseEvent>() {
-                        @Override
 			public void handle(MouseEvent t) {
 				if(getNoticeTreeItem().getNotice().getContent()!=null) {
 					controller.setCurrentTreeItem(getNoticeTreeItem());
@@ -150,7 +147,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	}
 
 	private String getString() {
-		return ((getItem() == null) ? "" : getItem());
+		return ((getItem() == null) ? "" : getItem().toString());
 	}
 
 	public NoticeController getController() {
