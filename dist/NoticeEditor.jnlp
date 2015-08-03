@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="NoticeEditor.jar" size="21465" download="eager" />
+    <jar href="NoticeEditor.jar" size="22282" download="eager" />
     <jar href="lib/asm-4.1.jar" size="47359" download="eager" />
     <jar href="lib/asm-analysis-4.1.jar" size="19812" download="eager" />
     <jar href="lib/asm-tree-4.1.jar" size="22162" download="eager" />

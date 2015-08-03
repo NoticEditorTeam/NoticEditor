@@ -58,6 +58,7 @@
              <property name="store.jar.name" value="MyJarName"/>
         -->
         <property name="store.jar.name" value="NoticEditorPacked"/>
+        <property name="jfx.main.class" value="com.temporaryteam.noticeditor.Main"/>
 
         <!-- don't edit below this line -->
 
@@ -74,7 +75,7 @@
             <zipgroupfileset dir="dist/lib" includes="*.jar"/>
 
             <manifest>
-                <attribute name="Main-Class" value="${main.class}"/>
+                <attribute name="Main-Class" value="${jfx.main.class}"/>
             </manifest>
         </jar>
 

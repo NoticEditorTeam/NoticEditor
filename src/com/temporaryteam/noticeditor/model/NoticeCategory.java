@@ -72,7 +72,7 @@ public class NoticeCategory {
 		obj.put("name", name);
 		if(content!=null) obj.put("content", content);
 		else obj.put("content", "");
-		ArrayList vect = new ArrayList<JSONObject>();
+		ArrayList vect = new ArrayList();
 		if(subcategories!=null) for(NoticeCategory subcategory : subcategories) vect.add(subcategory.toJson());
 		obj.put("subcategories", new JSONArray(vect));
 		return obj;
@@ -83,7 +83,7 @@ public class NoticeCategory {
 		content = jsobj.getString("content");
 		if(content == "") content = null;
 		JSONArray arr = jsobj.getJSONArray("subcategories");
-		subcategories = new ArrayList<NoticeCategory>();
+		subcategories = new ArrayList<>();
 		NoticeCategory category;
 		if(arr.length()!=0) {
 			for(int i = 0; i<arr.length(); i++) {
