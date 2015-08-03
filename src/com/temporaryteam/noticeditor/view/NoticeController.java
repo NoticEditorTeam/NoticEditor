@@ -262,7 +262,7 @@ public class NoticeController {
 				toWrite.mkdir();
 				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName(), toWrite);
 				IOUtil.pack(toWrite, (toWrite.getParent() + "/" + ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName() + ".zip"));
-				toWrite.delete();
+				IOUtil.removeDirectory(toWrite);
 			} catch(IOException ioe) {
 			}
 		}

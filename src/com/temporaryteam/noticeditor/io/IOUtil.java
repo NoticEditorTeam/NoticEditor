@@ -37,6 +37,20 @@ public final class IOUtil {
 		}
 	}
 	
+	public static void removeDirectory(File directory) {
+		if (directory.isFile() || !directory.exists()) return;
+		removeDirectoryHelper(directory);
+	}
+	
+	private static void removeDirectoryHelper(File file) {
+		if (file.isDirectory()) {
+			for (File f : file.listFiles()) {
+				f.delete();
+			}
+		}
+		file.delete();
+	}
+	
 	/** 
 	 * Pack directory
 	 */
