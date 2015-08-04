@@ -12,7 +12,7 @@ XMLIN=./src/com/temporaryteam/noticeditor/view
 XMLOUT=$(BUILD)/com/temporaryteam/noticeditor/view
 
 MANIFEST=manifest.mf
-OUTPUT=noticed.jar
+OUTPUT=NoticEditor.jar
 MAIN_CLASS=com/temporaryteam/noticeditor/Main.java
 
 all: init clean compile pack
