@@ -149,8 +149,9 @@ public class NoticeController {
 	/**
 	 * Open notice in TextArea
 	 */
-	public void open(String notice) {
-		noticeArea.setText(notice);
+	public void open(NoticeCategory notice) {
+		if (notice == null) return;
+		noticeArea.setText(notice.getContent());
 	}
 	
 	/**
@@ -196,6 +197,19 @@ public class NoticeController {
 		
 		rebuild("help");
 		final NoticeController controller = this;
+		noticeTree.setShowRoot(false);
+		noticeTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		noticeTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
+			@Override
+			public void changed(ObservableValue<? extends TreeItem<String>> observable, TreeItem<String> oldValue, TreeItem<String> newValue) {
+				if (newValue == null) return;
+				currentTreeItem = (NoticeTreeItem)newValue;
+				noticeArea.setEditable(currentTreeItem.isLeaf());
+				if (currentTreeItem.isLeaf()) {
+					open(currentTreeItem.getNotice());
+				}
+			}
+		});
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
 			public TreeCell<String> call(TreeView<String> p) {
@@ -204,15 +218,15 @@ public class NoticeController {
 				return cell;
 			}
 		});
+		
 		engine.loadContent(noticeArea.getText());
 		noticeArea.textProperty().addListener(new ChangeListener<String>() {
-
-                    @Override
-                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                        engine.loadContent(operate(newValue));
-			if(currentTreeItem!=null) currentTreeItem.getNotice().setContent(newValue);
-                    }
-                });
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				engine.loadContent(operate(newValue));
+				if(currentTreeItem!=null) currentTreeItem.getNotice().setContent(newValue);
+			}
+		});
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
 	}
 	
