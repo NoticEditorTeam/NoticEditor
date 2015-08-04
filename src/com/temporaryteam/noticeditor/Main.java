@@ -1,6 +1,6 @@
 package com.temporaryteam.noticeditor;
 
-import com.temporaryteam.noticeditor.view.NoticeController;
+import com.temporaryteam.noticeditor.controller.NoticeController;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
