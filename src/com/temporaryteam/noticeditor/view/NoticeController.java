@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import javafx.util.Callback;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.stage.FileChooser;
@@ -72,10 +73,19 @@ public class NoticeController {
 	private MenuItem rotateItem;
 
 	@FXML
+	private MenuItem addBranchItem;
+
+	@FXML
+	private MenuItem addNoticeItem;
+
+	@FXML
+	private MenuItem deleteItem;
+
+	@FXML
 	private CheckMenuItem wordWrapItem;
 	
 	@FXML
-    private Menu previewStyleMenu;
+    	private Menu previewStyleMenu;
 
 	@FXML
 	private TreeView<String> noticeTree;
@@ -88,6 +98,7 @@ public class NoticeController {
 	private PegDownProcessor processor;
 	private NoticeCategory currentNotice;
 	private NoticeTreeItem currentTreeItem;
+	private EditNoticeTreeCell cell;
 
 	/**
 	 * The constructor. Must be called before initialization method
@@ -98,12 +109,22 @@ public class NoticeController {
 		chooser.setTitle("Select notice to open");
 		chooser.getExtensionFilters().addAll(
 			new ExtensionFilter("Text files", "*.txt"),
-			new ExtensionFilter("PDF files", "*.pdf"),
-			new ExtensionFilter("HTML files", "*.html"),
 			new ExtensionFilter("All files", "*"));
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
 	}
 
+	public MenuItem getAddBranchItem() {
+		return addBranchItem;
+	}
+
+	public MenuItem getAddNoticeItem() {
+		return addNoticeItem;
+	}
+
+	public MenuItem getDeleteItem() {
+		return deleteItem;
+	}
+	
 	public NoticeTreeItem getCurrentTreeItem() {
 		return currentTreeItem;
 	}
@@ -153,7 +174,7 @@ public class NoticeController {
 	public void rebuild(String str) {
 		ArrayList<NoticeCategory> list = new ArrayList<>();
 		list.add(new NoticeCategory("Default notice", str));
-		currentNotice = new NoticeCategory("Default branch", list);
+		currentNotice = new NoticeCategory("Root", list);
 		noticeTree.setRoot(createNode(currentNotice));
 	}
 
@@ -184,6 +205,7 @@ public class NoticeController {
 	@FXML
 	private void initialize() {
 		noticeArea.setText("help");
+		noticeTree.setShowRoot(false);
 		engine = viewer.getEngine();
 		
 		// Set preview styles menu items
@@ -193,10 +215,13 @@ public class NoticeController {
 			RadioMenuItem item = new RadioMenuItem(style.getName());
 			item.setToggleGroup(previewStyleGroup);
 			if (cssPath == null) item.setSelected(true);
-			item.setOnAction((e) -> {
+			item.setOnAction(new EventHandler<ActionEvent>() {
+				public void handle(ActionEvent e)
+				{
 				String path = cssPath;
 				if (path != null) path = getClass().getResource(path).toExternalForm();
 				engine.setUserStyleSheetLocation(path);
+				}
 			});
 			previewStyleMenu.getItems().add(item);
 		}
@@ -206,7 +231,7 @@ public class NoticeController {
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
 			public TreeCell<String> call(TreeView<String> p) {
-				EditNoticeTreeCell cell = new EditNoticeTreeCell();
+				cell = new EditNoticeTreeCell();
 				cell.setController(controller);
 				return cell;
 			}
@@ -283,14 +308,12 @@ public class NoticeController {
 		}
 		else if(source.equals(zipItem)) {
 			try {
-				File destDir; // folder to save zip
-				if (openedFile != null) destDir = openedFile.getParentFile();
-				else destDir = chooser.showSaveDialog(main.getPrimaryStage()).getParentFile();
-				
+				File destFile; // zipFile to save zip
+				destFile = chooser.showSaveDialog(main.getPrimaryStage()).getParentFile();
 				String rootName = ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName();
 				File temporary = Files.createTempDirectory("noticeditor").toFile();
 				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), rootName, temporary);
-				IOUtil.pack(temporary, destDir.getPath() + "/" + rootName + ".zip");
+				IOUtil.pack(temporary, destFile.getPath());
 				IOUtil.removeDirectory(temporary);
 			} catch(IOException ioe) {
 			}
@@ -302,8 +325,8 @@ public class NoticeController {
 			editorPanel.setOrientation(or);
 		}
 		else if(source.equals(exitItem)) Platform.exit();
+		else cell.handleContextMenu(event);
 	}
-
 	/**
 	 * Sets reference to Main class
 	 */

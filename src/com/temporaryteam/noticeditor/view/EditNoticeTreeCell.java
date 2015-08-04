@@ -2,6 +2,8 @@ package com.temporaryteam.noticeditor.view;
 
 import java.util.ArrayList;
 
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -17,60 +19,61 @@ import com.temporaryteam.noticeditor.model.NoticeCategory;
 public class EditNoticeTreeCell extends TreeCell<String> {
 
 	private TextField noticeName;
-	private ContextMenu branchMenu;
-	private ContextMenu noticeMenu;
 	private NoticeController controller;
 
 	public EditNoticeTreeCell() {
-		branchMenu = new ContextMenu();
-		noticeMenu = new ContextMenu();
-		MenuItem addBranchItem = new MenuItem("Add branch");
-		MenuItem addNoticeItem = new MenuItem("Add notice");
-		MenuItem deleteItem = new MenuItem("Delete");
-		MenuItem deleteItem2 = new MenuItem("Delete");
-		branchMenu.getItems().addAll(addBranchItem, addNoticeItem, deleteItem);
-		noticeMenu.getItems().add(deleteItem2);
-		addBranchItem.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-			public void handle(ActionEvent t) {
-				ArrayList<NoticeCategory> list = new ArrayList<>();
-				NoticeCategory branch = new NoticeCategory("New branch", list);
-				NoticeTreeItem newBranch = new NoticeTreeItem(branch);
-				getTreeItem().getChildren().add(newBranch);
-				getNoticeTreeItem().getNotice().getSubCategories().add(branch);
-			}
-		});
-		addNoticeItem.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-			public void handle(ActionEvent t) {
-				NoticeCategory notice = new NoticeCategory("New notice", "");
-				NoticeTreeItem newNotice = new NoticeTreeItem(notice);
-				getTreeItem().getChildren().add(newNotice);
-				getNoticeTreeItem().getNotice().getSubCategories().add(notice);
-			}
-		});
-		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
-                        @Override
-			public void handle(ActionEvent t) {
-				NoticeCategory notice = getNoticeTreeItem().getNotice();
-				NoticeTreeItem deletingNotice = getNoticeTreeItem();
-				if(!(deletingNotice.getParent()==null)) deletingNotice.getParent().getChildren().remove(deletingNotice);
-				deleteNode(notice);
-				notice = null;
-				deletingNotice = null;
-			}
-		};
-		deleteItem.setOnAction(handler);
-		deleteItem2.setOnAction(handler);
 		setOnMouseReleased(new EventHandler<MouseEvent>() {
                         @Override
 			public void handle(MouseEvent t) {
-				if(getNoticeTreeItem().getNotice().getContent()!=null) {
-					controller.setCurrentTreeItem(getNoticeTreeItem());
-					controller.open(getNoticeTreeItem().getNotice().getContent());
+				if(getNoticeTreeItem()!=null) {
+					if(getNoticeTreeItem().getNotice().getContent()!=null) {
+						controller.setCurrentTreeItem(getNoticeTreeItem());
+						controller.open(getNoticeTreeItem().getNotice().getContent());
+					}
 				}
 			}
 		});
+	}
+
+	public void handleContextMenu(ActionEvent e) {
+		MenuItem source = (MenuItem)e.getSource();
+		ArrayList<NoticeCategory> subcategories;
+		ObservableList<NoticeTreeItem> children;
+		if(getTreeItem()!=null) {
+			if((getNoticeTreeItem().getNotice().getContent()!=null)||(source.equals(controller.getDeleteItem()))) {
+				children = getNoticeTreeItem().getParent().getChildren();
+				subcategories = ((NoticeTreeItem)(getNoticeTreeItem().getParent())).getNotice().getSubCategories();
+			}
+			else {
+				children = getNoticeTreeItem().getChildren();
+				subcategories = getNoticeTreeItem().getNotice().getSubCategories();
+			}
+		}
+		else {
+			children = ((NoticeTreeItem)(getTreeView().getRoot())).getChildren();
+			subcategories = ((NoticeTreeItem)(getTreeView().getRoot())).getNotice().getSubCategories();
+		}
+		if(source.equals(controller.getAddBranchItem())) {
+			ArrayList<NoticeCategory> list = new ArrayList<>();
+			NoticeCategory toAdd = new NoticeCategory("New branch", list);
+			NoticeTreeItem newBranch = new NoticeTreeItem(toAdd);
+			String content = getNoticeTreeItem().getNotice().getContent();
+			children.add(newBranch);
+			subcategories.add(toAdd);
+		}
+		else if(source.equals(controller.getAddNoticeItem())) {
+                        NoticeCategory toAdd = new NoticeCategory("New notice", "");
+			NoticeTreeItem newNotice = new NoticeTreeItem(toAdd);
+			String content = getNoticeTreeItem().getNotice().getContent();
+			children.add(newNotice);
+			subcategories.add(toAdd);
+		}
+		else if(source.equals(controller.getDeleteItem())) {
+			NoticeCategory toDel = getNoticeTreeItem().getNotice();
+			children = getNoticeTreeItem().getParent().getChildren();
+			children.remove(getNoticeTreeItem());
+			deleteNode(toDel);
+		}
 	}
 
 	@Override
@@ -113,8 +116,6 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 			} else {
 				setText(getString());
 				setGraphic(getTreeItem().getGraphic());
-				if(!getTreeItem().isLeaf()) setContextMenu(branchMenu);
-				else setContextMenu(noticeMenu);
 			}
 		}
 	}
