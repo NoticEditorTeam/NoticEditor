@@ -22,7 +22,7 @@ public class NoticeItem {
 	public static final String KEY_CHILDS = "childs";
 
 	private static final Random RND = new Random();
-	
+
 	private String name;
 	private ArrayList<NoticeItem> childs = new ArrayList<>();
 	private String content;
@@ -47,18 +47,20 @@ public class NoticeItem {
 		}
 		JSONArray arr = json.getJSONArray(KEY_CHILDS);
 		childs = new ArrayList();
-		if (arr.length() != 0) {
-			for (int i = 0; i < arr.length(); i++) {
-				childs.add(new NoticeItem(arr.getJSONObject(i)));
-			}
+		for (int i = 0; i < arr.length(); i++) {
+			childs.add(new NoticeItem(arr.getJSONObject(i)));
 		}
 		genId();
 	}
-	
+
 	private void genId() {
 		id = System.nanoTime() + RND.nextInt(100);
 	}
 
+	/** 
+	 * id used for diff nodes with equals name (for example when exporting to HTML). 
+	 * @return generated unique id
+	 */
 	public long getId() {
 		return id;
 	}
