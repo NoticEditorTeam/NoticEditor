@@ -1,7 +1,5 @@
 package com.temporaryteam.noticeditor.view;
 
-import java.util.ArrayList;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
@@ -43,11 +41,11 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	private ObservableList<NoticeTreeItem> buildChildrens(NoticeTreeItem noticeTreeItem) {
 		NoticeItem noticeItem = noticeTreeItem.getNotice();
 		if (noticeItem.isBranch()) {
-			ObservableList<NoticeTreeItem> children = FXCollections.observableArrayList();
+			ObservableList<NoticeTreeItem> childrens = FXCollections.observableArrayList();
 			for (NoticeItem child : noticeItem.childrens()) {
-				children.add(new NoticeTreeItem(child));
+				childrens.add(new NoticeTreeItem(child));
 			}
-			return children;
+			return childrens;
 		}
 		return FXCollections.emptyObservableList();
 	}

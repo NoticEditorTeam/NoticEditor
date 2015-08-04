@@ -19,50 +19,45 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	private NoticeController controller;
 
 	public void handleContextMenu(ActionEvent e) {
-		MenuItem source = (MenuItem)e.getSource();
+		MenuItem source = (MenuItem) e.getSource();
 		NoticeTreeItem selected = controller.getCurrentTreeItem();
-		
-		ArrayList<NoticeItem> subcategories;
-		ObservableList<NoticeTreeItem> children;
-		if(selected != null) {
-			if(selected.getNotice().getContent() !=null || source == controller.getDeleteItem()) {
-				children = selected.getParent().getChildren();
-				subcategories = ((NoticeTreeItem)(selected.getParent())).getNotice().childrens();
+
+		ArrayList<NoticeItem> childItems;
+		ObservableList<NoticeTreeItem> childTreeItems;
+		if (selected != null) {
+			if (!selected.getNotice().isBranch() || source == controller.getDeleteItem()) {
+				childTreeItems = selected.getParent().getChildren();
+				childItems = ((NoticeTreeItem) (selected.getParent())).getNotice().childrens();
+			} else {
+				childTreeItems = selected.getChildren();
+				childItems = selected.getNotice().childrens();
 			}
-			else {
-				children = selected.getChildren();
-				subcategories = selected.getNotice().childrens();
-			}
+		} else {
+			childTreeItems = ((NoticeTreeItem) (getTreeView().getRoot())).getChildren();
+			childItems = ((NoticeTreeItem) (getTreeView().getRoot())).getNotice().childrens();
 		}
-		else {
-			children = ((NoticeTreeItem)(getTreeView().getRoot())).getChildren();
-			subcategories = ((NoticeTreeItem)(getTreeView().getRoot())).getNotice().childrens();
-		}
-		if(source.equals(controller.getAddBranchItem())) {
+		if (source == controller.getAddBranchItem()) {
 			ArrayList<NoticeItem> list = new ArrayList<>();
 			NoticeItem toAdd = new NoticeItem("New branch", list);
-			NoticeTreeItem newBranch = new NoticeTreeItem(toAdd);
-			children.add(newBranch);
-			subcategories.add(toAdd);
-		}
-		else if(source.equals(controller.getAddNoticeItem())) {
-                        NoticeItem toAdd = new NoticeItem("New notice", "");
+			NoticeTreeItem treeItem = new NoticeTreeItem(toAdd);
+			childTreeItems.add(treeItem);
+			childItems.add(toAdd);
+		} else if (source == controller.getAddNoticeItem()) {
+			NoticeItem toAdd = new NoticeItem("New notice", "");
 			NoticeTreeItem newNotice = new NoticeTreeItem(toAdd);
-			children.add(newNotice);
-			subcategories.add(toAdd);
-		}
-		else if(source.equals(controller.getDeleteItem())) {
+			childTreeItems.add(newNotice);
+			childItems.add(toAdd);
+		} else if (source == controller.getDeleteItem()) {
 			NoticeItem toDel = selected.getNotice();
-			children = selected.getParent().getChildren();
-			children.remove(selected);
-			deleteNode(toDel);
+			childTreeItems.remove(selected);
+			childItems.remove(toDel);
 		}
 	}
 
 	@Override
 	public void startEdit() {
 		super.startEdit();
-		if(noticeName==null) {
+		if (noticeName == null) {
 			createTextField();
 		}
 		setText(null);
@@ -73,7 +68,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		setText((String)getItem());
+		setText((String) getItem());
 		setGraphic(getTreeItem().getGraphic());
 	}
 
@@ -86,12 +81,12 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	@Override
 	public void updateItem(String item, boolean empty) {
 		super.updateItem(item, empty);
-		if(empty) {
+		if (empty) {
 			setText(null);
 			setGraphic(null);
 		} else {
-			if(isEditing()) {
-				if(noticeName != null) {
+			if (isEditing()) {
+				if (noticeName != null) {
 					noticeName.setText(getString());
 				}
 				setText(null);
@@ -102,30 +97,19 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 			}
 		}
 	}
-	
+
 	private NoticeTreeItem getNoticeTreeItem() {
-		return (NoticeTreeItem<String>)getTreeItem();
+		return (NoticeTreeItem<String>) getTreeItem();
 	}
 
-	private void deleteNode(NoticeItem node) {
-		if(node.isBranch()) {
-			for(NoticeItem category : node.childrens()) {
-				deleteNode(category);
-			}
-			node.childrens().clear();
-		} else {
-			node.setContent(null);
-		}
-	}
-	
 	private void createTextField() {
 		noticeName = new TextField(getString());
 		noticeName.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent t) {
-				if(t.getCode() == KeyCode.ENTER) {
+				if (t.getCode() == KeyCode.ENTER) {
 					commitEdit(noticeName.getText());
-				} else if(t.getCode() == KeyCode.ESCAPE) {
+				} else if (t.getCode() == KeyCode.ESCAPE) {
 					cancelEdit();
 				}
 			}
@@ -139,7 +123,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	public NoticeController getController() {
 		return controller;
 	}
-	
+
 	public void setController(NoticeController controller) {
 		this.controller = controller;
 	}
