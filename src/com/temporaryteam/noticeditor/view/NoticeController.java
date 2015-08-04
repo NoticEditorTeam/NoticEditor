@@ -46,43 +46,13 @@ public class NoticeController {
 	private WebView viewer;
 
 	@FXML
-	private MenuItem newItem;
-
-	@FXML
-	private MenuItem openItem;
-
-	@FXML
-	private MenuItem saveItem;
-
-	@FXML
-	private MenuItem saveAsItem;
-
-	@FXML
-	private MenuItem exportHTMLItem;
-
-	@FXML
-	private MenuItem exitItem;
-
-	@FXML
-	private MenuItem aboutItem;
-
-	@FXML
-	private MenuItem rotateItem;
-
-	@FXML
-	private MenuItem addBranchItem;
-
-	@FXML
-	private MenuItem addNoticeItem;
-
-	@FXML
-	private MenuItem deleteItem;
+	private MenuItem addBranchItem, addNoticeItem, deleteItem;
 
 	@FXML
 	private CheckMenuItem wordWrapItem;
 	
 	@FXML
-    	private Menu previewStyleMenu;
+	private Menu previewStyleMenu;
 
 	@FXML
 	private TreeView<String> noticeTree;
@@ -250,68 +220,62 @@ public class NoticeController {
 	 * Handler
 	 */
 	@FXML
-	private void handleMenu(ActionEvent event) {
-		MenuItem source = (MenuItem)event.getSource();
-		if(source.equals(newItem)) {
-			noticeArea.setText("help");
-			rebuild("help");
-			openedFile = null;
+	private void handleContextMenu(ActionEvent event) {
+		cell.handleContextMenu(event);
+	}
+	
+	@FXML
+	private void handleNew(ActionEvent event) {
+		noticeArea.setText("help");
+		rebuild("help");
+		openedFile = null;
+	}
+	
+	@FXML
+	private void handleOpen(ActionEvent event) {
+		try {
+			if (openedFile != null) chooser.setInitialDirectory(new File(openedFile.getParent()));
+			File selected = chooser.showOpenDialog(main.getPrimaryStage());
+			if (selected == null) return;
+			
+			JSONObject obj = new JSONObject(IOUtil.readContent(selected));
+			currentNotice.fromJson(obj);
+			noticeArea.setText("");
+			openedFile = selected;
+			noticeTree.setRoot(createNode(currentNotice));
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
 		}
-		else if(source.equals(saveItem)) {
-			try {
-				File toSave = null;
-				if (openedFile == null) {
-					File selected = chooser.showSaveDialog(main.getPrimaryStage());
-					if  (selected != null) toSave = selected;
-				}
-				else toSave = openedFile;
-				if (toSave != null) {
-					IOUtil.writeJson(toSave, currentNotice.toJson());
-				}
-			} catch(IOException | JSONException ioe) {
+	}
+	
+	@FXML
+	private void handleSave(ActionEvent event) {
+		try {
+			File toSave = null;
+			if (openedFile == null) {
+				File selected = chooser.showSaveDialog(main.getPrimaryStage());
+				if (selected != null) toSave = selected;
 			}
-		}
-		else if((source.equals(openItem))||(source.equals(saveAsItem))) {
-			try {
-				File selected = null;
-				if(openedFile!=null) chooser.setInitialDirectory(new File(openedFile.getParent()));
-				if(source.equals(openItem)) {
-					selected = chooser.showOpenDialog(main.getPrimaryStage());
-				}
-				else if(source.equals(saveAsItem)) {
-					selected = chooser.showSaveDialog(main.getPrimaryStage());
-				}
-				if(selected!=null) {
-					if(source.equals(openItem)) {
-						JSONObject obj = new JSONObject(IOUtil.readContent(selected));
-						currentNotice.fromJson(obj);
-						noticeArea.setText("");
-						openedFile = selected;
-						noticeTree.setRoot(createNode(currentNotice));
-					}
-					else if(source.equals(saveAsItem)) {
-						IOUtil.writeJson(selected, currentNotice.toJson());
-						openedFile = selected;
-					}
-				}
-			} catch (IOException | JSONException e) {
-				e.printStackTrace();
+			else toSave = openedFile;
+			if (toSave != null) {
+				IOUtil.writeJson(toSave, currentNotice.toJson());
 			}
+		} catch(IOException | JSONException ioe) {
 		}
-		else if(source.equals(exportHTMLItem)) {
-			try {
-				writeNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), "index.html");
-			} catch(IOException ioe) {
-			}
+	}
+	
+	@FXML
+	private void handleSaveAs(ActionEvent event) {
+		try {
+			if(openedFile != null) chooser.setInitialDirectory(new File(openedFile.getParent()));
+			File selected = chooser.showSaveDialog(main.getPrimaryStage());
+			if (selected == null) return;
+			
+			IOUtil.writeJson(selected, currentNotice.toJson());
+			openedFile = selected;
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
 		}
-		else if(source.equals(rotateItem)) {
-			Orientation or = editorPanel.getOrientation();
-			if (or == Orientation.HORIZONTAL) or = Orientation.VERTICAL;
-			else or = Orientation.HORIZONTAL;
-			editorPanel.setOrientation(or);
-		}
-		else if(source.equals(exitItem)) Platform.exit();
-		else cell.handleContextMenu(event);
 	}
 	
 	@FXML
@@ -326,6 +290,32 @@ public class NoticeController {
 			IOUtil.removeDirectory(temporaryDir);
 		} catch(IOException ioe) {
 		}
+	}
+	
+	@FXML
+	private void handleExportHtml(ActionEvent event) {
+		try {
+			writeNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), "index.html");
+		} catch(IOException ioe) {
+		}
+	}
+	
+	@FXML
+	private void handleExit(ActionEvent event) {
+		Platform.exit();
+	}
+	
+	@FXML
+	private void handleSwitchOrientation(ActionEvent event) {
+		Orientation or = editorPanel.getOrientation();
+		if (or == Orientation.HORIZONTAL) or = Orientation.VERTICAL;
+		else or = Orientation.HORIZONTAL;
+		editorPanel.setOrientation(or);
+	}
+	
+	@FXML
+	private void handleAbout(ActionEvent event) {
+		
 	}
 	
 	/**
