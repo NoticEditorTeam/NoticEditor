@@ -11,7 +11,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-import com.temporaryteam.noticeditor.model.NoticeCategory;
+import com.temporaryteam.noticeditor.model.NoticeItem;
 
 public class EditNoticeTreeCell extends TreeCell<String> {
 
@@ -22,37 +22,37 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		MenuItem source = (MenuItem)e.getSource();
 		NoticeTreeItem selected = controller.getCurrentTreeItem();
 		
-		ArrayList<NoticeCategory> subcategories;
+		ArrayList<NoticeItem> subcategories;
 		ObservableList<NoticeTreeItem> children;
 		if(selected != null) {
-			if((selected.getNotice().getContent()!=null)||(source.equals(controller.getDeleteItem()))) {
+			if(selected.getNotice().getContent() !=null || source == controller.getDeleteItem()) {
 				children = selected.getParent().getChildren();
-				subcategories = ((NoticeTreeItem)(selected.getParent())).getNotice().getSubCategories();
+				subcategories = ((NoticeTreeItem)(selected.getParent())).getNotice().childrens();
 			}
 			else {
 				children = selected.getChildren();
-				subcategories = selected.getNotice().getSubCategories();
+				subcategories = selected.getNotice().childrens();
 			}
 		}
 		else {
 			children = ((NoticeTreeItem)(getTreeView().getRoot())).getChildren();
-			subcategories = ((NoticeTreeItem)(getTreeView().getRoot())).getNotice().getSubCategories();
+			subcategories = ((NoticeTreeItem)(getTreeView().getRoot())).getNotice().childrens();
 		}
 		if(source.equals(controller.getAddBranchItem())) {
-			ArrayList<NoticeCategory> list = new ArrayList<>();
-			NoticeCategory toAdd = new NoticeCategory("New branch", list);
+			ArrayList<NoticeItem> list = new ArrayList<>();
+			NoticeItem toAdd = new NoticeItem("New branch", list);
 			NoticeTreeItem newBranch = new NoticeTreeItem(toAdd);
 			children.add(newBranch);
 			subcategories.add(toAdd);
 		}
 		else if(source.equals(controller.getAddNoticeItem())) {
-                        NoticeCategory toAdd = new NoticeCategory("New notice", "");
+                        NoticeItem toAdd = new NoticeItem("New notice", "");
 			NoticeTreeItem newNotice = new NoticeTreeItem(toAdd);
 			children.add(newNotice);
 			subcategories.add(toAdd);
 		}
 		else if(source.equals(controller.getDeleteItem())) {
-			NoticeCategory toDel = selected.getNotice();
+			NoticeItem toDel = selected.getNotice();
 			children = selected.getParent().getChildren();
 			children.remove(selected);
 			deleteNode(toDel);
@@ -107,15 +107,14 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		return (NoticeTreeItem<String>)getTreeItem();
 	}
 
-	private void deleteNode(NoticeCategory node) {
-		if(node.getSubCategories()==null) {
-			node.setContent(null);
-		}
-		else {
-			for(NoticeCategory category : node.getSubCategories()) {
+	private void deleteNode(NoticeItem node) {
+		if(node.isBranch()) {
+			for(NoticeItem category : node.childrens()) {
 				deleteNode(category);
 			}
-			node.setSubCategories(null);
+			node.childrens().clear();
+		} else {
+			node.setContent(null);
 		}
 	}
 	

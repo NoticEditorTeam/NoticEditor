@@ -25,14 +25,15 @@ import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.io.IOUtil;
-import com.temporaryteam.noticeditor.model.NoticeCategory;
+import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.stage.DirectoryChooser;
 
 public class NoticeController {
-	
+
 	@FXML
 	private SplitPane mainPanel;
 
@@ -50,7 +51,7 @@ public class NoticeController {
 
 	@FXML
 	private CheckMenuItem wordWrapItem;
-	
+
 	@FXML
 	private Menu previewStyleMenu;
 
@@ -58,115 +59,25 @@ public class NoticeController {
 	private TreeView<String> noticeTree;
 
 	private Main main;
-	private File openedFile;
-	private FileChooser chooser;
+	private FileChooser fileChooser;
+	private DirectoryChooser dirChooser;
 	private WebEngine engine;
-	private String input;
 	private PegDownProcessor processor;
-	private NoticeCategory currentNotice;
+	private NoticeItem currentNotice;
 	private NoticeTreeItem currentTreeItem;
 	private EditNoticeTreeCell cell;
+	private File fileSaved;
 
-	/**
-	 * The constructor. Must be called before initialization method
-	 */
 	public NoticeController() {
-		openedFile = null;
-		chooser = new FileChooser();
-		chooser.setTitle("Select notice to open");
-		chooser.getExtensionFilters().addAll(
-			new ExtensionFilter("Text files", "*.txt"),
-			new ExtensionFilter("All files", "*"));
+		fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(
+				new ExtensionFilter("Text files", "*.txt"),
+				new ExtensionFilter("All files", "*"));
+		dirChooser = new DirectoryChooser();
+		dirChooser.setTitle("Select folder to save");
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
 	}
-
-	public MenuItem getAddBranchItem() {
-		return addBranchItem;
-	}
-
-	public MenuItem getAddNoticeItem() {
-		return addNoticeItem;
-	}
-
-	public MenuItem getDeleteItem() {
-		return deleteItem;
-	}
 	
-	public NoticeTreeItem getCurrentTreeItem() {
-		return currentTreeItem;
-	}
-
-	public void setCurrentTreeItem(NoticeTreeItem newCurrentTreeItem) {
-		currentTreeItem = newCurrentTreeItem;
-	}
-	
-	/**
-	 * Write node
-	 */
-	public void writeNode(NoticeCategory node, String name) throws IOException {
-		File file;
-		if (openedFile != null) file = new File(openedFile.getParent() + "/" + name);
-		else file = chooser.showSaveDialog(main.getPrimaryStage());
-		IOUtil.writeContent(file, node.toHTML(processor));
-		if(node.getSubCategories()!=null) {
-			for(NoticeCategory subcategory : node.getSubCategories()) {
-				writeNode(subcategory, (subcategory.getName() + ".html"));
-			}
-		}
-	}
-
-	/**
-	 * Write node in filesystem
-	 */
-	private void writeFSNode(NoticeCategory node, File dir) throws IOException {
-		String name = node.getName();
-		System.out.println("In " + node.getName() + " with name " + name);
-		if (node.getSubCategories() != null) {
-			for(NoticeCategory cat : node.getSubCategories()) {
-				File newDir = new File(dir.getPath() + "/" + name);
-				if(newDir.exists()) newDir.delete();
-				newDir.mkdir();
-				writeFSNode(cat, newDir);
-			}
-		}
-		else {
-			File toWrite = new File(dir.getPath() + "/" + name + ".md");
-			IOUtil.writeContent(toWrite, node.getContent());
-		}
-		System.out.println("Exit");
-	}
-
-	/**
-	 * Rebuild tree
-	 */
-	public void rebuild(String str) {
-		ArrayList<NoticeCategory> list = new ArrayList<>();
-		list.add(new NoticeCategory("Default notice", str));
-		currentNotice = new NoticeCategory("Root", list);
-		noticeTree.setRoot(createNode(currentNotice));
-	}
-
-	/**
-	 * Open notice in TextArea
-	 */
-	public void open(NoticeCategory notice) {
-		if (notice == null) return;
-		noticeArea.setText(notice.getContent());
-	}
-	
-	/**
-	 * Method for operate with markdown
-	 */
-	private String operate(String source) {
-		return processor.markdownToHtml(source);
-	}
-	
-	/**
-	 * Generate node
-	 */
-	private NoticeTreeItem<String> createNode(NoticeCategory notice) {
-		return new NoticeTreeItem<>(notice);
-	}
 	
 	/**
 	 * Initializes the controller class.
@@ -176,25 +87,28 @@ public class NoticeController {
 		noticeArea.setText("help");
 		noticeTree.setShowRoot(false);
 		engine = viewer.getEngine();
-		
+
 		// Set preview styles menu items
 		ToggleGroup previewStyleGroup = new ToggleGroup();
 		for (PreviewStyles style : PreviewStyles.values()) {
 			final String cssPath = style.getCssPath();
 			RadioMenuItem item = new RadioMenuItem(style.getName());
 			item.setToggleGroup(previewStyleGroup);
-			if (cssPath == null) item.setSelected(true);
+			if (cssPath == null) {
+				item.setSelected(true);
+			}
 			item.setOnAction(new EventHandler<ActionEvent>() {
-				public void handle(ActionEvent e)
-				{
-				String path = cssPath;
-				if (path != null) path = getClass().getResource(path).toExternalForm();
-				engine.setUserStyleSheetLocation(path);
+				public void handle(ActionEvent e) {
+					String path = cssPath;
+					if (path != null) {
+						path = getClass().getResource(path).toExternalForm();
+					}
+					engine.setUserStyleSheetLocation(path);
 				}
 			});
 			previewStyleMenu.getItems().add(item);
 		}
-		
+
 		rebuild("help");
 		final NoticeController controller = this;
 		noticeTree.setShowRoot(false);
@@ -202,8 +116,10 @@ public class NoticeController {
 		noticeTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<String>> observable, TreeItem<String> oldValue, TreeItem<String> newValue) {
-				if (newValue == null) return;
-				currentTreeItem = (NoticeTreeItem)newValue;
+				if (newValue == null) {
+					return;
+				}
+				currentTreeItem = (NoticeTreeItem) newValue;
 				noticeArea.setEditable(currentTreeItem.isLeaf());
 				if (currentTreeItem.isLeaf()) {
 					open(currentTreeItem.getNotice());
@@ -218,18 +134,111 @@ public class NoticeController {
 				return cell;
 			}
 		});
-		
+
 		engine.loadContent(noticeArea.getText());
 		noticeArea.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				engine.loadContent(operate(newValue));
-				if(currentTreeItem!=null) currentTreeItem.getNotice().setContent(newValue);
+				if (currentTreeItem != null) {
+					currentTreeItem.getNotice().setContent(newValue);
+				}
 			}
 		});
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
 	}
-	
+
+	public MenuItem getAddBranchItem() {
+		return addBranchItem;
+	}
+
+	public MenuItem getAddNoticeItem() {
+		return addNoticeItem;
+	}
+
+	public MenuItem getDeleteItem() {
+		return deleteItem;
+	}
+
+	public NoticeTreeItem getCurrentTreeItem() {
+		return currentTreeItem;
+	}
+
+	public void setCurrentTreeItem(NoticeTreeItem newCurrentTreeItem) {
+		currentTreeItem = newCurrentTreeItem;
+	}
+
+	/**
+	 * Save item as HTML pages. Root item was saved to index.html
+	 *
+	 * @param item node to recursively save
+	 * @param file file to save
+	 */
+	public void exportToHtmlPages(NoticeItem item, File file) throws IOException {
+		IOUtil.writeContent(file, item.toHTML(processor));
+		if (item.isBranch()) {
+			for (NoticeItem child : item.childrens()) {
+				exportToHtmlPages(child, new File(file.getParent(), child.getId() + ".html"));
+			}
+		}
+	}
+
+	/**
+	 * Write node in filesystem
+	 */
+	private void writeFSNode(NoticeItem node, File dir) throws IOException {
+		String name = node.getName();
+		System.out.println("In " + node.getName() + " with name " + name);
+		if (node.isBranch()) {
+			for (NoticeItem child : node.childrens()) {
+				File newDir = new File(dir.getPath() + "/" + name);
+				if (newDir.exists()) {
+					newDir.delete();
+				}
+				newDir.mkdir();
+				writeFSNode(child, newDir);
+			}
+		} else {
+			File toWrite = new File(dir.getPath() + "/" + name + ".md");
+			IOUtil.writeContent(toWrite, node.getContent());
+		}
+		System.out.println("Exit");
+	}
+
+	/**
+	 * Rebuild tree
+	 */
+	public void rebuild(String str) {
+		ArrayList<NoticeItem> list = new ArrayList<>();
+		list.add(new NoticeItem("Default notice", str));
+		currentNotice = new NoticeItem("Root", list);
+		noticeTree.setRoot(createNode(currentNotice));
+	}
+
+	/**
+	 * Open notice in TextArea
+	 */
+	public void open(NoticeItem notice) {
+		if (notice == null) {
+			return;
+		}
+		noticeArea.setText(notice.getContent());
+	}
+
+	/**
+	 * Method for operate with markdown
+	 */
+	private String operate(String source) {
+		return processor.markdownToHtml(source);
+	}
+
+	/**
+	 * Generate node
+	 */
+	private NoticeTreeItem<String> createNode(NoticeItem notice) {
+		return new NoticeTreeItem<>(notice);
+	}
+
 	/**
 	 * Handler
 	 */
@@ -237,106 +246,118 @@ public class NoticeController {
 	private void handleContextMenu(ActionEvent event) {
 		cell.handleContextMenu(event);
 	}
-	
+
 	@FXML
 	private void handleNew(ActionEvent event) {
 		noticeArea.setText("help");
 		rebuild("help");
-		openedFile = null;
+		fileSaved = null;
 	}
-	
+
 	@FXML
 	private void handleOpen(ActionEvent event) {
 		try {
-			if (openedFile != null) chooser.setInitialDirectory(new File(openedFile.getParent()));
-			File selected = chooser.showOpenDialog(main.getPrimaryStage());
-			if (selected == null) return;
-			
-			JSONObject obj = new JSONObject(IOUtil.readContent(selected));
-			currentNotice.fromJson(obj);
+			if (fileSaved != null) {
+				fileChooser.setInitialDirectory(new File(fileSaved.getParent()));
+			}
+			fileSaved = fileChooser.showOpenDialog(main.getPrimaryStage());
+			if (fileSaved == null) {
+				return;
+			}
+
+			JSONObject json = new JSONObject(IOUtil.readContent(fileSaved));
+			currentNotice = new NoticeItem(json);
 			noticeArea.setText("");
-			openedFile = selected;
 			noticeTree.setRoot(createNode(currentNotice));
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@FXML
 	private void handleSave(ActionEvent event) {
+		if (fileSaved == null) {
+			fileChooser.setTitle("Save notice");
+			fileSaved = fileChooser.showSaveDialog(main.getPrimaryStage());
+			if (fileSaved == null) {
+				return;
+			}
+		}
 		try {
-			File toSave = null;
-			if (openedFile == null) {
-				File selected = chooser.showSaveDialog(main.getPrimaryStage());
-				if (selected != null) toSave = selected;
-			}
-			else toSave = openedFile;
-			if (toSave != null) {
-				IOUtil.writeJson(toSave, currentNotice.toJson());
-			}
-		} catch(IOException | JSONException ioe) {
+			IOUtil.writeJson(fileSaved, currentNotice.toJson());
+		} catch (IOException | JSONException ioe) {
 		}
 	}
-	
+
 	@FXML
 	private void handleSaveAs(ActionEvent event) {
+		if (fileSaved != null) {
+			fileChooser.setInitialDirectory(new File(fileSaved.getParent()));
+		}
+		fileChooser.setTitle("Save notice");
+		fileSaved = fileChooser.showSaveDialog(main.getPrimaryStage());
+		if (fileSaved == null) {
+			return;
+		}
+
 		try {
-			if(openedFile != null) chooser.setInitialDirectory(new File(openedFile.getParent()));
-			File selected = chooser.showSaveDialog(main.getPrimaryStage());
-			if (selected == null) return;
-			
-			IOUtil.writeJson(selected, currentNotice.toJson());
-			openedFile = selected;
+			IOUtil.writeJson(fileSaved, currentNotice.toJson());
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@FXML
 	private void handleSaveToZip(ActionEvent event) {
+		fileChooser.setTitle("Save notice as zip archive");
+		File destFile = fileChooser.showSaveDialog(main.getPrimaryStage());
+		if (destFile == null) {
+			return;
+		}
 		try {
-			File destFile = chooser.showSaveDialog(main.getPrimaryStage());
-			if (destFile == null) return;
-			
 			File temporaryDir = Files.createTempDirectory("noticeditor").toFile();
-			writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), temporaryDir);
+			writeFSNode(((NoticeTreeItem) noticeTree.getRoot()).getNotice(), temporaryDir);
 			IOUtil.pack(temporaryDir, destFile.getPath());
 			IOUtil.removeDirectory(temporaryDir);
-		} catch(IOException ioe) {
+		} catch (IOException ioe) {
 		}
 	}
-	
+
 	@FXML
 	private void handleExportHtml(ActionEvent event) {
+		dirChooser.setTitle("Select dir to save HTML files");
+		File destDir = dirChooser.showDialog(main.getPrimaryStage());
+		if (destDir == null) {
+			return;
+		}
+		File indexFile = new File(destDir, "index.html");
 		try {
-			writeNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), "index.html");
-		} catch(IOException ioe) {
+			exportToHtmlPages(((NoticeTreeItem) noticeTree.getRoot()).getNotice(), indexFile);
+		} catch (IOException ioe) {
 		}
 	}
-	
+
 	@FXML
 	private void handleExit(ActionEvent event) {
 		Platform.exit();
 	}
-	
+
 	@FXML
 	private void handleSwitchOrientation(ActionEvent event) {
-		Orientation or = editorPanel.getOrientation();
-		if (or == Orientation.HORIZONTAL) or = Orientation.VERTICAL;
-		else or = Orientation.HORIZONTAL;
-		editorPanel.setOrientation(or);
+		editorPanel.setOrientation(editorPanel.getOrientation() == Orientation.HORIZONTAL
+				? Orientation.VERTICAL : Orientation.HORIZONTAL);
 	}
-	
+
 	@FXML
 	private void handleAbout(ActionEvent event) {
-		
+
 	}
-	
+
 	/**
 	 * Sets reference to Main class
 	 */
 	public void setMain(Main main) {
 		this.main = main;
 	}
-	
+
 }

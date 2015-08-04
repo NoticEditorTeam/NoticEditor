@@ -6,51 +6,48 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 
-import com.temporaryteam.noticeditor.model.NoticeCategory;
+import com.temporaryteam.noticeditor.model.NoticeItem;
 
 public class NoticeTreeItem<T extends String> extends TreeItem {
 
 	private boolean isFirstTimeChildren = true;
-	private NoticeCategory notice;
+	private NoticeItem notice;
 
-	public NoticeTreeItem(NoticeCategory category) {
+	public NoticeTreeItem(NoticeItem category) {
 		super(category.getName());
 		notice = category;
 	}
 
 	@Override
 	public ObservableList<NoticeTreeItem> getChildren() {
-		if(isFirstTimeChildren) {
+		if (isFirstTimeChildren) {
 			isFirstTimeChildren = false;
-			super.getChildren().setAll(buildChildren(this));
+			super.getChildren().setAll(buildChildrens(this));
 		}
 		return super.getChildren();
 	}
 
 	@Override
 	public boolean isLeaf() {
-		return ((notice.getSubCategories())==null);
+		return !notice.isBranch();
 	}
 
-	public NoticeCategory getNotice() {
+	public NoticeItem getNotice() {
 		return notice;
 	}
 
-	public void setNotice(NoticeCategory notice) {
+	public void setNotice(NoticeItem notice) {
 		this.notice = notice;
 	}
 
-	private ObservableList<NoticeTreeItem> buildChildren(NoticeTreeItem noticeItem) {
-		NoticeCategory category = noticeItem.getNotice();
-		if((category!=null)&&(((category.getSubCategories())!=null))) {
-			ArrayList<NoticeCategory> categories = category.getSubCategories();
-			if(categories!=null) {
-				ObservableList<NoticeTreeItem> children = FXCollections.observableArrayList();
-				for(NoticeCategory cat : categories) {
-					children.add(new NoticeTreeItem(cat));
-				}
-				return children;
+	private ObservableList<NoticeTreeItem> buildChildrens(NoticeTreeItem noticeTreeItem) {
+		NoticeItem noticeItem = noticeTreeItem.getNotice();
+		if (noticeItem.isBranch()) {
+			ObservableList<NoticeTreeItem> children = FXCollections.observableArrayList();
+			for (NoticeItem child : noticeItem.childrens()) {
+				children.add(new NoticeTreeItem(child));
 			}
+			return children;
 		}
 		return FXCollections.emptyObservableList();
 	}
