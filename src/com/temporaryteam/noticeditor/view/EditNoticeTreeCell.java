@@ -1,5 +1,7 @@
 package com.temporaryteam.noticeditor.view;
 
+import com.temporaryteam.noticeditor.controller.NoticeController;
+import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
@@ -18,6 +20,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	private TextField noticeName;
 	private NoticeController controller;
 
+	// TODO: decompose method to handlers?
 	public void handleContextMenu(ActionEvent e) {
 		MenuItem source = (MenuItem) e.getSource();
 		NoticeTreeItem selected = controller.getCurrentTreeItem();
@@ -68,7 +71,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		setText((String) getItem());
+		setText(getItem());
 		setGraphic(getTreeItem().getGraphic());
 	}
 
@@ -116,6 +119,10 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		});
 	}
 
+	/**
+	 * 
+	 * @return selected item or empty string
+	 */
 	private String getString() {
 		return ((getItem() == null) ? "" : getItem());
 	}

@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-// TODO: remove this class
+// TODO: remove this class (use NoticeTreeItem)
 /**
  * Model representation of notice. Contains notice data or branch data
  *

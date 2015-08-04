@@ -1,5 +1,6 @@
-package com.temporaryteam.noticeditor.view;
+package com.temporaryteam.noticeditor.controller;
 
+import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -27,6 +28,7 @@ import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
+import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

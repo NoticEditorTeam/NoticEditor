@@ -1,4 +1,4 @@
-package com.temporaryteam.noticeditor.view;
+package com.temporaryteam.noticeditor.model;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +25,10 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		return super.getChildren();
 	}
 
+	/**
+	 * 
+	 * @return true if content == null (its node has no childrens)
+	 */
 	@Override
 	public boolean isLeaf() {
 		return !notice.isBranch();
