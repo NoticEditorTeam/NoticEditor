@@ -58,9 +58,6 @@ public class NoticeController {
 	private MenuItem saveAsItem;
 
 	@FXML
-	private MenuItem zipItem;
-
-	@FXML
 	private MenuItem exportHTMLItem;
 
 	@FXML
@@ -151,14 +148,15 @@ public class NoticeController {
 	/**
 	 * Write node in filesystem
 	 */
-	private void writeFSNode(NoticeCategory node, String name, File dir) throws IOException {
+	private void writeFSNode(NoticeCategory node, File dir) throws IOException {
+		String name = node.getName();
 		System.out.println("In " + node.getName() + " with name " + name);
-		if(node.getSubCategories()!=null) {
+		if (node.getSubCategories() != null) {
 			for(NoticeCategory cat : node.getSubCategories()) {
 				File newDir = new File(dir.getPath() + "/" + name);
 				if(newDir.exists()) newDir.delete();
 				newDir.mkdir();
-				writeFSNode(cat, cat.getName(), newDir);
+				writeFSNode(cat, newDir);
 			}
 		}
 		else {
@@ -306,18 +304,6 @@ public class NoticeController {
 			} catch(IOException ioe) {
 			}
 		}
-		else if(source.equals(zipItem)) {
-			try {
-				File destFile; // zipFile to save zip
-				destFile = chooser.showSaveDialog(main.getPrimaryStage()).getParentFile();
-				String rootName = ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName();
-				File temporary = Files.createTempDirectory("noticeditor").toFile();
-				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), rootName, temporary);
-				IOUtil.pack(temporary, destFile.getPath());
-				IOUtil.removeDirectory(temporary);
-			} catch(IOException ioe) {
-			}
-		}
 		else if(source.equals(rotateItem)) {
 			Orientation or = editorPanel.getOrientation();
 			if (or == Orientation.HORIZONTAL) or = Orientation.VERTICAL;
@@ -327,6 +313,21 @@ public class NoticeController {
 		else if(source.equals(exitItem)) Platform.exit();
 		else cell.handleContextMenu(event);
 	}
+	
+	@FXML
+	private void handleSaveToZip(ActionEvent event) {
+		try {
+			File destFile = chooser.showSaveDialog(main.getPrimaryStage());
+			if (destFile == null) return;
+			
+			File temporaryDir = Files.createTempDirectory("noticeditor").toFile();
+			writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), temporaryDir);
+			IOUtil.pack(temporaryDir, destFile.getPath());
+			IOUtil.removeDirectory(temporaryDir);
+		} catch(IOException ioe) {
+		}
+	}
+	
 	/**
 	 * Sets reference to Main class
 	 */
