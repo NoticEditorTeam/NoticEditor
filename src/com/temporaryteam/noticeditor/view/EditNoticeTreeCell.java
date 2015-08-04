@@ -57,14 +57,12 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 			ArrayList<NoticeCategory> list = new ArrayList<>();
 			NoticeCategory toAdd = new NoticeCategory("New branch", list);
 			NoticeTreeItem newBranch = new NoticeTreeItem(toAdd);
-			String content = getNoticeTreeItem().getNotice().getContent();
 			children.add(newBranch);
 			subcategories.add(toAdd);
 		}
 		else if(source.equals(controller.getAddNoticeItem())) {
                         NoticeCategory toAdd = new NoticeCategory("New notice", "");
 			NoticeTreeItem newNotice = new NoticeTreeItem(toAdd);
-			String content = getNoticeTreeItem().getNotice().getContent();
 			children.add(newNotice);
 			subcategories.add(toAdd);
 		}
