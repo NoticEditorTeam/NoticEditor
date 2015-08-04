@@ -31,6 +31,7 @@ import com.temporaryteam.noticeditor.model.PreviewStyles;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.stage.DirectoryChooser;
+import jfx.messagebox.MessageBox;
 
 public class NoticeController {
 
@@ -333,6 +334,7 @@ public class NoticeController {
 		File indexFile = new File(destDir, "index.html");
 		try {
 			exportToHtmlPages(((NoticeTreeItem) noticeTree.getRoot()).getNotice(), indexFile);
+			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
 		} catch (IOException ioe) {
 		}
 	}
