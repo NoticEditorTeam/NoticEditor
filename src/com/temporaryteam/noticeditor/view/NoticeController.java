@@ -309,7 +309,7 @@ public class NoticeController {
 		else if(source.equals(zipItem)) {
 			try {
 				File destFile; // zipFile to save zip
-				destFile = chooser.showSaveDialog(main.getPrimaryStage()).getParentFile();
+				destFile = chooser.showSaveDialog(main.getPrimaryStage());
 				String rootName = ((NoticeTreeItem)noticeTree.getRoot()).getNotice().getName();
 				File temporary = Files.createTempDirectory("noticeditor").toFile();
 				writeFSNode(((NoticeTreeItem)noticeTree.getRoot()).getNotice(), rootName, temporary);
