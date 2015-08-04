@@ -11,27 +11,27 @@
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" onAction="#handleMenu" text="File">
+          <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="newItem" mnemonicParsing="false" onAction="#handleMenu" text="New" />
-                  <MenuItem fx:id="openItem" mnemonicParsing="false" onAction="#handleMenu" text="Open" />
-                  <MenuItem fx:id="saveItem" mnemonicParsing="false" onAction="#handleMenu" text="Save" />
-                  <MenuItem fx:id="saveAsItem" mnemonicParsing="false" onAction="#handleMenu" text="Save As" />
-                  <MenuItem fx:id="zipItem" mnemonicParsing="false" onAction="#handleMenu" text="Save in zip" />
-                  <MenuItem fx:id="exportHTMLItem" mnemonicParsing="false" onAction="#handleMenu" text="Export to HTML" />
-              <MenuItem fx:id="exitItem" mnemonicParsing="false" onAction="#handleMenu" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#handleNew" text="New" />
+              <MenuItem mnemonicParsing="false" onAction="#handleOpen" text="Open" />
+              <MenuItem mnemonicParsing="false" onAction="#handleSave" text="Save" />
+              <MenuItem mnemonicParsing="false" onAction="#handleSaveAs" text="Save As" />
+              <MenuItem mnemonicParsing="false" onAction="#handleSaveToZip" text="Save in zip" />
+              <MenuItem mnemonicParsing="false" onAction="#handleExportHtml" text="Export to HTML" />
+              <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" onAction="#handleMenu" text="View">
+          <Menu mnemonicParsing="false" text="View">
             <items>
-              <MenuItem fx:id="rotateItem" mnemonicParsing="false" onAction="#handleMenu" text="Rotate" />
+              <MenuItem mnemonicParsing="false" onAction="#handleSwitchOrientation" text="Switch orientation" />
               <CheckMenuItem fx:id="wordWrapItem" mnemonicParsing="false" text="Word wrap" />
               <Menu fx:id="previewStyleMenu" mnemonicParsing="false" text="Preview style" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem fx:id="aboutItem" mnemonicParsing="false" onAction="#handleMenu" text="About" />
+              <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
             </items>
           </Menu>
         </menus>
@@ -44,9 +44,9 @@
                <contextMenu>
                   <ContextMenu>
                     <items>
-                      <MenuItem fx:id="addBranchItem" mnemonicParsing="false" onAction="#handleMenu" text="Add branch" />
-                        <MenuItem fx:id="addNoticeItem" mnemonicParsing="false" onAction="#handleMenu" text="Add notice" />
-                        <MenuItem fx:id="deleteItem" mnemonicParsing="false" onAction="#handleMenu" text="Delete" />
+                      <MenuItem fx:id="addBranchItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Add branch" />
+                        <MenuItem fx:id="addNoticeItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Add notice" />
+                        <MenuItem fx:id="deleteItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Delete" />
                     </items>
                   </ContextMenu>
                </contextMenu></TreeView>
