@@ -18,8 +18,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
@@ -28,11 +26,11 @@ import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
+import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.stage.DirectoryChooser;
 import jfx.messagebox.MessageBox;
 
 public class NoticeController {
@@ -62,22 +60,14 @@ public class NoticeController {
 	private TreeView<String> noticeTree;
 
 	private Main main;
-	private FileChooser fileChooser;
-	private DirectoryChooser dirChooser;
 	private WebEngine engine;
-	private PegDownProcessor processor;
+	private final PegDownProcessor processor;
 	private NoticeItem currentNotice;
 	private NoticeTreeItem currentTreeItem;
 	private EditNoticeTreeCell cell;
 	private File fileSaved;
 
 	public NoticeController() {
-		fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(
-				new ExtensionFilter("Text files", "*.txt"),
-				new ExtensionFilter("All files", "*"));
-		dirChooser = new DirectoryChooser();
-		dirChooser.setTitle("Select folder to save");
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
 	}
 	
@@ -260,13 +250,11 @@ public class NoticeController {
 	@FXML
 	private void handleOpen(ActionEvent event) {
 		try {
-			if (fileSaved != null) {
-				fileChooser.setInitialDirectory(new File(fileSaved.getParent()));
-			}
-			fileSaved = fileChooser.showOpenDialog(main.getPrimaryStage());
-			if (fileSaved == null) {
-				return;
-			}
+			fileSaved = Chooser.file().open()
+					.filter(Chooser.SUPPORTED, Chooser.ALL)
+					.title("Open notice")
+					.show(main.getPrimaryStage());
+			if (fileSaved == null) return;
 
 			JSONObject json = new JSONObject(IOUtil.readContent(fileSaved));
 			currentNotice = new NoticeItem(json);
@@ -280,11 +268,11 @@ public class NoticeController {
 	@FXML
 	private void handleSave(ActionEvent event) {
 		if (fileSaved == null) {
-			fileChooser.setTitle("Save notice");
-			fileSaved = fileChooser.showSaveDialog(main.getPrimaryStage());
-			if (fileSaved == null) {
-				return;
-			}
+			fileSaved = Chooser.file().save()
+					.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
+					.title("Save notice")
+					.show(main.getPrimaryStage());
+			if (fileSaved == null) return;
 		}
 		try {
 			IOUtil.writeJson(fileSaved, currentNotice.toJson());
@@ -294,14 +282,11 @@ public class NoticeController {
 
 	@FXML
 	private void handleSaveAs(ActionEvent event) {
-		if (fileSaved != null) {
-			fileChooser.setInitialDirectory(new File(fileSaved.getParent()));
-		}
-		fileChooser.setTitle("Save notice");
-		fileSaved = fileChooser.showSaveDialog(main.getPrimaryStage());
-		if (fileSaved == null) {
-			return;
-		}
+		fileSaved = Chooser.file().save()
+					.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
+					.title("Save notice")
+					.show(main.getPrimaryStage());
+		if (fileSaved == null) return;
 
 		try {
 			IOUtil.writeJson(fileSaved, currentNotice.toJson());
@@ -312,11 +297,11 @@ public class NoticeController {
 
 	@FXML
 	private void handleSaveToZip(ActionEvent event) {
-		fileChooser.setTitle("Save notice as zip archive");
-		File destFile = fileChooser.showSaveDialog(main.getPrimaryStage());
-		if (destFile == null) {
-			return;
-		}
+		File destFile = Chooser.file().save()
+					.filter(Chooser.ZIP)
+					.title("Save notice as zip archive")
+					.show(main.getPrimaryStage());
+		if (destFile == null) return;
 		try {
 			File temporaryDir = Files.createTempDirectory("noticeditor").toFile();
 			writeFSNode(((NoticeTreeItem) noticeTree.getRoot()).getNotice(), temporaryDir);
@@ -328,11 +313,11 @@ public class NoticeController {
 
 	@FXML
 	private void handleExportHtml(ActionEvent event) {
-		dirChooser.setTitle("Select dir to save HTML files");
-		File destDir = dirChooser.showDialog(main.getPrimaryStage());
-		if (destDir == null) {
-			return;
-		}
+		File destDir = Chooser.directory()
+					.title("Select directory to save HTML files")
+					.show(main.getPrimaryStage());
+		if (destDir == null) return;
+
 		File indexFile = new File(destDir, "index.html");
 		try {
 			exportToHtmlPages(((NoticeTreeItem) noticeTree.getRoot()).getNotice(), indexFile);
