@@ -269,7 +269,7 @@ public class NoticeController {
 	private void handleSave(ActionEvent event) {
 		if (fileSaved == null) {
 			fileSaved = Chooser.file().save()
-					.filter(Chooser.JSON, Chooser.SUPPORTED, Chooser.ALL)
+					.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
 					.title("Save notice")
 					.show(main.getPrimaryStage());
 			if (fileSaved == null) return;
@@ -283,7 +283,7 @@ public class NoticeController {
 	@FXML
 	private void handleSaveAs(ActionEvent event) {
 		fileSaved = Chooser.file().save()
-					.filter(Chooser.JSON, Chooser.SUPPORTED, Chooser.ALL)
+					.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
 					.title("Save notice")
 					.show(main.getPrimaryStage());
 		if (fileSaved == null) return;
