@@ -139,9 +139,7 @@ public class NoticeController {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				engine.loadContent(operate(newValue));
-				if (currentTreeItem.isLeaf()) {
-					currentTreeItem.setContent(newValue);
-				}
+				currentTreeItem.changeContent(newValue);
 			}
 		});
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());

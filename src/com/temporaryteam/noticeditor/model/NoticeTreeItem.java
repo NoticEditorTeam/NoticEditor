@@ -96,8 +96,14 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		return content;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	/**
+	 * Content will be changed only when is a leaf node.
+	 * @param content 
+	 */
+	public void changeContent(String content) {
+		if (isLeaf()) {
+			this.content = content;
+		}
 	}
 
 	public String getTitle() {
