@@ -60,9 +60,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	@Override
 	public void startEdit() {
 		super.startEdit();
-		if (noticeName == null) {
-			createTextField();
-		}
+		if (noticeName == null) createTextField();
 		setText(null);
 		setGraphic(noticeName);
 		noticeName.selectAll();
@@ -120,7 +118,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return selected item or empty string
 	 */
 	private String getString() {
