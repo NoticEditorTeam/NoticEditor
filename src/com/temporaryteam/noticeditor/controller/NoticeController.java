@@ -59,12 +59,11 @@ public class NoticeController {
 
 	private Main main;
 	private WebEngine engine;
-<<<<<<< HEAD
-	private PegDownProcessor processor;
+=======
+>>>>>>> aNNiMON-issue11/dialogs
 =======
 	private final PegDownProcessor processor;
-	private NoticeItem currentNotice;
->>>>>>> aNNiMON-issue11/dialogs
+>>>>>>> c9bdd5745dc7308de0777d95cab13bd2b18f1f0f
 	private NoticeTreeItem currentTreeItem;
 	private EditNoticeTreeCell cell;
 	private File fileSaved;
@@ -235,23 +234,14 @@ public class NoticeController {
 
 	@FXML
 	private void handleOpen(ActionEvent event) {
-		if (fileSaved != null) {
-			fileChooser.setInitialDirectory(new File(fileSaved.getParent()));
-		}
-		fileSaved = fileChooser.showOpenDialog(main.getPrimaryStage());
-		if (fileSaved == null) {
-			return;
-		}
 		try {
 <<<<<<< HEAD
-=======
-			fileSaved = Chooser.file().open()
-					.filter(Chooser.SUPPORTED, Chooser.ALL)
-					.title("Open notice")
-					.show(main.getPrimaryStage());
-			if (fileSaved == null) return;
-
+<<<<<<< HEAD
+>>>>>>> c9bdd5745dc7308de0777d95cab13bd2b18f1f0f
+<<<<<<< HEAD
 >>>>>>> aNNiMON-issue11/dialogs
+=======
+>>>>>>> c9bdd5745dc7308de0777d95cab13bd2b18f1f0f
 			JSONObject json = new JSONObject(IOUtil.readContent(fileSaved));
 			currentTreeItem = new NoticeTreeItem(json);
 			noticeArea.setText("");
