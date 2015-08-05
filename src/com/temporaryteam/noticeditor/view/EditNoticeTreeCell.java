@@ -2,7 +2,6 @@ package com.temporaryteam.noticeditor.view;
 
 import com.temporaryteam.noticeditor.controller.NoticeController;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
-import java.util.ArrayList;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,8 +12,6 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-import com.temporaryteam.noticeditor.model.NoticeItem;
-
 public class EditNoticeTreeCell extends TreeCell<String> {
 
 	private TextField noticeName;
@@ -24,36 +21,22 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	public void handleContextMenu(ActionEvent e) {
 		MenuItem source = (MenuItem) e.getSource();
 		NoticeTreeItem selected = controller.getCurrentTreeItem();
-
-		ArrayList<NoticeItem> childItems;
 		ObservableList<NoticeTreeItem> childTreeItems;
 		if (selected != null) {
-			if (!selected.getNotice().isBranch() || source == controller.getDeleteItem()) {
+			if (selected.isLeaf() || source == controller.getDeleteItem()) {
 				childTreeItems = selected.getParent().getChildren();
-				childItems = ((NoticeTreeItem) (selected.getParent())).getNotice().childrens();
 			} else {
 				childTreeItems = selected.getChildren();
-				childItems = selected.getNotice().childrens();
 			}
 		} else {
 			childTreeItems = ((NoticeTreeItem) (getTreeView().getRoot())).getChildren();
-			childItems = ((NoticeTreeItem) (getTreeView().getRoot())).getNotice().childrens();
 		}
 		if (source == controller.getAddBranchItem()) {
-			ArrayList<NoticeItem> list = new ArrayList<>();
-			NoticeItem toAdd = new NoticeItem("New branch", list);
-			NoticeTreeItem treeItem = new NoticeTreeItem(toAdd);
-			childTreeItems.add(treeItem);
-			childItems.add(toAdd);
+			childTreeItems.add(new NoticeTreeItem("New branch"));
 		} else if (source == controller.getAddNoticeItem()) {
-			NoticeItem toAdd = new NoticeItem("New notice", "");
-			NoticeTreeItem newNotice = new NoticeTreeItem(toAdd);
-			childTreeItems.add(newNotice);
-			childItems.add(toAdd);
+			childTreeItems.add(new NoticeTreeItem("New notice", ""));
 		} else if (source == controller.getDeleteItem()) {
-			NoticeItem toDel = selected.getNotice();
 			childTreeItems.remove(selected);
-			childItems.remove(toDel);
 		}
 	}
 
@@ -78,7 +61,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	@Override
 	public void commitEdit(String str) {
 		super.commitEdit(str);
-		getNoticeTreeItem().getNotice().setName(str);
+		getNoticeTreeItem().setTitle(str);
 	}
 
 	@Override
@@ -120,7 +103,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return selected item or empty string
 	 */
 	private String getString() {
