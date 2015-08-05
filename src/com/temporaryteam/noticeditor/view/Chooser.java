@@ -77,7 +77,7 @@ public final class Chooser {
 	
 	public File show(Window window) {
 		// Set initial directory from last session
-		if (lastDirectory != null) {
+		if (lastDirectory != null && lastDirectory.isDirectory() && lastDirectory.exists()) {
 			if (fileChooseMode) {
 				fileChooser.setInitialDirectory(lastDirectory);
 			} else {
