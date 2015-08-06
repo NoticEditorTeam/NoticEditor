@@ -3,11 +3,15 @@ package com.temporaryteam.noticeditor.view;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 
 public class EditNoticeTreeCell extends TreeCell<String> {
 
@@ -75,11 +79,16 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 		});
 	}
 
-	private ImageView getIcon() {
+	private Node getIcon() {
 		if (getNoticeTreeItem().isBranch()) {
 			return null;
 		} else {
-			return new ImageView("resources/icons/note.png");
+			switch (getNoticeTreeItem().getStatus()) {
+				case NoticeTreeItem.STATUS_IMPORTANT:
+					return new Circle(5, Color.YELLOW);
+				default:
+					return new Circle(5, Color.AQUAMARINE);
+			}
 		}
 	}
 

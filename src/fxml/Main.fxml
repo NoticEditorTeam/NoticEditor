@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.web.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.text.*?>
@@ -38,18 +39,24 @@
       </MenuBar>
    </top>
    <center>
-      <SplitPane fx:id="mainPanel" dividerPositions="0.26059850374064836" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.26059850374064836" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <items>
-            <TreeView fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false">
-               <contextMenu>
-                  <ContextMenu>
-                    <items>
-                      <MenuItem fx:id="addBranchItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Add branch" />
-                        <MenuItem fx:id="addNoticeItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Add notice" />
-                        <MenuItem fx:id="deleteItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Delete" />
-                    </items>
-                  </ContextMenu>
-               </contextMenu></TreeView>
+            <SplitPane dividerPositions="0.8" orientation="VERTICAL">
+               <items>
+                  <TreeView fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false">
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem fx:id="addBranchItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Add branch" />
+                              <MenuItem fx:id="addNoticeItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Add notice" />
+                              <MenuItem fx:id="deleteItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Delete" />
+                          </items>
+                        </ContextMenu>
+                     </contextMenu>
+                  </TreeView>
+                  <fx:include source="NoticeSettings.fxml" />
+               </items>
+            </SplitPane>
             <SplitPane fx:id="editorPanel" dividerPositions="0.5" prefHeight="409.0" prefWidth="390.0">
               <items>
                   <TextArea fx:id="noticeArea" prefHeight="409.0" prefWidth="216.0" />
