@@ -101,7 +101,6 @@ public class NoticeController {
 
 		rebuild("help");
 		final NoticeController controller = this;
-		noticeTree.setShowRoot(false);
 		noticeTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		noticeTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 			@Override
