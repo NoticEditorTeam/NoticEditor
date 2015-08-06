@@ -5,6 +5,7 @@ import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -27,7 +28,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	public void cancelEdit() {
 		super.cancelEdit();
 		setText(getItem());
-		setGraphic(getTreeItem().getGraphic());
+		setGraphic(getIcon());
 	}
 
 	@Override
@@ -51,7 +52,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 				setGraphic(noticeName);
 			} else {
 				setText(getString());
-				setGraphic(getTreeItem().getGraphic());
+				setGraphic(getIcon());
 			}
 		}
 	}
@@ -72,6 +73,14 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 				}
 			}
 		});
+	}
+
+	private ImageView getIcon() {
+		if (getNoticeTreeItem().isBranch()) {
+			return new ImageView("resources/icons/folder.png");
+		} else {
+			return new ImageView("resources/icons/note.png");
+		}
 	}
 
 	/**

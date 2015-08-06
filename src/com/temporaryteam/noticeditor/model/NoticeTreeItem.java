@@ -21,12 +21,12 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	public static final String KEY_CONTENT = "content";
 	public static final String KEY_CHILDS = "childs";
 
-	private static final Random RND = new Random();
+	private static int id_counter = 1;
 
 	private String title;
 	private ObservableList<NoticeTreeItem> childs;
 	private String content;
-	private long id;
+	private final long id = id_counter++;
 
 	/**
 	 * Create branch node on tree.
@@ -60,12 +60,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		for (int i = 0; i < arr.length(); i++) {
 			childs.add(new NoticeTreeItem(arr.getJSONObject(i)));
 		}
-		genId();
 		setValue(title);
-	}
-
-	private void genId() {
-		id = System.nanoTime() + RND.nextInt(100);
 	}
 
 	/**
