@@ -29,6 +29,7 @@ import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
 
 public class NoticeController {
@@ -100,7 +101,6 @@ public class NoticeController {
 
 		rebuild("help");
 		final NoticeController controller = this;
-		noticeTree.setShowRoot(false);
 		noticeTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		noticeTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 			@Override
@@ -118,9 +118,7 @@ public class NoticeController {
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
 			public TreeCell<String> call(TreeView<String> p) {
-				cell = new EditNoticeTreeCell();
-				cell.setController(controller);
-				return cell;
+				return new EditNoticeTreeCell();
 			}
 		});
 
@@ -133,22 +131,6 @@ public class NoticeController {
 			}
 		});
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
-	}
-
-	public MenuItem getAddBranchItem() {
-		return addBranchItem;
-	}
-
-	public MenuItem getAddNoticeItem() {
-		return addNoticeItem;
-	}
-
-	public MenuItem getDeleteItem() {
-		return deleteItem;
-	}
-
-	public NoticeTreeItem getCurrentTreeItem() {
-		return currentTreeItem;
 	}
 
 	/**
@@ -218,7 +200,24 @@ public class NoticeController {
 	 */
 	@FXML
 	private void handleContextMenu(ActionEvent event) {
-		cell.handleContextMenu(event);
+		Object source = event.getSource();
+		ObservableList<NoticeTreeItem> childTreeItems;
+		if (currentTreeItem != null) {
+			if (currentTreeItem.isLeaf() || source == deleteItem) {
+				childTreeItems = currentTreeItem.getParent().getChildren();
+			} else {
+				childTreeItems = currentTreeItem.getChildren();
+			}
+		} else {
+			childTreeItems = ((NoticeTreeItem) (noticeTree.getRoot())).getChildren();
+		}
+		if (source == addBranchItem) {
+			childTreeItems.add(new NoticeTreeItem("New branch"));
+		} else if (source == addNoticeItem) {
+			childTreeItems.add(new NoticeTreeItem("New notice", ""));
+		} else if (source == deleteItem) {
+			childTreeItems.remove(currentTreeItem);
+		}
 	}
 
 	@FXML
