@@ -1,12 +1,14 @@
 package com.temporaryteam.noticeditor;
 
 import com.temporaryteam.noticeditor.controller.NoticeController;
+import com.temporaryteam.noticeditor.controller.NoticeSettingsController;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class Main extends Application {
 
@@ -29,14 +31,28 @@ public class Main extends Application {
 	 */
 	public void initRootLayout() {
 		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/Main.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"));
+			loader.setControllerFactory(new Callback<Class<?>, Object>() {
+
+				NoticeController noticeController;
+				NoticeSettingsController noticeSettingsController;
+				
+				@Override
+				public Object call(Class<?> param) {
+					if (param == NoticeController.class) {
+						noticeController = new NoticeController(Main.this);
+						return noticeController;
+					} else if (param == NoticeSettingsController.class) {
+						noticeSettingsController = new NoticeSettingsController(noticeController);
+						return noticeSettingsController;
+					}
+					return null;
+				}
+			});
 			rootLayout = (BorderPane) loader.load();
 			Scene scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			NoticeController controller = loader.getController();
-			controller.setMain(this);
 		}
 		catch(Exception e) {
 			e.printStackTrace();

@@ -35,9 +35,6 @@ import jfx.messagebox.MessageBox;
 public class NoticeController {
 
 	@FXML
-	private SplitPane mainPanel;
-
-	@FXML
 	private SplitPane editorPanel;
 
 	@FXML
@@ -65,7 +62,8 @@ public class NoticeController {
 	private EditNoticeTreeCell cell;
 	private File fileSaved;
 
-	public NoticeController() {
+	public NoticeController(Main main) {
+		this.main = main;
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
 	}
 
@@ -321,12 +319,9 @@ public class NoticeController {
 	private void handleAbout(ActionEvent event) {
 
 	}
-
-	/**
-	 * Sets reference to Main class
-	 */
-	public void setMain(Main main) {
-		this.main = main;
+	
+	public NoticeTreeItem<String> getCurrentNotice() {
+		return currentTreeItem;
 	}
 
 }

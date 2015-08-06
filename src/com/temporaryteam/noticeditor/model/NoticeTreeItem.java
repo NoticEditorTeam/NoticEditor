@@ -1,8 +1,8 @@
 package com.temporaryteam.noticeditor.model;
 
 import java.util.ArrayList;
-import java.util.Random;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.scene.control.TreeItem;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,12 +21,16 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	public static final String KEY_CONTENT = "content";
 	public static final String KEY_CHILDS = "childs";
 
+	public static final int STATUS_NORMAL = 1;
+	public static final int STATUS_IMPORTANT = 2;
+
 	private static int id_counter = 1;
 
 	private String title;
 	private ObservableList<NoticeTreeItem> childs;
 	private String content;
 	private final long id = id_counter++;
+	private int status = STATUS_NORMAL;
 
 	/**
 	 * Create branch node on tree.
@@ -93,7 +97,8 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 
 	/**
 	 * Content will be changed only when is a leaf node.
-	 * @param content 
+	 *
+	 * @param content
 	 */
 	public void changeContent(String content) {
 		if (isLeaf()) {
@@ -108,6 +113,15 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	public void setTitle(String title) {
 		setValue(title);
 		this.title = title;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+		Event.fireEvent(this, new TreeModificationEvent(childrenModificationEvent(), this));
+	}
+
+	public int getStatus() {
+		return status;
 	}
 
 	public String toHTML(PegDownProcessor processor) {
