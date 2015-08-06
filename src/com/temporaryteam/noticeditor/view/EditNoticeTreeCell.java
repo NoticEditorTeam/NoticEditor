@@ -77,7 +77,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 
 	private ImageView getIcon() {
 		if (getNoticeTreeItem().isBranch()) {
-			return new ImageView("resources/icons/folder.png");
+			return null;
 		} else {
 			return new ImageView("resources/icons/note.png");
 		}
