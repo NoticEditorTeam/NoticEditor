@@ -139,10 +139,10 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 				} else {
 					switch (child.getStatus()) {
 						case STATUS_IMPORTANT:
-							item.appendElement("span").addClass("glyphicon glyphicon-paperclip important");
+							item.appendElement("span").addClass("glyphicon glyphicon-pushpin important");
 							break;
 						default:
-							item.appendElement("span").addClass("glyphicon glyphicon-paperclip normal");
+							item.appendElement("span").addClass("glyphicon glyphicon-pushpin normal");
 					}
 				}
 				item.appendElement("a").attr("href", child.getId() + ".html")
