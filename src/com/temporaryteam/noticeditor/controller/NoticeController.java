@@ -59,11 +59,7 @@ public class NoticeController {
 
 	private Main main;
 	private WebEngine engine;
-=======
->>>>>>> aNNiMON-issue11/dialogs
-=======
 	private final PegDownProcessor processor;
->>>>>>> c9bdd5745dc7308de0777d95cab13bd2b18f1f0f
 	private NoticeTreeItem currentTreeItem;
 	private EditNoticeTreeCell cell;
 	private File fileSaved;
@@ -235,13 +231,6 @@ public class NoticeController {
 	@FXML
 	private void handleOpen(ActionEvent event) {
 		try {
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> c9bdd5745dc7308de0777d95cab13bd2b18f1f0f
-<<<<<<< HEAD
->>>>>>> aNNiMON-issue11/dialogs
-=======
->>>>>>> c9bdd5745dc7308de0777d95cab13bd2b18f1f0f
 			JSONObject json = new JSONObject(IOUtil.readContent(fileSaved));
 			currentTreeItem = new NoticeTreeItem(json);
 			noticeArea.setText("");
