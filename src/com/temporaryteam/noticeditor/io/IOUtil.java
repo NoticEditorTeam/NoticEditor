@@ -2,6 +2,7 @@ package com.temporaryteam.noticeditor.io;
 
 import java.io.*;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.zip.ZipEntry;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 
 public final class IOUtil {
 	
+	private static final int FILENAME_LIMIT = 60;
 	private static final String NEW_LINE = System.lineSeparator();
 
 	public static String readContent(File file) throws IOException {
@@ -51,6 +53,23 @@ public final class IOUtil {
 		file.delete();
 	}
 	
+	public static String sanitizeFilename(String name) {
+		if (name == null || name.isEmpty()) return "empty";
+		
+		// Convert non-ascii chars to char code
+		String newName = name;
+		try {
+			newName = URLEncoder.encode(newName, "UTF-8");
+		} catch (UnsupportedEncodingException ex) { }
+		// Allow only english chars, numbers and some specific symbols
+		newName = newName.toLowerCase().replaceAll("[^a-z0-9._\\(\\)]", "_");
+		// Limit filename length
+		if (newName.length() > FILENAME_LIMIT) {
+			newName = newName.substring(0, FILENAME_LIMIT);
+		}
+		return newName;
+	}
+	
 	/** 
 	 * Pack directory
 	 */
@@ -74,7 +93,7 @@ public final class IOUtil {
 						zout.putNextEntry(new ZipEntry(name));
 						try (InputStream in = new FileInputStream(child)) {
 							byte[] buffer = new byte[1024];
-							while(true) {
+							while (true) {
 								int readCount = in.read(buffer);
 								if (readCount < 0) break;
 								zout.write(buffer, 0, readCount);
@@ -86,4 +105,5 @@ public final class IOUtil {
 			}
 		}
 	}
+	
 }
