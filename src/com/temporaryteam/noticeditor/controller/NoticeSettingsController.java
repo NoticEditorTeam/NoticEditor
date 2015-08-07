@@ -14,7 +14,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 
 /**
- * FXML Controller class
+ * FXML Controller class.
+ * Отвечает за прикрепление файлов и настройку важности заметки.
  *
  * @author Naik
  */
