@@ -1,12 +1,14 @@
 package com.temporaryteam.noticeditor.model;
 
 import java.util.ArrayList;
-import java.util.Random;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.scene.control.TreeItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.pegdown.PegDownProcessor;
 
 /**
@@ -21,12 +23,16 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	public static final String KEY_CONTENT = "content";
 	public static final String KEY_CHILDS = "childs";
 
-	private static final Random RND = new Random();
+	public static final int STATUS_NORMAL = 1;
+	public static final int STATUS_IMPORTANT = 2;
+
+	private static int id_counter = 1;
 
 	private String title;
 	private ObservableList<NoticeTreeItem> childs;
 	private String content;
-	private long id;
+	private final long id = id_counter++;
+	private int status = STATUS_NORMAL;
 
 	/**
 	 * Create branch node on tree.
@@ -60,12 +66,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		for (int i = 0; i < arr.length(); i++) {
 			childs.add(new NoticeTreeItem(arr.getJSONObject(i)));
 		}
-		genId();
 		setValue(title);
-	}
-
-	private void genId() {
-		id = System.nanoTime() + RND.nextInt(100);
 	}
 
 	/**
@@ -98,7 +99,8 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 
 	/**
 	 * Content will be changed only when is a leaf node.
-	 * @param content 
+	 *
+	 * @param content
 	 */
 	public void changeContent(String content) {
 		if (isLeaf()) {
@@ -115,18 +117,43 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		this.title = title;
 	}
 
-	public String toHTML(PegDownProcessor processor) {
-		StringBuilder html = new StringBuilder();
+	public void setStatus(int status) {
+		this.status = status;
+		Event.fireEvent(this, new TreeModificationEvent(childrenModificationEvent(), this));
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void toHTML(PegDownProcessor processor, Document doc) {
+		doc.title(title);
+		doc.select("#notice_title").first().text(title);
+		Element data = doc.select("#content").first();
 		if (isBranch()) {
+			Element list = doc.createElement("div").addClass("list-group");
 			for (NoticeTreeItem child : childs) {
-				html.append("<a href=\"").append(child.getId()).append(".html\">");
-				html.append(child.getTitle()).append(".html</a><br/>\n");
+				Element item = doc.createElement("div").addClass("list-group-item");
+				if (child.isBranch()) {
+					item.appendElement("span").addClass("glyphicon glyphicon-folder-open");
+				} else {
+					switch (child.getStatus()) {
+						case STATUS_IMPORTANT:
+							item.appendElement("span").addClass("glyphicon glyphicon-pushpin important");
+							break;
+						default:
+							item.appendElement("span").addClass("glyphicon glyphicon-pushpin normal");
+					}
+				}
+				item.appendElement("a").attr("href", child.getId() + ".html")
+						.text(child.getTitle())
+						.appendElement("br");
+				list.appendChild(item);
 			}
-			html.append("<br/><br/>\n");
+			data.appendChild(list);
 		} else {
-			html.append(processor.markdownToHtml(content));
+			data.html(processor.markdownToHtml(content));
 		}
-		return html.toString();
 	}
 
 	public JSONObject toJson() throws JSONException {

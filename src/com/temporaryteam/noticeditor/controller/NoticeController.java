@@ -26,15 +26,17 @@ import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 public class NoticeController {
-
-	@FXML
-	private SplitPane mainPanel;
 
 	@FXML
 	private SplitPane editorPanel;
@@ -67,8 +69,10 @@ public class NoticeController {
 	private NoticeTreeItem currentTreeItem;
 	private EditNoticeTreeCell cell;
 	private File fileSaved;
+	private Logger logger = Logger.getLogger(NoticeController.class.getName());
 
-	public NoticeController() {
+	public NoticeController(Main main) {
+		this.main = main;
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
 	}
 
@@ -104,7 +108,6 @@ public class NoticeController {
 
 		rebuild("help");
 		final NoticeController controller = this;
-		noticeTree.setShowRoot(false);
 		noticeTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		noticeTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 			@Override
@@ -122,9 +125,7 @@ public class NoticeController {
 		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
 			public TreeCell<String> call(TreeView<String> p) {
-				cell = new EditNoticeTreeCell();
-				cell.setController(controller);
-				return cell;
+				return new EditNoticeTreeCell();
 			}
 		});
 
@@ -139,22 +140,6 @@ public class NoticeController {
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
 	}
 
-	public MenuItem getAddBranchItem() {
-		return addBranchItem;
-	}
-
-	public MenuItem getAddNoticeItem() {
-		return addNoticeItem;
-	}
-
-	public MenuItem getDeleteItem() {
-		return deleteItem;
-	}
-
-	public NoticeTreeItem getCurrentTreeItem() {
-		return currentTreeItem;
-	}
-
 	/**
 	 * Save item as HTML pages. Root item was saved to index.html
 	 *
@@ -162,7 +147,9 @@ public class NoticeController {
 	 * @param file file to save
 	 */
 	public void exportToHtmlPages(NoticeTreeItem<String> item, File file) throws IOException {
-		IOUtil.writeContent(file, item.toHTML(processor));
+		Document doc = Jsoup.parse(getClass().getResourceAsStream("/resources/export_template.html"), null, "");
+		item.toHTML(processor, doc);
+		IOUtil.writeContent(file, doc.outerHtml());
 		if (item.isBranch()) {
 			for (Object obj : item.getChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) obj;
@@ -222,7 +209,24 @@ public class NoticeController {
 	 */
 	@FXML
 	private void handleContextMenu(ActionEvent event) {
-		cell.handleContextMenu(event);
+		Object source = event.getSource();
+		ObservableList<NoticeTreeItem> childTreeItems;
+		if (currentTreeItem != null) {
+			if (currentTreeItem.isLeaf() || source == deleteItem) {
+				childTreeItems = currentTreeItem.getParent().getChildren();
+			} else {
+				childTreeItems = currentTreeItem.getChildren();
+			}
+		} else {
+			childTreeItems = ((NoticeTreeItem) (noticeTree.getRoot())).getChildren();
+		}
+		if (source == addBranchItem) {
+			childTreeItems.add(new NoticeTreeItem("New branch"));
+		} else if (source == addNoticeItem) {
+			childTreeItems.add(new NoticeTreeItem("New notice", ""));
+		} else if (source == deleteItem) {
+			childTreeItems.remove(currentTreeItem);
+		}
 	}
 
 	@FXML
@@ -308,7 +312,8 @@ public class NoticeController {
 		try {
 			exportToHtmlPages((NoticeTreeItem) noticeTree.getRoot(), indexFile);
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
-		} catch (IOException ioe) {
+		} catch (IOException ex) {
+			logger.log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -327,12 +332,9 @@ public class NoticeController {
 	private void handleAbout(ActionEvent event) {
 
 	}
-
-	/**
-	 * Sets reference to Main class
-	 */
-	public void setMain(Main main) {
-		this.main = main;
+	
+	public NoticeTreeItem<String> getCurrentNotice() {
+		return currentTreeItem;
 	}
 
 }
