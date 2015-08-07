@@ -26,11 +26,15 @@ import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 public class NoticeController {
 
@@ -61,6 +65,7 @@ public class NoticeController {
 	private NoticeTreeItem currentTreeItem;
 	private EditNoticeTreeCell cell;
 	private File fileSaved;
+	private Logger logger = Logger.getLogger(NoticeController.class.getName());
 
 	public NoticeController(Main main) {
 		this.main = main;
@@ -138,7 +143,9 @@ public class NoticeController {
 	 * @param file file to save
 	 */
 	public void exportToHtmlPages(NoticeTreeItem<String> item, File file) throws IOException {
-		IOUtil.writeContent(file, item.toHTML(processor));
+		Document doc = Jsoup.parse(getClass().getResourceAsStream("/resources/export_template.html"), null, "");
+		item.toHTML(processor, doc);
+		IOUtil.writeContent(file, doc.outerHtml());
 		if (item.isBranch()) {
 			for (Object obj : item.getChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) obj;
@@ -300,7 +307,8 @@ public class NoticeController {
 		try {
 			exportToHtmlPages((NoticeTreeItem) noticeTree.getRoot(), indexFile);
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
-		} catch (IOException ioe) {
+		} catch (IOException ex) {
+			logger.log(Level.SEVERE, null, ex);
 		}
 	}
 

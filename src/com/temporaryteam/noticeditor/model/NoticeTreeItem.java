@@ -7,6 +7,8 @@ import javafx.scene.control.TreeItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.pegdown.PegDownProcessor;
 
 /**
@@ -124,18 +126,34 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		return status;
 	}
 
-	public String toHTML(PegDownProcessor processor) {
-		StringBuilder html = new StringBuilder();
+	public void toHTML(PegDownProcessor processor, Document doc) {
+		doc.title(title);
+		doc.select("#notice_title").first().text(title);
+		Element data = doc.select("#content").first();
 		if (isBranch()) {
+			Element list = doc.createElement("div").addClass("list-group");
 			for (NoticeTreeItem child : childs) {
-				html.append("<a href=\"").append(child.getId()).append(".html\">");
-				html.append(child.getTitle()).append(".html</a><br/>\n");
+				Element item = doc.createElement("div").addClass("list-group-item");
+				if (child.isBranch()) {
+					item.appendElement("span").addClass("glyphicon glyphicon-folder-open");
+				} else {
+					switch (child.getStatus()) {
+						case STATUS_IMPORTANT:
+							item.appendElement("span").addClass("glyphicon glyphicon-paperclip important");
+							break;
+						default:
+							item.appendElement("span").addClass("glyphicon glyphicon-paperclip normal");
+					}
+				}
+				item.appendElement("a").attr("href", child.getId() + ".html")
+						.text(child.getTitle())
+						.appendElement("br");
+				list.appendChild(item);
 			}
-			html.append("<br/><br/>\n");
+			data.appendChild(list);
 		} else {
-			html.append(processor.markdownToHtml(content));
+			data.html(processor.markdownToHtml(content));
 		}
-		return html.toString();
 	}
 
 	public JSONObject toJson() throws JSONException {
