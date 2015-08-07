@@ -9,7 +9,6 @@ import static org.pegdown.Extensions.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import javafx.util.Callback;
 import javafx.application.Platform;
@@ -22,6 +21,8 @@ import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
+import com.temporaryteam.noticeditor.io.ExportException;
+import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
 import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
@@ -132,44 +133,6 @@ public class NoticeController {
 	}
 
 	/**
-	 * Save item as HTML pages. Root item was saved to index.html
-	 *
-	 * @param item node to recursively save
-	 * @param file file to save
-	 */
-	public void exportToHtmlPages(NoticeTreeItem<String> item, File file) throws IOException {
-		IOUtil.writeContent(file, item.toHTML(processor));
-		if (item.isBranch()) {
-			for (Object obj : item.getChildren()) {
-				NoticeTreeItem child = (NoticeTreeItem) obj;
-				exportToHtmlPages(child, new File(file.getParent(), child.getId() + ".html"));
-			}
-		}
-	}
-
-	/**
-	 * Write node in filesystem
-	 */
-	private void writeFSNode(NoticeTreeItem item, File dir) throws IOException {
-		String title = item.getTitle();
-		System.out.println("In " + item.getTitle() + " with title " + title);
-		if (item.isBranch()) {
-			for (Object child : item.getChildren()) {
-				File newDir = new File(dir.getPath() + "/" + title);
-				if (newDir.exists()) {
-					newDir.delete();
-				}
-				newDir.mkdir();
-				writeFSNode((NoticeTreeItem) child, newDir);
-			}
-		} else {
-			File toWrite = new File(dir.getPath() + "/" + title + ".md");
-			IOUtil.writeContent(toWrite, item.getContent());
-		}
-		System.out.println("Exit");
-	}
-
-	/**
 	 * Rebuild tree
 	 */
 	public void rebuild(String defaultNoticeContent) {
@@ -252,10 +215,7 @@ public class NoticeController {
 					.show(main.getPrimaryStage());
 			if (fileSaved == null) return;
 		}
-		try {
-			IOUtil.writeJson(fileSaved, ((NoticeTreeItem) noticeTree.getRoot()).toJson());
-		} catch (IOException | JSONException ioe) {
-		}
+		ExportStrategyHolder.JSON.export(fileSaved, ((NoticeTreeItem) noticeTree.getRoot()));
 	}
 
 	@FXML
@@ -265,12 +225,8 @@ public class NoticeController {
 					.title("Save notice")
 					.show(main.getPrimaryStage());
 		if (fileSaved == null) return;
-
-		try {
-			IOUtil.writeJson(fileSaved, ((NoticeTreeItem) noticeTree.getRoot()).toJson());
-		} catch (IOException | JSONException e) {
-			e.printStackTrace();
-		}
+		
+		ExportStrategyHolder.JSON.export(fileSaved, ((NoticeTreeItem) noticeTree.getRoot()));
 	}
 
 	@FXML
@@ -280,13 +236,8 @@ public class NoticeController {
 					.title("Save notice as zip archive")
 					.show(main.getPrimaryStage());
 		if (destFile == null) return;
-		try {
-			File temporaryDir = Files.createTempDirectory("noticeditor").toFile();
-			writeFSNode((NoticeTreeItem) noticeTree.getRoot(), temporaryDir);
-			IOUtil.pack(temporaryDir, destFile.getPath());
-			IOUtil.removeDirectory(temporaryDir);
-		} catch (IOException ioe) {
-		}
+		
+		ExportStrategyHolder.ZIP.export(destFile, (NoticeTreeItem) noticeTree.getRoot());
 	}
 
 	@FXML
@@ -295,12 +246,13 @@ public class NoticeController {
 					.title("Select directory to save HTML files")
 					.show(main.getPrimaryStage());
 		if (destDir == null) return;
-
-		File indexFile = new File(destDir, "index.html");
+		
 		try {
-			exportToHtmlPages((NoticeTreeItem) noticeTree.getRoot(), indexFile);
+			ExportStrategyHolder.HTML.setProcessor(processor);
+			ExportStrategyHolder.HTML.export(destDir, (NoticeTreeItem) noticeTree.getRoot());
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
-		} catch (IOException ioe) {
+		} catch (ExportException e) {
+			MessageBox.show(main.getPrimaryStage(), "Export failed!", "", MessageBox.OK);
 		}
 	}
 
