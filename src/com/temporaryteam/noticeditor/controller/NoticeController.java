@@ -160,7 +160,6 @@ public class NoticeController {
 	 */
 	private void writeFSNode(NoticeTreeItem item, File dir) throws IOException {
 		String title = item.getTitle();
-		System.out.println("In " + item.getTitle() + " with title " + title);
 		if (item.isBranch()) {
 			for (Object child : item.getChildren()) {
 				File newDir = new File(dir.getPath() + "/" + title);
@@ -174,7 +173,6 @@ public class NoticeController {
 			File toWrite = new File(dir.getPath() + "/" + title + ".md");
 			IOUtil.writeContent(toWrite, item.getContent());
 		}
-		System.out.println("Exit");
 	}
 
 	/**
