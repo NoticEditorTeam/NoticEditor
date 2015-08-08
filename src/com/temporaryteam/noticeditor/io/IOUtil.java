@@ -70,6 +70,14 @@ public final class IOUtil {
 		return newName;
 	}
 	
+	public static InputStream toStream(String content) throws IOException {
+		return toStream(content, "UTF-8");
+	}
+	
+	public static InputStream toStream(String content, String charset) throws IOException {
+		return new ByteArrayInputStream(content.getBytes(charset));
+	}
+	
 	/** 
 	 * Pack directory
 	 */
