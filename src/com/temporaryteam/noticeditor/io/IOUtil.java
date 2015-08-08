@@ -1,12 +1,7 @@
 package com.temporaryteam.noticeditor.io;
 
 import java.io.*;
-import java.net.URI;
 import java.net.URLEncoder;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -76,42 +71,6 @@ public final class IOUtil {
 	
 	public static InputStream toStream(String content, String charset) throws IOException {
 		return new ByteArrayInputStream(content.getBytes(charset));
-	}
-	
-	/** 
-	 * Pack directory
-	 */
-	public static void pack(File directory, String toSave) throws IOException {
-		final URI root = directory.toURI();
-		Deque<File> queue = new LinkedList<File>();
-		queue.push(directory);
-		
-		try (OutputStream out = new FileOutputStream(new File(toSave));
-				ZipOutputStream zout = new ZipOutputStream(out)) {
-			
-			while(!queue.isEmpty()) {
-				directory = queue.pop();
-				for(File child : directory.listFiles()) {
-					String name = root.relativize(child.toURI()).getPath();
-					if (child.isDirectory()) {
-						queue.push(child);
-						name = name.endsWith("/") ? name : (name + "/");
-						zout.putNextEntry(new ZipEntry(name));
-					} else {
-						zout.putNextEntry(new ZipEntry(name));
-						try (InputStream in = new FileInputStream(child)) {
-							byte[] buffer = new byte[1024];
-							while (true) {
-								int readCount = in.read(buffer);
-								if (readCount < 0) break;
-								zout.write(buffer, 0, readCount);
-							}
-						}
-						zout.closeEntry();
-					}
-				}
-			}
-		}
 	}
 	
 }
