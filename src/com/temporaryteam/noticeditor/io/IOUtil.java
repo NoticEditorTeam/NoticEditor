@@ -11,13 +11,7 @@ public final class IOUtil {
 	private static final String NEW_LINE = System.lineSeparator();
 
 	public static String readContent(File file) throws IOException {
-		final StringBuilder result = new StringBuilder();
-		try (InputStream is = new FileInputStream(file);
-				Reader isr = new InputStreamReader(is, "UTF-8");
-				BufferedReader reader = new BufferedReader(isr)) {
-			result.append(reader.readLine()).append(NEW_LINE);
-		}
-		return result.toString();
+		return IOUtil.stringFromStream(new FileInputStream(file));
 	}
 	
 	public static void writeContent(File file, String content) throws IOException {
@@ -73,4 +67,19 @@ public final class IOUtil {
 		return new ByteArrayInputStream(content.getBytes(charset));
 	}
 	
+	public static String stringFromStream(InputStream stream) throws IOException {
+		return stringFromStream(stream, "UTF-8");
+	}
+	
+	public static String stringFromStream(InputStream stream, String charset) throws IOException {
+		final StringBuilder result = new StringBuilder();
+		try (Reader isr = new InputStreamReader(stream, charset);
+				BufferedReader reader = new BufferedReader(isr)) {
+			String line;
+			while ( (line = reader.readLine()) != null ) {
+				result.append(line).append(NEW_LINE);
+			}
+		}
+		return result.toString();
+	}
 }
