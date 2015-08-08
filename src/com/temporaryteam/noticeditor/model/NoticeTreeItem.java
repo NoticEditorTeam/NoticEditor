@@ -66,6 +66,10 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		}
 		setValue(title);
 	}
+	
+	public void addChild(NoticeTreeItem item) {
+		childs.add(item);
+	}
 
 	@Override
 	public boolean isLeaf() {
