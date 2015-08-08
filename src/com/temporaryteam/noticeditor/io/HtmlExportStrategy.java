@@ -21,9 +21,8 @@ public class HtmlExportStrategy implements ExportStrategy {
 
 	@Override
 	public void export(File destDir, NoticeTreeItem notice) {
-		File indexFile = new File(destDir, "index.html");
 		try {
-			exportToHtmlPages(notice, indexFile);
+			exportToHtmlPages(notice, destDir, "index");
 		} catch (IOException ioe) {
 			throw new ExportException(ioe);
 		}
@@ -33,16 +32,30 @@ public class HtmlExportStrategy implements ExportStrategy {
 	 * Save item as HTML pages. Root item was saved to index.html
 	 *
 	 * @param item node to recursively save
-	 * @param file file to save
+	 * @param dir directory to save
+	 * @param filename name of the file without extension
 	 */
-	private void exportToHtmlPages(NoticeTreeItem<String> item, File file) throws IOException {
+	private void exportToHtmlPages(NoticeTreeItem<String> item, File dir, String filename) throws IOException {
 		Document doc = Jsoup.parse(getClass().getResourceAsStream("/resources/export_template.html"), null, "");
-		item.toHTML(processor, doc);
+		
+		File file = new File(dir, filename + ".html");
+		if (file.exists()) {
+			// solve collision
+			int counter = 1;
+			String newFileName = filename;
+			while (file.exists()) {
+				newFileName = String.format("%s_(%d)", filename, counter++);
+				file = new File(dir, newFileName + ".html");
+			}
+			filename = newFileName;
+		}
+		
+		item.toHTML(processor, doc, filename + ".html");
 		IOUtil.writeContent(file, doc.outerHtml());
 		if (item.isBranch()) {
 			for (Object obj : item.getChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) obj;
-				exportToHtmlPages(child, new File(file.getParent(), child.getId() + ".html"));
+				exportToHtmlPages(child, dir, IOUtil.sanitizeFilename(child.getTitle()));
 			}
 		}
 	}
