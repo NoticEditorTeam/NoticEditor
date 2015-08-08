@@ -3,6 +3,8 @@ package com.temporaryteam.noticeditor.io;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.io.File;
 import java.io.IOException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.pegdown.PegDownProcessor;
 
 /**
@@ -34,7 +36,9 @@ public class HtmlExportStrategy implements ExportStrategy {
 	 * @param file file to save
 	 */
 	private void exportToHtmlPages(NoticeTreeItem<String> item, File file) throws IOException {
-		IOUtil.writeContent(file, item.toHTML(processor));
+		Document doc = Jsoup.parse(getClass().getResourceAsStream("/resources/export_template.html"), null, "");
+		item.toHTML(processor, doc);
+		IOUtil.writeContent(file, doc.outerHtml());
 		if (item.isBranch()) {
 			for (Object obj : item.getChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) obj;

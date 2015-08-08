@@ -27,6 +27,8 @@ import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -35,6 +37,8 @@ import jfx.messagebox.MessageBox;
 
 public class NoticeController {
 
+	private static final Logger logger = Logger.getLogger(NoticeController.class.getName());
+	
 	@FXML
 	private SplitPane editorPanel;
 
@@ -252,6 +256,7 @@ public class NoticeController {
 			ExportStrategyHolder.HTML.export(destDir, (NoticeTreeItem) noticeTree.getRoot());
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
 		} catch (ExportException e) {
+			logger.log(Level.SEVERE, null, e);
 			MessageBox.show(main.getPrimaryStage(), "Export failed!", "", MessageBox.OK);
 		}
 	}
