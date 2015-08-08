@@ -21,9 +21,12 @@ import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
+import com.temporaryteam.noticeditor.io.DocumentFormat;
 import com.temporaryteam.noticeditor.io.ExportException;
+import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
 import com.temporaryteam.noticeditor.io.IOUtil;
+import com.temporaryteam.noticeditor.io.ZipWithIndexFormat;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
@@ -34,6 +37,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
+import net.lingala.zip4j.exception.ZipException;
 
 public class NoticeController {
 
@@ -200,48 +204,43 @@ public class NoticeController {
 					.title("Open notice")
 					.show(main.getPrimaryStage());
 			if (fileSaved == null) return;
-
-			JSONObject json = new JSONObject(IOUtil.readContent(fileSaved));
-			currentTreeItem = new NoticeTreeItem(json);
+			
+			currentTreeItem = DocumentFormat.open(fileSaved);
 			noticeArea.setText("");
 			noticeTree.setRoot(currentTreeItem);
 		} catch (IOException | JSONException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, null, e);
 		}
 	}
 
 	@FXML
 	private void handleSave(ActionEvent event) {
 		if (fileSaved == null) {
-			fileSaved = Chooser.file().save()
-					.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
-					.title("Save notice")
-					.show(main.getPrimaryStage());
-			if (fileSaved == null) return;
+			handleSaveAs(event);
+		} else {
+			saveDocument(fileSaved);
 		}
-		ExportStrategyHolder.JSON.export(fileSaved, ((NoticeTreeItem) noticeTree.getRoot()));
 	}
 
 	@FXML
 	private void handleSaveAs(ActionEvent event) {
 		fileSaved = Chooser.file().save()
-					.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
-					.title("Save notice")
-					.show(main.getPrimaryStage());
+				.filter(Chooser.ZIP, Chooser.JSON)
+				.title("Save notice")
+				.show(main.getPrimaryStage());
 		if (fileSaved == null) return;
 		
-		ExportStrategyHolder.JSON.export(fileSaved, ((NoticeTreeItem) noticeTree.getRoot()));
+		saveDocument(fileSaved);
 	}
-
-	@FXML
-	private void handleSaveToZip(ActionEvent event) {
-		File destFile = Chooser.file().save()
-					.filter(Chooser.ZIP)
-					.title("Save notice as zip archive")
-					.show(main.getPrimaryStage());
-		if (destFile == null) return;
-		
-		ExportStrategyHolder.ZIP.export(destFile, (NoticeTreeItem) noticeTree.getRoot());
+	
+	private void saveDocument(File file) {
+		ExportStrategy strategy;
+		if (Chooser.JSON.equals( Chooser.getLastSelectedExtensionFilter() )) {
+			strategy = ExportStrategyHolder.JSON;
+		} else {
+			strategy = ExportStrategyHolder.ZIP;
+		}
+		DocumentFormat.save(file, ((NoticeTreeItem) noticeTree.getRoot()), strategy);
 	}
 
 	@FXML
