@@ -1,12 +1,15 @@
 package com.temporaryteam.noticeditor.model;
 
+import org.pegdown.PegDownProcessor;
+import org.jsoup.nodes.Document;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-public NoticeTree extends TreeView<String>() {
+public class NoticeTree extends TreeView<String> {
 
 	public NoticeTree() {
 		super();
@@ -17,8 +20,7 @@ public NoticeTree extends TreeView<String>() {
 	}
 
 	public NoticeTree(JSONObject jsobj) throws JSONException {
-		NoticeTreeItem root = new NoticeTreeItem(jsobj);
-		super(root);
+		super(new NoticeTreeItem(jsobj));
 	}
 
 	public void addNote(NoticeTreeItem level, String name, String content) {
@@ -42,8 +44,8 @@ public NoticeTree extends TreeView<String>() {
 	}
 
 	public void deleteNode(NoticeTreeItem toDel) {
-		if(!isLeaf()) {
-			for(NoticeTreeItem son : toDel.getChildren()) deleteNode(son);
+		if(toDel.isLeaf()) {
+			for(Object son : toDel.getChildren()) deleteNode((NoticeTreeItem)son);
 		}
 		else {
 			if(toDel.getParent()!=null) {
@@ -52,12 +54,12 @@ public NoticeTree extends TreeView<String>() {
 		}
 	}
 
-	public void toHTML(PegDownProcessor, Document doc) {
-		getRoot().toHTML();
+	public void toHTML(PegDownProcessor processor, Document doc) {
+		((NoticeTreeItem)getRoot()).toHTML(processor, doc);
 	}
 
 	public JSONObject toJson() throws JSONException {
-		return getRoot().toJson();
+		return ((NoticeTreeItem)getRoot()).toJson();
 	}
 
 }

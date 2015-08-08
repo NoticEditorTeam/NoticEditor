@@ -1,6 +1,5 @@
 package com.temporaryteam.noticeditor.controller;
 
-import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -23,6 +22,8 @@ import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.io.IOUtil;
+import com.temporaryteam.noticeditor.model.NoticeTree;
+import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
@@ -57,7 +58,7 @@ public class NoticeController {
 	private Menu previewStyleMenu;
 
 	@FXML
-	private TreeView<String> noticeTree;
+	private NoticeTree noticeTree;
 
 	private Main main;
 	private WebEngine engine;
@@ -234,6 +235,13 @@ public class NoticeController {
 
 	@FXML
 	private void handleOpen(ActionEvent event) {
+		if(fileSaved == null) {
+			fileSaved = Chooser.file().open()
+				.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
+				.title("Open notice")
+				.show(main.getPrimaryStage());
+			if(fileSaved == null) return;
+		}
 		try {
 			JSONObject json = new JSONObject(IOUtil.readContent(fileSaved));
 			currentTreeItem = new NoticeTreeItem(json);

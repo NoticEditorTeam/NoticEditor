@@ -7,6 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
+<?import com.temporaryteam.noticeditor.model.NoticeTree?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="539.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeController">
    <top>
@@ -43,7 +44,7 @@
          <items>
             <SplitPane dividerPositions="0.8" orientation="VERTICAL">
                <items>
-                  <TreeView fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false">
+                  <NoticeTree fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false">
                      <contextMenu>
                         <ContextMenu>
                           <items>
@@ -53,7 +54,7 @@
                           </items>
                         </ContextMenu>
                      </contextMenu>
-                  </TreeView>
+                  </NoticeTree>
                   <fx:include source="NoticeSettings.fxml" />
                </items>
             </SplitPane>

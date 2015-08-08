@@ -1,5 +1,5 @@
 JC=javac
-JCOPTS=-classpath $(CLASSPATH) `./configure` -sourcepath $(SRC) -d $(BUILD) -g $(SRC)/$(MAIN_CLASS)
+JCOPTS=-classpath `./configure` -sourcepath $(SRC) -d $(BUILD) -g $(SRC)/$(MAIN_CLASS)
 PACKCMD=jar cfm $(DIST)/$(OUTPUT) $(MANIFEST) -C $(BUILD) .
 RM=rm -rf
 
