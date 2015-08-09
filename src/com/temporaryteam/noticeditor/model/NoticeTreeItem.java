@@ -1,6 +1,5 @@
 package com.temporaryteam.noticeditor.model;
 
-import com.temporaryteam.noticeditor.io.IOUtil;
 import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -29,7 +28,7 @@ public class NoticeTreeItem extends TreeItem<String> {
 	private String title;
 	private ObservableList<TreeItem<String>> childs;
 	private String content;
-	private int status = STATUS_NORMAL;
+	private int status;
 
 	/**
 	 * Create branch node on tree.
@@ -37,9 +36,7 @@ public class NoticeTreeItem extends TreeItem<String> {
 	 * @param title
 	 */
 	public NoticeTreeItem(String title) {
-		super(title);
-		this.title = title;
-		childs = getChildren();
+		this(title, null);
 	}
 
 	/**
@@ -49,21 +46,19 @@ public class NoticeTreeItem extends TreeItem<String> {
 	 * @param content
 	 */
 	public NoticeTreeItem(String title, String content) {
-		this(title);
+		super(title);
+		this.title = title;
 		this.content = content;
+		childs = getChildren();
+		status = STATUS_NORMAL;
 	}
 
 	public NoticeTreeItem(JSONObject json) throws JSONException {
-		title = json.getString(KEY_TITLE);
-		if (json.has(KEY_CONTENT)) {
-			content = json.getString(KEY_CONTENT);
-		}
+		this(json.getString(KEY_TITLE), json.optString(KEY_CONTENT, null));
 		JSONArray arr = json.getJSONArray(KEY_CHILDREN);
-		childs = getChildren();
 		for (int i = 0; i < arr.length(); i++) {
 			childs.add(new NoticeTreeItem(arr.getJSONObject(i)));
 		}
-		setValue(title);
 	}
 	
 	public void addChild(NoticeTreeItem item) {
@@ -152,9 +147,7 @@ public class NoticeTreeItem extends TreeItem<String> {
 	public JSONObject toJson() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put(KEY_TITLE, title);
-		if (content != null) {
-			json.put(KEY_CONTENT, content);
-		}
+		json.putOpt(KEY_CONTENT, content);
 		ArrayList list = new ArrayList();
 		for (TreeItem<String> treeItem : childs) {
 			NoticeTreeItem child = (NoticeTreeItem) treeItem;
