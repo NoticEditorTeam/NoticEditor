@@ -69,11 +69,11 @@ public class NoticeTree {
 	}
 
 	public void toHTML(PegDownProcessor processor, Document doc) {
-		((NoticeTreeItem)getRoot()).toHTML(processor, doc, "index");
+		root.toHTML(processor, doc, "index");
 	}
 
 	public JSONObject toJson() throws JSONException {
-		return ((NoticeTreeItem)getRoot()).toJson();
+		return root.toJson();
 	}
 
 }
