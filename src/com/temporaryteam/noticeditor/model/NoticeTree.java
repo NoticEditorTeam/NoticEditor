@@ -52,7 +52,7 @@ public class NoticeTree {
 	}
 
 	public void deleteNode(NoticeTreeItem toDel) {
-		ArrayDeque<NoticeTreeItem> items = new Stack<NoticeTreeItem>();
+		ArrayDeque<NoticeTreeItem> items = new ArrayDeque<NoticeTreeItem>();
 		items.push(toDel);
 		while(!items.isEmpty()) {
 			NoticeTreeItem currentItem = items.pop();
@@ -62,7 +62,7 @@ public class NoticeTree {
 			}
 			else {
 				for(Object son : currentItem.getChildren()) {
-					item.push((NoticeTreeItem)son);
+					items.push((NoticeTreeItem)son);
 				}
 			}
 		}
