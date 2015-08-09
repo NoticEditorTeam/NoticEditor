@@ -240,18 +240,12 @@ public class NoticeController {
 
 	@FXML
 	private void handleOpen(ActionEvent event) {
-		if(fileSaved == null) {
+		try {
 			fileSaved = Chooser.file().open()
 				.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
 				.title("Open notice")
 				.show(main.getPrimaryStage());
 			if(fileSaved == null) return;
-		}
-		try {
-			JSONObject json = new JSONObject(IOUtil.readContent(fileSaved));
-			currentTreeItem = new NoticeTreeItem(json);
-			if (fileSaved == null) return;
-			
 			currentTreeItem = DocumentFormat.open(fileSaved);
 			noticeArea.setText("");
 			noticeTree.setRoot(currentTreeItem);
