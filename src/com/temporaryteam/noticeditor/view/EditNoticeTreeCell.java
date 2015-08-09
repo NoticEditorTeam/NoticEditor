@@ -13,6 +13,9 @@ import javafx.scene.shape.Circle;
 
 public class EditNoticeTreeCell extends TreeCell<String> {
 
+	private final Circle CIRCLE_AQUAMARINE = new Circle(5, Color.AQUAMARINE);
+	private final Circle CIRCLE_YELLOW = new Circle(5, Color.YELLOW);
+	
 	private TextField noticeName;
 
 	@Override
@@ -60,7 +63,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	}
 
 	private NoticeTreeItem getNoticeTreeItem() {
-		return (NoticeTreeItem<String>) getTreeItem();
+		return (NoticeTreeItem) getTreeItem();
 	}
 
 	private void createTextField() {
@@ -80,16 +83,15 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	private Node getIcon() {
 		if (getNoticeTreeItem().isBranch()) {
 			return null;
-		} else {
-			switch (getNoticeTreeItem().getStatus()) {
-				case NoticeTreeItem.STATUS_IMPORTANT:
-					return new Circle(5, Color.YELLOW);
-				default:
-					return new Circle(5, Color.AQUAMARINE);
-			}
+		}
+		switch (getNoticeTreeItem().getStatus()) {
+			case NoticeTreeItem.STATUS_IMPORTANT:
+				return CIRCLE_YELLOW;
+			default:
+				return CIRCLE_AQUAMARINE;
 		}
 	}
-
+	
 	/**
 	 *
 	 * @return selected item or empty string

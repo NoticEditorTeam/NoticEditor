@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import javafx.scene.control.TreeItem;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
@@ -93,7 +94,7 @@ public class ZipWithIndexFormat {
 	}
 
 	public void export(NoticeTree tree) throws IOException, JSONException, ZipException {
-		export((NoticeTreeItem)tree.getRoot());
+		export(tree.getRoot());
 	}
 	
 	private void storeFile(String path, String content) throws IOException, ZipException {
@@ -127,7 +128,7 @@ public class ZipWithIndexFormat {
 		if (item.isBranch()) {
 			// ../branch_filename
 			ArrayList list = new ArrayList();
-			for (Object object : item.getChildren()) {
+			for (TreeItem<String> object : item.getChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) object;
 				
 				JSONObject indexEntry = new JSONObject();

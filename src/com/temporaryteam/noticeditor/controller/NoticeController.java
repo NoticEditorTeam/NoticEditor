@@ -1,6 +1,5 @@
 package com.temporaryteam.noticeditor.controller;
 
-import org.json.JSONObject;
 import org.json.JSONException;
 
 import org.pegdown.PegDownProcessor;
@@ -24,8 +23,6 @@ import com.temporaryteam.noticeditor.io.DocumentFormat;
 import com.temporaryteam.noticeditor.io.ExportException;
 import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
-import com.temporaryteam.noticeditor.io.IOUtil;
-import com.temporaryteam.noticeditor.io.ZipWithIndexFormat;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
@@ -39,9 +36,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import net.lingala.zip4j.exception.ZipException;
 
 public class NoticeController {
 
@@ -68,11 +62,10 @@ public class NoticeController {
 	@FXML
 	private NoticeTreeView noticeTree;
 
-	private Main main;
+	private final Main main;
 	private WebEngine engine;
 	private final PegDownProcessor processor;
 	private NoticeTreeItem currentTreeItem;
-	private EditNoticeTreeCell cell;
 	private File fileSaved;
 
 	public NoticeController(Main main) {
@@ -111,7 +104,6 @@ public class NoticeController {
 		}
 
 		rebuild("help");
-		final NoticeController controller = this;
 		noticeTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 		noticeTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 			@Override
@@ -142,6 +134,10 @@ public class NoticeController {
 			}
 		});
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
+	}
+	
+	public NoticeTreeItem getCurrentNotice() {
+		return currentTreeItem;
 	}
 
 	/**
@@ -175,7 +171,7 @@ public class NoticeController {
 	@FXML
 	private void handleContextMenu(ActionEvent event) {
 		Object source = event.getSource();
-		ObservableList<NoticeTreeItem> childTreeItems;
+		ObservableList<? super NoticeTreeItem> childTreeItems;
 		if (currentTreeItem != null) {
 			if (currentTreeItem.isLeaf() || source == deleteItem) {
 				childTreeItems = currentTreeItem.getParent().getChildren();
@@ -183,7 +179,7 @@ public class NoticeController {
 				childTreeItems = currentTreeItem.getChildren();
 			}
 		} else {
-			childTreeItems = ((NoticeTreeItem) (noticeTree.getRoot())).getChildren();
+			childTreeItems = noticeTree.getRoot().getChildren();
 		}
 		if (source == addBranchItem) {
 			childTreeItems.add(new NoticeTreeItem("New branch"));
@@ -282,8 +278,4 @@ public class NoticeController {
 
 	}
 	
-	public NoticeTreeItem<String> getCurrentNotice() {
-		return currentTreeItem;
-	}
-
 }

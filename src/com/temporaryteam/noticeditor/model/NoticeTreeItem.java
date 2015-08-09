@@ -1,6 +1,5 @@
 package com.temporaryteam.noticeditor.model;
 
-import com.temporaryteam.noticeditor.io.IOUtil;
 import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -8,17 +7,13 @@ import javafx.scene.control.TreeItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.pegdown.PegDownProcessor;
 
 /**
  * Model representation of notice. Contains notice data or branch data
  *
- * @param <T> tree item name
  * @author naik, setser, annimon, kalter
  */
-public class NoticeTreeItem<T extends String> extends TreeItem {
+public class NoticeTreeItem extends TreeItem<String> {
 
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_CONTENT = "content";
@@ -28,9 +23,9 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	public static final int STATUS_IMPORTANT = 2;
 
 	private String title;
-	private ObservableList<NoticeTreeItem> childs;
+	private ObservableList<TreeItem<String>> childs;
 	private String content;
-	private int status = STATUS_NORMAL;
+	private int status;
 
 	/**
 	 * Create branch node on tree.
@@ -38,9 +33,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	 * @param title
 	 */
 	public NoticeTreeItem(String title) {
-		super(title);
-		this.title = title;
-		childs = getChildren();
+		this(title, null);
 	}
 
 	/**
@@ -50,21 +43,19 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	 * @param content
 	 */
 	public NoticeTreeItem(String title, String content) {
-		this(title);
+		super(title);
+		this.title = title;
 		this.content = content;
+		childs = getChildren();
+		status = STATUS_NORMAL;
 	}
 
 	public NoticeTreeItem(JSONObject json) throws JSONException {
-		title = json.getString(KEY_TITLE);
-		if (json.has(KEY_CONTENT)) {
-			content = json.getString(KEY_CONTENT);
-		}
+		this(json.getString(KEY_TITLE), json.optString(KEY_CONTENT, null));
 		JSONArray arr = json.getJSONArray(KEY_CHILDREN);
-		childs = getChildren();
 		for (int i = 0; i < arr.length(); i++) {
 			childs.add(new NoticeTreeItem(arr.getJSONObject(i)));
 		}
-		setValue(title);
 	}
 	
 	public void addChild(NoticeTreeItem item) {
@@ -119,44 +110,13 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		return status;
 	}
 
-	public void toHTML(PegDownProcessor processor, Document doc, String filename) {
-		doc.title(title);
-		doc.select("#notice_title").first().text(title);
-		Element data = doc.select("#content").first();
-		if (isBranch()) {
-			Element list = doc.createElement("div").addClass("list-group");
-			for (NoticeTreeItem child : childs) {
-				Element item = doc.createElement("div").addClass("list-group-item");
-				if (child.isBranch()) {
-					item.appendElement("span").addClass("glyphicon glyphicon-folder-open");
-				} else {
-					switch (child.getStatus()) {
-						case STATUS_IMPORTANT:
-							item.appendElement("span").addClass("glyphicon glyphicon-pushpin important");
-							break;
-						default:
-							item.appendElement("span").addClass("glyphicon glyphicon-pushpin normal");
-					}
-				}
-				item.appendElement("a").attr("href", filename)
-						.text(child.getTitle())
-						.appendElement("br");
-				list.appendChild(item);
-			}
-			data.appendChild(list);
-		} else {
-			data.html(processor.markdownToHtml(content));
-		}
-	}
-
 	public JSONObject toJson() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put(KEY_TITLE, title);
-		if (content != null) {
-			json.put(KEY_CONTENT, content);
-		}
+		json.putOpt(KEY_CONTENT, content);
 		ArrayList list = new ArrayList();
-		for (NoticeTreeItem child : childs) {
+		for (TreeItem<String> treeItem : childs) {
+			NoticeTreeItem child = (NoticeTreeItem) treeItem;
 			list.add(child.toJson());
 		}
 		json.put(KEY_CHILDREN, new JSONArray(list));

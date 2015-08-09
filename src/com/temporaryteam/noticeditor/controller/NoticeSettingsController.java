@@ -47,7 +47,7 @@ public class NoticeSettingsController implements Initializable {
 
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				NoticeTreeItem<String> noticeTreeItem = noticeController.getCurrentNotice();
+				NoticeTreeItem noticeTreeItem = noticeController.getCurrentNotice();
 				if (noticeTreeItem != null && noticeTreeItem.isLeaf()) {
 					switch(newValue.intValue()) {
 						case 0: noticeTreeItem.setStatus(NoticeTreeItem.STATUS_NORMAL); break;
