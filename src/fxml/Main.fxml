@@ -19,7 +19,6 @@
               <MenuItem mnemonicParsing="false" onAction="#handleOpen" text="Open" />
               <MenuItem mnemonicParsing="false" onAction="#handleSave" text="Save" />
               <MenuItem mnemonicParsing="false" onAction="#handleSaveAs" text="Save As" />
-              <MenuItem mnemonicParsing="false" onAction="#handleSaveToZip" text="Save in zip" />
               <MenuItem mnemonicParsing="false" onAction="#handleExportHtml" text="Export to HTML" />
               <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
             </items>

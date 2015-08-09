@@ -8,7 +8,6 @@ import static org.pegdown.Extensions.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import javafx.util.Callback;
 import javafx.application.Platform;
@@ -21,7 +20,12 @@ import javafx.scene.web.WebView;
 import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
+import com.temporaryteam.noticeditor.io.DocumentFormat;
+import com.temporaryteam.noticeditor.io.ExportException;
+import com.temporaryteam.noticeditor.io.ExportStrategy;
+import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
 import com.temporaryteam.noticeditor.io.IOUtil;
+import com.temporaryteam.noticeditor.io.ZipWithIndexFormat;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
@@ -36,9 +40,12 @@ import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import net.lingala.zip4j.exception.ZipException;
 
 public class NoticeController {
 
+	private static final Logger logger = Logger.getLogger(NoticeController.class.getName());
+	
 	@FXML
 	private SplitPane editorPanel;
 
@@ -66,7 +73,6 @@ public class NoticeController {
 	private NoticeTreeItem currentTreeItem;
 	private EditNoticeTreeCell cell;
 	private File fileSaved;
-	private Logger logger = Logger.getLogger(NoticeController.class.getName());
 
 	public NoticeController(Main main) {
 		this.main = main;
@@ -138,6 +144,7 @@ public class NoticeController {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Save item as HTML pages. Root item was saved to index.html
 	 *
 	 * @param item node to recursively save
@@ -243,57 +250,44 @@ public class NoticeController {
 		try {
 			JSONObject json = new JSONObject(IOUtil.readContent(fileSaved));
 			currentTreeItem = new NoticeTreeItem(json);
+			if (fileSaved == null) return;
+			
+			currentTreeItem = DocumentFormat.open(fileSaved);
 			noticeArea.setText("");
 			noticeTree.setRoot(currentTreeItem);
 		} catch (IOException | JSONException e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, null, e);
 		}
 	}
 
 	@FXML
 	private void handleSave(ActionEvent event) {
 		if (fileSaved == null) {
-			fileSaved = Chooser.file().save()
-					.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
-					.title("Save notice")
-					.show(main.getPrimaryStage());
-			if (fileSaved == null) return;
-		}
-		try {
-			IOUtil.writeJson(fileSaved, ((NoticeTreeItem) noticeTree.getRoot()).toJson());
-		} catch (IOException | JSONException ioe) {
+			handleSaveAs(event);
+		} else {
+			saveDocument(fileSaved);
 		}
 	}
 
 	@FXML
 	private void handleSaveAs(ActionEvent event) {
 		fileSaved = Chooser.file().save()
-					.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
-					.title("Save notice")
-					.show(main.getPrimaryStage());
+				.filter(Chooser.ZIP, Chooser.JSON)
+				.title("Save notice")
+				.show(main.getPrimaryStage());
 		if (fileSaved == null) return;
-
-		try {
-			IOUtil.writeJson(fileSaved, ((NoticeTreeItem) noticeTree.getRoot()).toJson());
-		} catch (IOException | JSONException e) {
-			e.printStackTrace();
-		}
+		
+		saveDocument(fileSaved);
 	}
-
-	@FXML
-	private void handleSaveToZip(ActionEvent event) {
-		File destFile = Chooser.file().save()
-					.filter(Chooser.ZIP)
-					.title("Save notice as zip archive")
-					.show(main.getPrimaryStage());
-		if (destFile == null) return;
-		try {
-			File temporaryDir = Files.createTempDirectory("noticeditor").toFile();
-			writeFSNode((NoticeTreeItem) noticeTree.getRoot(), temporaryDir);
-			IOUtil.pack(temporaryDir, destFile.getPath());
-			IOUtil.removeDirectory(temporaryDir);
-		} catch (IOException ioe) {
+	
+	private void saveDocument(File file) {
+		ExportStrategy strategy;
+		if (Chooser.JSON.equals( Chooser.getLastSelectedExtensionFilter() )) {
+			strategy = ExportStrategyHolder.JSON;
+		} else {
+			strategy = ExportStrategyHolder.ZIP;
 		}
+		DocumentFormat.save(file, ((NoticeTreeItem) noticeTree.getRoot()), strategy);
 	}
 
 	@FXML
@@ -302,13 +296,14 @@ public class NoticeController {
 					.title("Select directory to save HTML files")
 					.show(main.getPrimaryStage());
 		if (destDir == null) return;
-
-		File indexFile = new File(destDir, "index.html");
+		
 		try {
-			exportToHtmlPages((NoticeTreeItem) noticeTree.getRoot(), indexFile);
+			ExportStrategyHolder.HTML.setProcessor(processor);
+			ExportStrategyHolder.HTML.export(destDir, (NoticeTreeItem) noticeTree.getRoot());
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
-		} catch (IOException ex) {
-			logger.log(Level.SEVERE, null, ex);
+		} catch (ExportException e) {
+			logger.log(Level.SEVERE, null, e);
+			MessageBox.show(main.getPrimaryStage(), "Export failed!", "", MessageBox.OK);
 		}
 	}
 

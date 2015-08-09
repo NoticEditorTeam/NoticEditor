@@ -12,14 +12,16 @@ import javafx.stage.Window;
  */
 public final class Chooser {
 	
-	public static final ExtensionFilter SUPPORTED = new ExtensionFilter("Supported Files", "*.txt", "*.md", "*.htm", "*.html", "*.json");
+	public static final ExtensionFilter SUPPORTED = new ExtensionFilter("Supported Files", "*.zip", "*.txt", "*.md", "*.htm", "*.html", "*.json");
 	public static final ExtensionFilter JSON = new ExtensionFilter("Json Files", "*.json");
 	public static final ExtensionFilter ZIP = new ExtensionFilter("Zip Files", "*.zip");
 	public static final ExtensionFilter ALL = new ExtensionFilter("All Files", "*.*");
 	
 	private static FileChooser fileChooser;
 	private static DirectoryChooser directoryChooser;
+	
 	private static File lastDirectory;
+	private static ExtensionFilter lastSelectedExtensionFilter;
 	
 	public static Chooser file() {
 		if (fileChooser == null) {
@@ -38,6 +40,10 @@ public final class Chooser {
 	
 	public static void setInitialDirectory(File directory) {
 		Chooser.lastDirectory = directory;
+	}
+	
+	public static ExtensionFilter getLastSelectedExtensionFilter() {
+		return lastSelectedExtensionFilter;
 	}
 
 	private final boolean fileChooseMode;
@@ -92,8 +98,9 @@ public final class Chooser {
 			} else {
 				result = fileChooser.showSaveDialog(window);
 			}
-			// Save last directory
+			// Save last directory and selected extension filter
 			if (result != null) lastDirectory = result.getParentFile();
+			lastSelectedExtensionFilter = fileChooser.getSelectedExtensionFilter();
 		} else {
 			result = directoryChooser.showDialog(window);
 			lastDirectory = result;

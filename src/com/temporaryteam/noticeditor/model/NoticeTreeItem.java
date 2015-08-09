@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.model;
 
+import com.temporaryteam.noticeditor.io.IOUtil;
 import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -26,12 +27,9 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	public static final int STATUS_NORMAL = 1;
 	public static final int STATUS_IMPORTANT = 2;
 
-	private static int id_counter = 1;
-
 	private String title;
 	private ObservableList<NoticeTreeItem> childs;
 	private String content;
-	private final long id = id_counter++;
 	private int status = STATUS_NORMAL;
 
 	/**
@@ -68,14 +66,9 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		}
 		setValue(title);
 	}
-
-	/**
-	 * id used for diff nodes with equals name (for example when exporting to HTML).
-	 *
-	 * @return generated unique id
-	 */
-	public long getId() {
-		return id;
+	
+	public void addChild(NoticeTreeItem item) {
+		childs.add(item);
 	}
 
 	@Override
@@ -126,7 +119,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		return status;
 	}
 
-	public void toHTML(PegDownProcessor processor, Document doc) {
+	public void toHTML(PegDownProcessor processor, Document doc, String filename) {
 		doc.title(title);
 		doc.select("#notice_title").first().text(title);
 		Element data = doc.select("#content").first();
@@ -145,7 +138,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 							item.appendElement("span").addClass("glyphicon glyphicon-pushpin normal");
 					}
 				}
-				item.appendElement("a").attr("href", child.getId() + ".html")
+				item.appendElement("a").attr("href", filename)
 						.text(child.getTitle())
 						.appendElement("br");
 				list.appendChild(item);

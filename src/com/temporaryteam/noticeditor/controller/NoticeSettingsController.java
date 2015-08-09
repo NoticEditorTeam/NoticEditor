@@ -15,7 +15,7 @@ import javafx.scene.control.ListView;
 
 /**
  * FXML Controller class.
- * Отвечает за прикрепление файлов и настройку важности заметки.
+ * Responsible for attaching files and note importance.
  *
  * @author Naik
  */
