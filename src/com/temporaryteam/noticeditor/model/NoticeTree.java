@@ -14,12 +14,20 @@ public class NoticeTree {
 		root = null;
 	}
 
+	/**
+	 * Create NoticeTree with set root
+	 * @param root set root
+	 */
 	public NoticeTree(NoticeTreeItem root) {
 		this.root = root;
 	}
-
+	
+	/**
+	 * Import NoticeTree from JSON
+	 * @param jsobj object to import from
+	 */
 	public NoticeTree(JSONObject jsobj) throws JSONException {
-		root = new NoticeTreeItem(jsobj);
+		this(new NoticeTreeItem(""));
 	}
 
 	public NoticeTreeItem getRoot() {
