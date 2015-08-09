@@ -2,18 +2,13 @@ package com.temporaryteam.noticeditor.model;
 
 import java.util.ArrayDeque;
 
-import org.pegdown.PegDownProcessor;
-import org.jsoup.nodes.Document;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 
 public class NoticeTree {
 
-	private NoticeTreeItem root;
+	private final NoticeTreeItem root;
 
 	public NoticeTree() {
 		root = null;
@@ -66,10 +61,6 @@ public class NoticeTree {
 				}
 			}
 		}
-	}
-
-	public void toHTML(PegDownProcessor processor, Document doc) {
-		root.toHTML(processor, doc, "index");
 	}
 
 	public JSONObject toJson() throws JSONException {

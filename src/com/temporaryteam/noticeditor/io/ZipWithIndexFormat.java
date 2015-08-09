@@ -94,7 +94,7 @@ public class ZipWithIndexFormat {
 	}
 
 	public void export(NoticeTree tree) throws IOException, JSONException, ZipException {
-		export((NoticeTreeItem)tree.getRoot());
+		export(tree.getRoot());
 	}
 	
 	private void storeFile(String path, String content) throws IOException, ZipException {

@@ -7,9 +7,6 @@ import javafx.scene.control.TreeItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.pegdown.PegDownProcessor;
 
 /**
  * Model representation of notice. Contains notice data or branch data
@@ -111,37 +108,6 @@ public class NoticeTreeItem extends TreeItem<String> {
 
 	public int getStatus() {
 		return status;
-	}
-
-	public void toHTML(PegDownProcessor processor, Document doc, String filename) {
-		doc.title(title);
-		doc.select("#notice_title").first().text(title);
-		Element data = doc.select("#content").first();
-		if (isBranch()) {
-			Element list = doc.createElement("div").addClass("list-group");
-			for (TreeItem<String> treeItem : childs) {
-				NoticeTreeItem child = (NoticeTreeItem) treeItem;
-				Element item = doc.createElement("div").addClass("list-group-item");
-				if (child.isBranch()) {
-					item.appendElement("span").addClass("glyphicon glyphicon-folder-open");
-				} else {
-					switch (child.getStatus()) {
-						case STATUS_IMPORTANT:
-							item.appendElement("span").addClass("glyphicon glyphicon-pushpin important");
-							break;
-						default:
-							item.appendElement("span").addClass("glyphicon glyphicon-pushpin normal");
-					}
-				}
-				item.appendElement("a").attr("href", filename)
-						.text(child.getTitle())
-						.appendElement("br");
-				list.appendChild(item);
-			}
-			data.appendChild(list);
-		} else {
-			data.html(processor.markdownToHtml(content));
-		}
 	}
 
 	public JSONObject toJson() throws JSONException {
