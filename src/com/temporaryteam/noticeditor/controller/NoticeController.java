@@ -29,6 +29,8 @@ import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 import com.temporaryteam.noticeditor.view.NoticeTreeView;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,6 +63,9 @@ public class NoticeController {
 
 	@FXML
 	private NoticeTreeView noticeTree;
+	
+	@FXML
+	private ResourceBundle resources; // magic!
 
 	private final Main main;
 	private WebEngine engine;
@@ -78,7 +83,7 @@ public class NoticeController {
 	 */
 	@FXML
 	private void initialize() {
-		noticeArea.setText("help");
+		noticeArea.setText(resources.getString("help"));
 		noticeTree.setShowRoot(false);
 		engine = viewer.getEngine();
 

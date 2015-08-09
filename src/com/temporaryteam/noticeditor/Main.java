@@ -2,18 +2,18 @@ package com.temporaryteam.noticeditor;
 
 import com.temporaryteam.noticeditor.controller.NoticeController;
 import com.temporaryteam.noticeditor.controller.NoticeSettingsController;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class Main extends Application {
 
 	private Stage primaryStage;
-	private BorderPane rootLayout;
 
 	public void Main() {
 	}
@@ -31,7 +31,8 @@ public class Main extends Application {
 	 */
 	public void initRootLayout() {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"),
+					ResourceBundle.getBundle("com.temporaryteam.noticeditor.translate.Language", Locale.getDefault()));
 			loader.setControllerFactory(new Callback<Class<?>, Object>() {
 
 				NoticeController noticeController;
@@ -49,8 +50,7 @@ public class Main extends Application {
 					return null;
 				}
 			});
-			rootLayout = (BorderPane) loader.load();
-			Scene scene = new Scene(rootLayout);
+			Scene scene = new Scene(loader.load());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		}
