@@ -207,7 +207,7 @@ public class NoticeController {
 				.title("Open notice")
 				.show(main.getPrimaryStage());
 			if(fileSaved == null) return;
-			noticeTree = DocumentFormat.open(fileSaved);
+			noticeTree.setRoot(DocumentFormat.open(fileSaved).getRoot());
 			noticeArea.setText("");
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
