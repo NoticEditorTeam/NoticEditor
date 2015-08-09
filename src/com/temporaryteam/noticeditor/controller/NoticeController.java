@@ -31,6 +31,7 @@ import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
+import com.temporaryteam.noticeditor.view.NoticeTreeView;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,7 +66,7 @@ public class NoticeController {
 	private Menu previewStyleMenu;
 
 	@FXML
-	private NoticeTree noticeTree;
+	private NoticeTreeView noticeTree;
 
 	private Main main;
 	private WebEngine engine;
@@ -150,7 +151,8 @@ public class NoticeController {
 		NoticeTreeItem rootItem = new NoticeTreeItem("Root");
 		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent);
 		rootItem.getChildren().add(currentTreeItem);
-		noticeTree.setRoot(rootItem);
+		NoticeTree curTree = new NoticeTree(rootItem);
+		noticeTree.setDataTree(curTree);
 	}
 
 	/**
@@ -207,7 +209,7 @@ public class NoticeController {
 				.title("Open notice")
 				.show(main.getPrimaryStage());
 			if(fileSaved == null) return;
-			noticeTree.setRoot(DocumentFormat.open(fileSaved).getRoot());
+			noticeTree.setDataTree(DocumentFormat.open(fileSaved));
 			noticeArea.setText("");
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
@@ -241,7 +243,7 @@ public class NoticeController {
 		} else {
 			strategy = ExportStrategyHolder.ZIP;
 		}
-		DocumentFormat.save(file, noticeTree, strategy);
+		DocumentFormat.save(file, noticeTree.getDataTree(), strategy);
 	}
 
 	@FXML
@@ -253,7 +255,7 @@ public class NoticeController {
 		
 		try {
 			ExportStrategyHolder.HTML.setProcessor(processor);
-			ExportStrategyHolder.HTML.export(destDir, noticeTree);
+			ExportStrategyHolder.HTML.export(destDir, noticeTree.getDataTree());
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);

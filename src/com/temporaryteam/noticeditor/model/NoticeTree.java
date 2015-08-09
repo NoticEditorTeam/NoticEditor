@@ -9,18 +9,24 @@ import org.json.JSONObject;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
-public class NoticeTree extends TreeView<String> {
+public class NoticeTree {
+
+	private NoticeTreeItem root;
 
 	public NoticeTree() {
-		super();
+		root = null;
 	}
 
 	public NoticeTree(NoticeTreeItem root) {
-		super(root);
+		this.root = root;
 	}
 
 	public NoticeTree(JSONObject jsobj) throws JSONException {
-		super(new NoticeTreeItem(jsobj));
+		root = new NoticeTreeItem(jsobj);
+	}
+
+	public NoticeTreeItem getRoot() {
+		return root;
 	}
 
 	public void addNote(NoticeTreeItem level, String name, String content) {
