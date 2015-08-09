@@ -22,7 +22,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_CONTENT = "content";
-	public static final String KEY_CHILDS = "childs";
+	public static final String KEY_CHILDREN = "childs";
 
 	public static final int STATUS_NORMAL = 1;
 	public static final int STATUS_IMPORTANT = 2;
@@ -59,7 +59,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		if (json.has(KEY_CONTENT)) {
 			content = json.getString(KEY_CONTENT);
 		}
-		JSONArray arr = json.getJSONArray(KEY_CHILDS);
+		JSONArray arr = json.getJSONArray(KEY_CHILDREN);
 		childs = getChildren();
 		for (int i = 0; i < arr.length(); i++) {
 			childs.add(new NoticeTreeItem(arr.getJSONObject(i)));
@@ -159,7 +159,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		for (NoticeTreeItem child : childs) {
 			list.add(child.toJson());
 		}
-		json.put(KEY_CHILDS, new JSONArray(list));
+		json.put(KEY_CHILDREN, new JSONArray(list));
 		return json;
 	}
 

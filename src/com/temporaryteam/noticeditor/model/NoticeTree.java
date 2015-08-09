@@ -1,5 +1,7 @@
 package com.temporaryteam.noticeditor.model;
 
+import java.util.ArrayDeque;
+
 import org.pegdown.PegDownProcessor;
 import org.jsoup.nodes.Document;
 
@@ -50,12 +52,18 @@ public class NoticeTree {
 	}
 
 	public void deleteNode(NoticeTreeItem toDel) {
-		if(toDel.isLeaf()) {
-			for(Object son : toDel.getChildren()) deleteNode((NoticeTreeItem)son);
-		}
-		else {
-			if(toDel.getParent()!=null) {
-				toDel.getParent().getChildren().remove(toDel);
+		ArrayDeque<NoticeTreeItem> items = new Stack<NoticeTreeItem>();
+		items.push(toDel);
+		while(!items.isEmpty()) {
+			NoticeTreeItem currentItem = items.pop();
+			if(currentItem.isLeaf()) {
+				currentItem.getParent().getChildren().remove(currentItem);
+				currentItem = null;
+			}
+			else {
+				for(Object son : currentItem.getChildren()) {
+					item.push((NoticeTreeItem)son);
+				}
 			}
 		}
 	}
