@@ -13,7 +13,6 @@ import javafx.util.Callback;
 public class Main extends Application {
 
 	private Stage primaryStage;
-	private BorderPane rootLayout;
 
 	public void Main() {
 	}
@@ -49,8 +48,7 @@ public class Main extends Application {
 					return null;
 				}
 			});
-			rootLayout = (BorderPane) loader.load();
-			Scene scene = new Scene(rootLayout);
+			Scene scene = new Scene(loader.load());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 		}
