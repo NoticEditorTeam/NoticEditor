@@ -144,45 +144,6 @@ public class NoticeController {
 	}
 
 	/**
-<<<<<<< HEAD
-	 * Save item as HTML pages. Root item was saved to index.html
-	 *
-	 * @param item node to recursively save
-	 * @param file file to save
-	 */
-	public void exportToHtmlPages(NoticeTreeItem<String> item, File file) throws IOException {
-		Document doc = Jsoup.parse(getClass().getResourceAsStream("/resources/export_template.html"), null, "");
-		item.toHTML(processor, doc);
-		IOUtil.writeContent(file, doc.outerHtml());
-		if (item.isBranch()) {
-			for (Object obj : item.getChildren()) {
-				NoticeTreeItem child = (NoticeTreeItem) obj;
-				exportToHtmlPages(child, new File(file.getParent(), child.getId() + ".html"));
-			}
-		}
-	}
-
-	/**
-	 * Write node in filesystem
-	 */
-	private void writeFSNode(NoticeTreeItem item, File dir) throws IOException {
-		String title = item.getTitle();
-		if (item.isBranch()) {
-			for (Object child : item.getChildren()) {
-				File newDir = new File(dir.getPath() + "/" + title);
-				if (newDir.exists()) {
-					newDir.delete();
-				}
-				newDir.mkdir();
-				writeFSNode((NoticeTreeItem) child, newDir);
-			}
-		} else {
-			File toWrite = new File(dir.getPath() + "/" + title + ".md");
-			IOUtil.writeContent(toWrite, item.getContent());
-		}
-	}
-
-	/**
 	 * Rebuild tree
 	 */
 	public void rebuild(String defaultNoticeContent) {
@@ -242,13 +203,12 @@ public class NoticeController {
 	private void handleOpen(ActionEvent event) {
 		try {
 			fileSaved = Chooser.file().open()
-				.filter(Chooser.SUPPORTED, Chooser.JSON, Chooser.ALL)
+				.filter(Chooser.SUPPORTED, Chooser.ALL)
 				.title("Open notice")
 				.show(main.getPrimaryStage());
 			if(fileSaved == null) return;
-			currentTreeItem = DocumentFormat.open(fileSaved);
+			noticeTree = DocumentFormat.open(fileSaved);
 			noticeArea.setText("");
-			noticeTree.setRoot(currentTreeItem);
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -281,7 +241,7 @@ public class NoticeController {
 		} else {
 			strategy = ExportStrategyHolder.ZIP;
 		}
-		DocumentFormat.save(file, ((NoticeTreeItem) noticeTree.getRoot()), strategy);
+		DocumentFormat.save(file, noticeTree, strategy);
 	}
 
 	@FXML
@@ -293,7 +253,7 @@ public class NoticeController {
 		
 		try {
 			ExportStrategyHolder.HTML.setProcessor(processor);
-			ExportStrategyHolder.HTML.export(destDir, (NoticeTreeItem) noticeTree.getRoot());
+			ExportStrategyHolder.HTML.export(destDir, noticeTree);
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);

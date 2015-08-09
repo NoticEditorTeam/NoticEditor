@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.io;
 
+import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.io.File;
 import java.io.IOException;
@@ -45,14 +46,14 @@ public class ZipWithIndexFormat {
 		parameters = new ZipParameters();
 	}
 	
-	public NoticeTreeItem importDocument() throws IOException, JSONException, ZipException {
+	public NoticeTree importDocument() throws IOException, JSONException, ZipException {
 		String indexContent = readFile(INDEX_JSON);
 		if (indexContent == null || indexContent.isEmpty()) {
 			throw new IOException("Invalid file format");
 		}
 		
 		JSONObject index = new JSONObject(indexContent);
-		return readNotices("", index);
+		return new NoticeTree(readNotices("", index));
 	}
 	
 	private String readFile(String path) throws IOException, ZipException {
@@ -89,6 +90,10 @@ public class ZipWithIndexFormat {
 		JSONObject index = new JSONObject();
 		writeNoticesAndFillIndex("", notice, index);
 		storeFile(INDEX_JSON, index.toString());
+	}
+
+	public void export(NoticeTree tree) throws IOException, JSONException, ZipException {
+		export((NoticeTreeItem)tree.getRoot());
 	}
 	
 	private void storeFile(String path, String content) throws IOException, ZipException {

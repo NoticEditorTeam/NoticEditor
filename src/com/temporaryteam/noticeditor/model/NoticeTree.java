@@ -55,7 +55,7 @@ public class NoticeTree extends TreeView<String> {
 	}
 
 	public void toHTML(PegDownProcessor processor, Document doc) {
-		((NoticeTreeItem)getRoot()).toHTML(processor, doc);
+		((NoticeTreeItem)getRoot()).toHTML(processor, doc, "index");
 	}
 
 	public JSONObject toJson() throws JSONException {

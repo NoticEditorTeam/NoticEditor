@@ -1,6 +1,6 @@
 package com.temporaryteam.noticeditor.io;
 
-import com.temporaryteam.noticeditor.model.NoticeTreeItem;
+import com.temporaryteam.noticeditor.model.NoticeTree;
 import java.io.File;
 
 /**
@@ -9,5 +9,5 @@ import java.io.File;
  */
 public interface ExportStrategy {
 	
-	void export(File file, NoticeTreeItem notice) throws ExportException;
+	void export(File file, NoticeTree tree) throws ExportException;
 }
