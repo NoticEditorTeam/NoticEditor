@@ -143,6 +143,10 @@ public class NoticeController {
 		});
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
 	}
+	
+	public NoticeTreeItem getCurrentNotice() {
+		return currentTreeItem;
+	}
 
 	/**
 	 * Rebuild tree
@@ -175,7 +179,7 @@ public class NoticeController {
 	@FXML
 	private void handleContextMenu(ActionEvent event) {
 		Object source = event.getSource();
-		ObservableList<NoticeTreeItem> childTreeItems;
+		ObservableList<? super NoticeTreeItem> childTreeItems;
 		if (currentTreeItem != null) {
 			if (currentTreeItem.isLeaf() || source == deleteItem) {
 				childTreeItems = currentTreeItem.getParent().getChildren();
@@ -183,7 +187,7 @@ public class NoticeController {
 				childTreeItems = currentTreeItem.getChildren();
 			}
 		} else {
-			childTreeItems = ((NoticeTreeItem) (noticeTree.getRoot())).getChildren();
+			childTreeItems = noticeTree.getRoot().getChildren();
 		}
 		if (source == addBranchItem) {
 			childTreeItems.add(new NoticeTreeItem("New branch"));
@@ -279,8 +283,4 @@ public class NoticeController {
 
 	}
 	
-	public NoticeTreeItem<String> getCurrentNotice() {
-		return currentTreeItem;
-	}
-
 }

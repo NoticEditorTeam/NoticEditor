@@ -15,10 +15,9 @@ import org.pegdown.PegDownProcessor;
 /**
  * Model representation of notice. Contains notice data or branch data
  *
- * @param <T> tree item name
  * @author naik, setser, annimon, kalter
  */
-public class NoticeTreeItem<T extends String> extends TreeItem {
+public class NoticeTreeItem extends TreeItem<String> {
 
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_CONTENT = "content";
@@ -28,7 +27,7 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 	public static final int STATUS_IMPORTANT = 2;
 
 	private String title;
-	private ObservableList<NoticeTreeItem> childs;
+	private ObservableList<TreeItem<String>> childs;
 	private String content;
 	private int status = STATUS_NORMAL;
 
@@ -125,7 +124,8 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 		Element data = doc.select("#content").first();
 		if (isBranch()) {
 			Element list = doc.createElement("div").addClass("list-group");
-			for (NoticeTreeItem child : childs) {
+			for (TreeItem<String> treeItem : childs) {
+				NoticeTreeItem child = (NoticeTreeItem) treeItem;
 				Element item = doc.createElement("div").addClass("list-group-item");
 				if (child.isBranch()) {
 					item.appendElement("span").addClass("glyphicon glyphicon-folder-open");
@@ -156,7 +156,8 @@ public class NoticeTreeItem<T extends String> extends TreeItem {
 			json.put(KEY_CONTENT, content);
 		}
 		ArrayList list = new ArrayList();
-		for (NoticeTreeItem child : childs) {
+		for (TreeItem<String> treeItem : childs) {
+			NoticeTreeItem child = (NoticeTreeItem) treeItem;
 			list.add(child.toJson());
 		}
 		json.put(KEY_CHILDREN, new JSONArray(list));

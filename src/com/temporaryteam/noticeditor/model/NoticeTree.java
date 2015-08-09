@@ -61,7 +61,7 @@ public class NoticeTree {
 				currentItem = null;
 			}
 			else {
-				for(Object son : currentItem.getChildren()) {
+				for(TreeItem<String> son : currentItem.getChildren()) {
 					items.push((NoticeTreeItem)son);
 				}
 			}

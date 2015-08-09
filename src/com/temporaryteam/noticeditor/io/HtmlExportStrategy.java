@@ -5,6 +5,7 @@ import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Stack;
+import javafx.scene.control.TreeItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.pegdown.PegDownProcessor;
@@ -37,7 +38,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 	 * @param dir directory to save
 	 * @param filename name of the file without extension
 	 */
-	private void exportToHtmlPages(NoticeTreeItem<String> item, File dir, String filename) throws IOException {
+	private void exportToHtmlPages(NoticeTreeItem item, File dir, String filename) throws IOException {
 		Document doc = Jsoup.parse(getClass().getResourceAsStream("/resources/export_template.html"), null, "");
 		
 		File file = new File(dir, filename + ".html");
@@ -55,7 +56,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 		item.toHTML(processor, doc, filename + ".html");
 		IOUtil.writeContent(file, doc.outerHtml());
 		if (item.isBranch()) {
-			for (Object obj : item.getChildren()) {
+			for (TreeItem<String> obj : item.getChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) obj;
 				exportToHtmlPages(child, dir, IOUtil.sanitizeFilename(child.getTitle()));
 			}

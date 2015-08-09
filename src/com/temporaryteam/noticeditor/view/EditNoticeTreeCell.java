@@ -60,7 +60,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	}
 
 	private NoticeTreeItem getNoticeTreeItem() {
-		return (NoticeTreeItem<String>) getTreeItem();
+		return (NoticeTreeItem) getTreeItem();
 	}
 
 	private void createTextField() {
