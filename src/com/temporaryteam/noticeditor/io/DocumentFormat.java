@@ -1,6 +1,6 @@
 package com.temporaryteam.noticeditor.io;
 
-import com.temporaryteam.noticeditor.model.NoticeTreeItem;
+import com.temporaryteam.noticeditor.model.NoticeTree;
 import java.io.File;
 import java.io.IOException;
 import net.lingala.zip4j.exception.ZipException;
@@ -13,16 +13,16 @@ import org.json.JSONObject;
  */
 public final class DocumentFormat {
 
-	public static NoticeTreeItem open(File file) throws JSONException, IOException {
+	public static NoticeTree open(File file) throws JSONException, IOException {
 		try {
 			return ZipWithIndexFormat.with(file).importDocument();
 		} catch (ZipException | IOException | JSONException e) {
 			JSONObject json = new JSONObject(IOUtil.readContent(file));
-			return new NoticeTreeItem(json);
+			return new NoticeTree(json);
 		}
 	}
 	
-	public static void save(File file, NoticeTreeItem root, ExportStrategy strategy) {
-		strategy.export(file, root);
+	public static void save(File file, NoticeTree tree, ExportStrategy strategy) {
+		strategy.export(file, tree);
 	}
 }

@@ -1,6 +1,5 @@
 package com.temporaryteam.noticeditor.controller;
 
-import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -27,9 +26,12 @@ import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
 import com.temporaryteam.noticeditor.io.IOUtil;
 import com.temporaryteam.noticeditor.io.ZipWithIndexFormat;
+import com.temporaryteam.noticeditor.model.NoticeTree;
+import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
+import com.temporaryteam.noticeditor.view.NoticeTreeView;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +39,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import net.lingala.zip4j.exception.ZipException;
 
 public class NoticeController {
@@ -62,7 +66,7 @@ public class NoticeController {
 	private Menu previewStyleMenu;
 
 	@FXML
-	private TreeView<String> noticeTree;
+	private NoticeTreeView noticeTree;
 
 	private Main main;
 	private WebEngine engine;
@@ -147,7 +151,8 @@ public class NoticeController {
 		NoticeTreeItem rootItem = new NoticeTreeItem("Root");
 		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent);
 		rootItem.getChildren().add(currentTreeItem);
-		noticeTree.setRoot(rootItem);
+		NoticeTree curTree = new NoticeTree(rootItem);
+		noticeTree.setDataTree(curTree);
 	}
 
 	/**
@@ -200,14 +205,12 @@ public class NoticeController {
 	private void handleOpen(ActionEvent event) {
 		try {
 			fileSaved = Chooser.file().open()
-					.filter(Chooser.SUPPORTED, Chooser.ALL)
-					.title("Open notice")
-					.show(main.getPrimaryStage());
-			if (fileSaved == null) return;
-			
-			currentTreeItem = DocumentFormat.open(fileSaved);
+				.filter(Chooser.SUPPORTED, Chooser.ALL)
+				.title("Open notice")
+				.show(main.getPrimaryStage());
+			if(fileSaved == null) return;
+			noticeTree.setDataTree(DocumentFormat.open(fileSaved));
 			noticeArea.setText("");
-			noticeTree.setRoot(currentTreeItem);
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -240,7 +243,7 @@ public class NoticeController {
 		} else {
 			strategy = ExportStrategyHolder.ZIP;
 		}
-		DocumentFormat.save(file, ((NoticeTreeItem) noticeTree.getRoot()), strategy);
+		DocumentFormat.save(file, noticeTree.getDataTree(), strategy);
 	}
 
 	@FXML
@@ -252,7 +255,7 @@ public class NoticeController {
 		
 		try {
 			ExportStrategyHolder.HTML.setProcessor(processor);
-			ExportStrategyHolder.HTML.export(destDir, (NoticeTreeItem) noticeTree.getRoot());
+			ExportStrategyHolder.HTML.export(destDir, noticeTree.getDataTree());
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);

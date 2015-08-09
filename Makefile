@@ -1,5 +1,5 @@
 JC=javac
-JCOPTS=-classpath $(LIBS)/pegdown-1.5.0.jar:$(LIBS)/org.json-chargebee-1.0.jar -sourcepath $(SRC) -d $(BUILD) -g $(SRC)/$(MAIN_CLASS)
+JCOPTS=-classpath `./configure` -sourcepath $(SRC) -d $(BUILD) -g $(SRC)/$(MAIN_CLASS)
 PACKCMD=jar cfm $(DIST)/$(OUTPUT) $(MANIFEST) -C $(BUILD) .
 RM=rm -rf
 
@@ -8,8 +8,10 @@ LIBS=./libs
 DIST=./dist
 SRC=./src
 
-XMLIN=./src/com/temporaryteam/noticeditor/view
-XMLOUT=$(BUILD)/com/temporaryteam/noticeditor/view
+XMLIN=$(SRC)/fxml
+XMLOUT=$(BUILD)/fxml
+RESIN=$(SRC)/resources
+RESOUT=$(BUILD)/resources
 
 MANIFEST=manifest.mf
 OUTPUT=NoticEditor.jar
@@ -29,7 +31,9 @@ compile:
 	$(JC) $(JCOPTS)
 
 pack:
+	mkdir -p $(BUILD)/{fxml,resources}
 	cp -rf $(XMLIN)/* $(XMLOUT)
+	cp -rf $(RESIN)/* $(RESOUT)
 	for j in $(LIBS)/*.jar ; do \
 		unzip $$j -x META-INF/* -d $(BUILD) > /dev/null ; \
 	done

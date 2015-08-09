@@ -1,6 +1,6 @@
 package com.temporaryteam.noticeditor.io;
 
-import com.temporaryteam.noticeditor.model.NoticeTreeItem;
+import com.temporaryteam.noticeditor.model.NoticeTree;
 import java.io.File;
 import java.io.IOException;
 import org.json.JSONException;
@@ -12,7 +12,7 @@ import org.json.JSONException;
 public class JsonExportStrategy implements ExportStrategy {
 
 	@Override
-	public void export(File file, NoticeTreeItem notice) {
+	public void export(File file, NoticeTree notice) {
 		try {
 			IOUtil.writeJson(file, notice.toJson());
 		} catch (IOException | JSONException e) {

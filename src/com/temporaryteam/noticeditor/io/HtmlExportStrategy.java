@@ -1,8 +1,10 @@
 package com.temporaryteam.noticeditor.io;
 
+import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.io.File;
 import java.io.IOException;
+import java.util.Stack;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.pegdown.PegDownProcessor;
@@ -20,7 +22,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 	}
 
 	@Override
-	public void export(File destDir, NoticeTreeItem notice) {
+	public void export(File destDir, NoticeTree notice) {
 		try {
 			exportToHtmlPages(notice, destDir, "index");
 		} catch (IOException ioe) {
@@ -58,5 +60,16 @@ public class HtmlExportStrategy implements ExportStrategy {
 				exportToHtmlPages(child, dir, IOUtil.sanitizeFilename(child.getTitle()));
 			}
 		}
+	}
+
+	/**
+	 * Save tree to HTML pages. Root item is saving to index.html
+	 *
+	 * @param tree tree to save
+	 * @param dir directory to save
+	 * @param filename name of the file
+	 */
+	private void exportToHtmlPages(NoticeTree tree, File dir, String filename) throws IOException {
+		exportToHtmlPages((NoticeTreeItem)tree.getRoot(), dir, filename);
 	}
 }
