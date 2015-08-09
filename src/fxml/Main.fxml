@@ -9,61 +9,61 @@
 <?import javafx.scene.layout.*?>
 <?import com.temporaryteam.noticeditor.view.NoticeTreeView?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="539.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeController">
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
+<BorderPane prefWidth="800.0" prefHeight="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeController">
+    <top>
+        <MenuBar>
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem onAction="#handleNew" text="New" />
+                        <MenuItem onAction="#handleOpen" text="Open" />
+                        <MenuItem onAction="#handleSave" text="Save" />
+                        <MenuItem onAction="#handleSaveAs" text="Save As" />
+                        <MenuItem onAction="#handleExportHtml" text="Export to HTML" />
+                        <MenuItem onAction="#handleExit" text="Exit" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="View">
+                    <items>
+                        <MenuItem onAction="#handleSwitchOrientation" text="Switch orientation" />
+                        <CheckMenuItem fx:id="wordWrapItem" text="Word wrap" />
+                        <Menu fx:id="previewStyleMenu" text="Preview style" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem onAction="#handleAbout" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.25" prefWidth="200.0" prefHeight="160.0">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleNew" text="New" />
-              <MenuItem mnemonicParsing="false" onAction="#handleOpen" text="Open" />
-              <MenuItem mnemonicParsing="false" onAction="#handleSave" text="Save" />
-              <MenuItem mnemonicParsing="false" onAction="#handleSaveAs" text="Save As" />
-              <MenuItem mnemonicParsing="false" onAction="#handleExportHtml" text="Export to HTML" />
-              <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
+                <SplitPane SplitPane.resizableWithParent="false" dividerPositions="0.8" orientation="VERTICAL">
+                    <items>
+                        <NoticeTreeView fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false">
+                            <contextMenu>
+                                <ContextMenu>
+                                    <items>
+                                        <MenuItem fx:id="addBranchItem" onAction="#handleContextMenu" text="Add branch" />
+                                        <MenuItem fx:id="addNoticeItem" onAction="#handleContextMenu" text="Add notice" />
+                                        <MenuItem fx:id="deleteItem" onAction="#handleContextMenu" text="Delete" />
+                                    </items>
+                                </ContextMenu>
+                            </contextMenu>
+                        </NoticeTreeView>
+                        <fx:include source="NoticeSettings.fxml" />
+                    </items>
+                </SplitPane>
+                <SplitPane fx:id="editorPanel" dividerPositions="0.5" prefWidth="390.0" prefHeight="400.0">
+                    <items>
+                        <TextArea fx:id="noticeArea" prefWidth="215.0" prefHeight="400.0" />
+                        <WebView fx:id="viewer" prefWidth="310.0" prefHeight="400.0" />
+                    </items>
+                </SplitPane>
             </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="View">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleSwitchOrientation" text="Switch orientation" />
-              <CheckMenuItem fx:id="wordWrapItem" mnemonicParsing="false" text="Word wrap" />
-              <Menu fx:id="previewStyleMenu" mnemonicParsing="false" text="Preview style" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </top>
-   <center>
-      <SplitPane dividerPositions="0.26059850374064836" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <items>
-            <SplitPane dividerPositions="0.8" orientation="VERTICAL">
-               <items>
-                  <NoticeTreeView fx:id="noticeTree" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false">
-                     <contextMenu>
-                        <ContextMenu>
-                          <items>
-                            <MenuItem fx:id="addBranchItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Add branch" />
-                              <MenuItem fx:id="addNoticeItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Add notice" />
-                              <MenuItem fx:id="deleteItem" mnemonicParsing="false" onAction="#handleContextMenu" text="Delete" />
-                          </items>
-                        </ContextMenu>
-                     </contextMenu>
-                  </NoticeTreeView>
-                  <fx:include source="NoticeSettings.fxml" />
-               </items>
-            </SplitPane>
-            <SplitPane fx:id="editorPanel" dividerPositions="0.5" prefHeight="409.0" prefWidth="390.0">
-              <items>
-                  <TextArea fx:id="noticeArea" prefHeight="409.0" prefWidth="216.0" />
-                  <WebView fx:id="viewer" prefHeight="409.0" prefWidth="312.0" />
-              </items>
-            </SplitPane>
-         </items>
-      </SplitPane>
-   </center>
+        </SplitPane>
+    </center>
 </BorderPane>

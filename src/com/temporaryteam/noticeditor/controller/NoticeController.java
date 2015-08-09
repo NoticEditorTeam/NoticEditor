@@ -191,6 +191,9 @@ public class NoticeController {
 			childTreeItems.add(new NoticeTreeItem("New notice", ""));
 		} else if (source == deleteItem) {
 			childTreeItems.remove(currentTreeItem);
+			if (currentTreeItem.getParent() == null) {
+				currentTreeItem = null;
+			}
 		}
 	}
 
