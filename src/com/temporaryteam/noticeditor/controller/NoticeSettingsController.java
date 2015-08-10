@@ -21,7 +21,7 @@ import javafx.scene.control.ListView;
  */
 public class NoticeSettingsController implements Initializable {
 	@FXML
-	private ListView<?> listAttached;
+	private ListView<String> listAttached;
 	@FXML
 	private Button btnRemoveFile;
 	@FXML
@@ -41,7 +41,7 @@ public class NoticeSettingsController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		choiceBoxNoticeStatus.setItems(FXCollections.observableArrayList(
-				"Normal", "Important"
+				rb.getString("normal"), rb.getString("important")
 		));
 		choiceBoxNoticeStatus.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 

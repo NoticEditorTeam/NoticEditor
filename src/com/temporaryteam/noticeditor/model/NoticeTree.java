@@ -20,7 +20,7 @@ public class NoticeTree {
 	}
 
 	/**
-	 * @param item
+	 * @param item to add
 	 * @param parent if null, item will be added to root item.
 	 */
 	public void addItem(NoticeTreeItem item, NoticeTreeItem parent) {

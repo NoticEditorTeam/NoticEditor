@@ -109,10 +109,8 @@ public class NoticeController {
 		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<String>> observable, TreeItem<String> oldValue, TreeItem<String> newValue) {
-				if (newValue == null) {
-					return;
-				}
 				currentTreeItem = (NoticeTreeItem) newValue;
+				System.out.println("Select: " + currentTreeItem);
 				open();
 			}
 		});
@@ -176,7 +174,9 @@ public class NoticeController {
 			noticeTree.addItem(new NoticeTreeItem("New notice", ""), currentTreeItem);
 		} else if (source == deleteItem) {
 			noticeTree.removeItem(currentTreeItem);
-			currentTreeItem = null;
+			if (currentTreeItem != null && currentTreeItem.getParent() == null) {
+				currentTreeItem = null;
+			}
 		}
 	}
 
