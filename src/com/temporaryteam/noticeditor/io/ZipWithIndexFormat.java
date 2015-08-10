@@ -100,9 +100,6 @@ public class ZipWithIndexFormat {
 	}
 	
 	private void storeFile(String path, String content) throws IOException, ZipException {
-		if (zip.isValidZipFile() && zip.getFileHeader(path) != null) {
-			zip.removeFile(path);
-		}
 		parameters.setFileNameInZip(path);
 		try (InputStream stream = IOUtil.toStream(content)) {
 			zip.addStream(stream, parameters);
