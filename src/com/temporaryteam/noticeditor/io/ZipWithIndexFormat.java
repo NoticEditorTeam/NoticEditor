@@ -28,6 +28,7 @@ public class ZipWithIndexFormat {
 	
 	private static final String KEY_TITLE = "title";
 	private static final String KEY_FILENAME = "filename";
+	private static final String KEY_STATUS = "status";
 	private static final String KEY_CHILDS = "childs";
 	
 	private static final String BRANCH_PREFIX = "branch_";
@@ -66,6 +67,7 @@ public class ZipWithIndexFormat {
 	private NoticeTreeItem readNotices(String dir, JSONObject index) throws IOException, JSONException, ZipException {
 		final String title = index.getString(KEY_TITLE);
 		final String filename = index.getString(KEY_FILENAME);
+		final int status = index.optInt(KEY_STATUS, NoticeTreeItem.STATUS_NORMAL);
 		final String dirPrefix = index.has(KEY_CHILDS) ? BRANCH_PREFIX : NOTE_PREFIX;
 		
 		final String newDir = dir + dirPrefix + filename + "/";
@@ -79,7 +81,7 @@ public class ZipWithIndexFormat {
 		} else {
 			// ../note_filename/filename.md
 			final String mdPath = newDir + filename + ".md";
-			return new NoticeTreeItem(title, readFile(mdPath));
+			return new NoticeTreeItem(title, readFile(mdPath), status);
 		}
 	}
 
@@ -138,6 +140,7 @@ public class ZipWithIndexFormat {
 			index.put(KEY_CHILDS, new JSONArray(list));
 		} else {
 			// ../note_filename/filename.md
+			index.put(KEY_STATUS, item.getStatus());
 			storeFile(newDir + "/" + filename + ".md", item.getContent());
 		}
 	}

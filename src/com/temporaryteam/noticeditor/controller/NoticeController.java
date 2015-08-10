@@ -138,7 +138,7 @@ public class NoticeController {
 	 */
 	public void rebuildTree(String defaultNoticeContent) {
 		noticeTree = new NoticeTree(new NoticeTreeItem("Root"));
-		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent);
+		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent, NoticeTreeItem.STATUS_NORMAL);
 		noticeTree.addItem(currentTreeItem, noticeTree.getRoot());
 		noticeTreeView.setRoot(noticeTree.getRoot());
 		open();
@@ -167,7 +167,7 @@ public class NoticeController {
 		if (source == addBranchItem) {
 			noticeTree.addItem(new NoticeTreeItem("New branch"), currentTreeItem);
 		} else if (source == addNoticeItem) {
-			noticeTree.addItem(new NoticeTreeItem("New notice", ""), currentTreeItem);
+			noticeTree.addItem(new NoticeTreeItem("New notice", "", NoticeTreeItem.STATUS_NORMAL), currentTreeItem);
 		} else if (source == deleteItem) {
 			noticeTree.removeItem(currentTreeItem);
 			if (currentTreeItem != null && currentTreeItem.getParent() == null) {
