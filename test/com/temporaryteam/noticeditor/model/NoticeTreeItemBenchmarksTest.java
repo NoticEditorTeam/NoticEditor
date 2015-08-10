@@ -9,7 +9,7 @@ import org.junit.rules.TestRule;
 public class NoticeTreeItemBenchmarksTest {
 
 	@Rule
-    public TestRule benchmarkRun = new BenchmarkRule();
+	public TestRule benchmarkRun = new BenchmarkRule();
 	
 	private static final int NESTING_LEVEL = 6000;
 	private static NoticeTreeItem root;
@@ -24,10 +24,10 @@ public class NoticeTreeItemBenchmarksTest {
 			branch = node;
 		}
 	}
-    
-    @BenchmarkOptions(benchmarkRounds = 1, warmupRounds = 1)
-    @Test
-    public void testJsonExport() throws JSONException {
+	
+	@BenchmarkOptions(benchmarkRounds = 1, warmupRounds = 1)
+	@Test
+	public void testJsonExport() throws JSONException {
 		root.toJson();
 	}
 }
