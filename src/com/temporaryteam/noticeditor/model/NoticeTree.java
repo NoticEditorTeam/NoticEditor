@@ -30,6 +30,7 @@ public class NoticeTree {
 			parent = (NoticeTreeItem) parent.getParent();
 		}
 		parent.getChildren().add(item);
+		parent.setExpanded(true);
 	}
 
 	public void removeItem(NoticeTreeItem item) {
