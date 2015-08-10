@@ -32,7 +32,7 @@ public class Main extends Application {
 	public void initRootLayout() {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"),
-					ResourceBundle.getBundle("com.temporaryteam.noticeditor.translate.Language", Locale.getDefault()));
+					ResourceBundle.getBundle("resources.translate.Language", Locale.getDefault()));
 			loader.setControllerFactory(new Callback<Class<?>, Object>() {
 
 				NoticeController noticeController;
