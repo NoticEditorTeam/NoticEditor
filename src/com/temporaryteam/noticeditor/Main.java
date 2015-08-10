@@ -45,6 +45,7 @@ public class Main extends Application {
 						return noticeController;
 					} else if (param == NoticeSettingsController.class) {
 						noticeSettingsController = new NoticeSettingsController(noticeController);
+						noticeController.setNoticeSettingsController(noticeSettingsController);
 						return noticeSettingsController;
 					}
 					return null;

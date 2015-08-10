@@ -19,8 +19,8 @@ public class NoticeTreeItem extends TreeItem<String> {
 	public static final String KEY_CONTENT = "content";
 	public static final String KEY_CHILDREN = "childs";
 
-	public static final int STATUS_NORMAL = 1;
-	public static final int STATUS_IMPORTANT = 2;
+	public static final int STATUS_NORMAL = 0;
+	public static final int STATUS_IMPORTANT = 1;
 
 	private String title;
 	private ObservableList<TreeItem<String>> childs;
@@ -57,7 +57,7 @@ public class NoticeTreeItem extends TreeItem<String> {
 			childs.add(new NoticeTreeItem(arr.getJSONObject(i)));
 		}
 	}
-	
+
 	public void addChild(NoticeTreeItem item) {
 		childs.add(item);
 	}

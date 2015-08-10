@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
 
 public class NoticeController {
@@ -60,7 +59,7 @@ public class NoticeController {
 	private Menu previewStyleMenu;
 
 	@FXML
-	private TreeView noticeTreeView;
+	private TreeView<String> noticeTreeView;
 
 	@FXML
 	private ResourceBundle resources; // magic!
@@ -71,6 +70,7 @@ public class NoticeController {
 	private NoticeTree noticeTree;
 	private NoticeTreeItem currentTreeItem;
 	private File fileSaved;
+	private NoticeSettingsController noticeSettingsController;
 
 	public NoticeController(Main main) {
 		this.main = main;
@@ -110,7 +110,6 @@ public class NoticeController {
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<String>> observable, TreeItem<String> oldValue, TreeItem<String> newValue) {
 				currentTreeItem = (NoticeTreeItem) newValue;
-				System.out.println("Select: " + currentTreeItem);
 				open();
 			}
 		});
@@ -132,10 +131,6 @@ public class NoticeController {
 		});
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
 		rebuildTree(resources.getString("help"));
-	}
-
-	public NoticeTreeItem getCurrentNotice() {
-		return currentTreeItem;
 	}
 
 	/**
@@ -160,6 +155,7 @@ public class NoticeController {
 			noticeArea.setEditable(true);
 			noticeArea.setText(currentTreeItem.getContent());
 		}
+		noticeSettingsController.open(currentTreeItem);
 	}
 
 	/**
@@ -176,6 +172,7 @@ public class NoticeController {
 			noticeTree.removeItem(currentTreeItem);
 			if (currentTreeItem != null && currentTreeItem.getParent() == null) {
 				currentTreeItem = null;
+				noticeSettingsController.open(null);
 			}
 		}
 	}
@@ -269,6 +266,14 @@ public class NoticeController {
 	@FXML
 	private void handleAbout(ActionEvent event) {
 
+	}
+	
+	public void setNoticeSettingsController(NoticeSettingsController controller) {
+		noticeSettingsController = controller;
+	}
+	
+	public NoticeTreeItem getCurrentNotice() {
+		return currentTreeItem;
 	}
 
 }
