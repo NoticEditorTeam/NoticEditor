@@ -9,9 +9,8 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 
 /**
  * FXML Controller class.
@@ -21,7 +20,9 @@ import javafx.scene.control.ListView;
  */
 public class NoticeSettingsController implements Initializable {
 	@FXML
-	private ListView<?> listAttached;
+	private GridPane settingsPane;
+	@FXML
+	private ListView<String> listAttached;
 	@FXML
 	private Button btnRemoveFile;
 	@FXML
@@ -41,25 +42,34 @@ public class NoticeSettingsController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		choiceBoxNoticeStatus.setItems(FXCollections.observableArrayList(
-				"Normal", "Important"
+				rb.getString("normal"), rb.getString("important")
 		));
 		choiceBoxNoticeStatus.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				NoticeTreeItem noticeTreeItem = noticeController.getCurrentNotice();
-				if (noticeTreeItem != null && noticeTreeItem.isLeaf()) {
-					switch(newValue.intValue()) {
-						case 0: noticeTreeItem.setStatus(NoticeTreeItem.STATUS_NORMAL); break;
-						case 1: noticeTreeItem.setStatus(NoticeTreeItem.STATUS_IMPORTANT); break;
-					}
+				NoticeTreeItem currentNotice = noticeController.getCurrentNotice();
+				if (currentNotice != null && currentNotice.isLeaf()) {
+					currentNotice.setStatus(newValue.intValue());
 				}
 			}
 		});
-	}	
+		open(null);
+	}
+	
+	public void open(NoticeTreeItem item) {
+		if (item == null || item.isBranch()) {
+			choiceBoxNoticeStatus.getSelectionModel().clearSelection();
+			settingsPane.setDisable(true);
+		} else {
+			choiceBoxNoticeStatus.getSelectionModel().select(item.getStatus());
+			settingsPane.setDisable(false);
+		}
+	}
 
 	@FXML
 	private void handleRemoveAttach(ActionEvent event) {
+		
 	}
 
 	@FXML

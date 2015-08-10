@@ -18,9 +18,10 @@ public class NoticeTreeItem extends TreeItem<String> {
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_CONTENT = "content";
 	public static final String KEY_CHILDREN = "childs";
+	public static final String KEY_STATUS = "status";
 
-	public static final int STATUS_NORMAL = 1;
-	public static final int STATUS_IMPORTANT = 2;
+	public static final int STATUS_NORMAL = 0;
+	public static final int STATUS_IMPORTANT = 1;
 
 	private String title;
 	private ObservableList<TreeItem<String>> childs;
@@ -33,7 +34,7 @@ public class NoticeTreeItem extends TreeItem<String> {
 	 * @param title
 	 */
 	public NoticeTreeItem(String title) {
-		this(title, null);
+		this(title, null, 0);
 	}
 
 	/**
@@ -41,23 +42,24 @@ public class NoticeTreeItem extends TreeItem<String> {
 	 *
 	 * @param title
 	 * @param content
+	 * @param status
 	 */
-	public NoticeTreeItem(String title, String content) {
+	public NoticeTreeItem(String title, String content, int status) {
 		super(title);
 		this.title = title;
 		this.content = content;
+		this.status = status;
 		childs = getChildren();
-		status = STATUS_NORMAL;
 	}
 
 	public NoticeTreeItem(JSONObject json) throws JSONException {
-		this(json.getString(KEY_TITLE), json.optString(KEY_CONTENT, null));
+		this(json.getString(KEY_TITLE), json.optString(KEY_CONTENT, null), json.optInt(KEY_STATUS, STATUS_NORMAL));
 		JSONArray arr = json.getJSONArray(KEY_CHILDREN);
 		for (int i = 0; i < arr.length(); i++) {
 			childs.add(new NoticeTreeItem(arr.getJSONObject(i)));
 		}
 	}
-	
+
 	public void addChild(NoticeTreeItem item) {
 		childs.add(item);
 	}
@@ -113,7 +115,10 @@ public class NoticeTreeItem extends TreeItem<String> {
 	public JSONObject toJson() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put(KEY_TITLE, title);
-		json.putOpt(KEY_CONTENT, content);
+		if (isLeaf()) {
+			json.put(KEY_STATUS, status);
+			json.put(KEY_CONTENT, content);
+		}
 		ArrayList list = new ArrayList();
 		for (TreeItem<String> treeItem : childs) {
 			NoticeTreeItem child = (NoticeTreeItem) treeItem;
