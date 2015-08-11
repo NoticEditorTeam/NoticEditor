@@ -13,5 +13,5 @@ git clone https://github.com/TemporaryTeam/NoticEditor.git
 ### Or else (for Unix users):
 ``` bash
 $ git clone https://github.com/TemporaryTeam/NoticEditor.git
-$ ./configure && make
+$ make
 ```
