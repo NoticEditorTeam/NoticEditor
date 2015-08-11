@@ -77,7 +77,6 @@ public class NoticeTree {
 			NoticeTreeItem currentItem = items.pop();
 			if(currentItem.isLeaf()) {
 				currentItem.getParent().getChildren().remove(currentItem);
-				currentItem = null;
 			}
 			else {
 				for(TreeItem<String> son : currentItem.getChildren()) {
