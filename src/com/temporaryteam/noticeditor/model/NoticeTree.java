@@ -1,18 +1,11 @@
 package com.temporaryteam.noticeditor.model;
 
-import java.util.ArrayDeque;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import javafx.scene.control.TreeItem;
 
 public class NoticeTree {
 
 	private final NoticeTreeItem root;
-
-	public NoticeTree() {
-		root = null;
-	}
 
 	public NoticeTree(NoticeTreeItem root) {
 		this.root = root;
@@ -26,41 +19,23 @@ public class NoticeTree {
 		return root;
 	}
 
-	public void addNote(NoticeTreeItem level, String name, String content) {
-		NoticeTreeItem item = new NoticeTreeItem(name, content);
-		if(level.isLeaf()) {
-			level.getParent().getChildren().add(item);
+	/**
+	 * @param item to add
+	 * @param parent if null, item will be added to root item.
+	 */
+	public void addItem(NoticeTreeItem item, NoticeTreeItem parent) {
+		if (parent == null) {
+			parent = root;
+		} else if (parent.isLeaf()) {
+			parent = (NoticeTreeItem) parent.getParent();
 		}
-		else {
-			level.getChildren().add(item);
-		}
+		parent.getChildren().add(item);
+		parent.setExpanded(true);
 	}
 
-	public void addBranch(NoticeTreeItem level, String name) {
-		NoticeTreeItem branch = new NoticeTreeItem(name);
-		if(level.isLeaf()) {
-			branch.getParent().getChildren().add(branch);
-		}
-		else {
-			level.getChildren().add(branch);
-		}
-	}
-
-	public void deleteNode(NoticeTreeItem toDel) {
-		ArrayDeque<NoticeTreeItem> items = new ArrayDeque<NoticeTreeItem>();
-		items.push(toDel);
-		while(!items.isEmpty()) {
-			NoticeTreeItem currentItem = items.pop();
-			if(currentItem.isLeaf()) {
-				currentItem.getParent().getChildren().remove(currentItem);
-				currentItem = null;
-			}
-			else {
-				for(TreeItem<String> son : currentItem.getChildren()) {
-					items.push((NoticeTreeItem)son);
-				}
-			}
-		}
+	public void removeItem(NoticeTreeItem item) {
+		if (item == null) return;
+		item.getParent().getChildren().remove(item);
 	}
 
 	public JSONObject toJson() throws JSONException {
