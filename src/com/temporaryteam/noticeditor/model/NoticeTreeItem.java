@@ -36,6 +36,15 @@ public class NoticeTreeItem extends TreeItem<String> {
 	public NoticeTreeItem(String title) {
 		this(title, null, 0);
 	}
+	
+	/**
+	 * Create leaf node on tree.
+	 * @param title
+	 * @param content 
+	 */
+	public NoticeTreeItem(String title, String content) {
+		this(title, content, STATUS_NORMAL);
+	}
 
 	/**
 	 * Create leaf node on tree.
