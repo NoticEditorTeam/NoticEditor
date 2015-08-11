@@ -1,14 +1,5 @@
 package com.temporaryteam.noticeditor.model;
 
-import static com.temporaryteam.noticeditor.model.NoticeTreeItem.*;
-import static com.temporaryteam.noticeditor.model.NoticeItem.*;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TreeItem;
-
 public class NoticeTree {
 
 	private final NoticeTreeItem root;
@@ -23,14 +14,6 @@ public class NoticeTree {
 	 */
 	public NoticeTree(NoticeTreeItem root) {
 		this.root = root;
-	}
-	
-	/**
-	 * Import NoticeTree from JSON
-	 * @param jsobj object to import from
-	 */
-	public NoticeTree(JSONObject jsobj) throws JSONException {
-		root = new NoticeTreeItem(jsobj);
 	}
 
 	public NoticeTreeItem getRoot() {
@@ -57,9 +40,4 @@ public class NoticeTree {
 		if (parent == null) return;
 		parent.getInternalChildren().remove(item);
 	}
-
-	public JSONObject toJson() throws JSONException {
-		return root.toJson();
-	}
-
 }

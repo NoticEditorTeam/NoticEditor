@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.io;
 
+import static com.temporaryteam.noticeditor.io.JsonFields.*;
 import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
@@ -26,12 +27,7 @@ import org.json.JSONObject;
 public class ZipWithIndexFormat {
 	
 	private static final String INDEX_JSON = "index.json";
-	
-	private static final String KEY_TITLE = "title";
-	private static final String KEY_FILENAME = "filename";
-	private static final String KEY_STATUS = "status";
-	private static final String KEY_CHILDREN = "children";
-	
+
 	private static final String BRANCH_PREFIX = "branch_";
 	private static final String NOTE_PREFIX = "note_";
 	
