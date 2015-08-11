@@ -30,16 +30,17 @@ public class NoticeTree {
 	 * @param jsobj object to import from
 	 */
 	public NoticeTree(JSONObject jsobj) throws JSONException {
-		root = new NoticeTreeItem(jsobj.getString(NoticeTreeItem.KEY_TITLE), jsobj.optString(NoticeTreeItem.KEY_CONTENT, null));
+		root = new NoticeTreeItem(jsobj.getString(NoticeTreeItem.KEY_TITLE), jsobj.optString(NoticeTreeItem.KEY_CONTENT, null), jsobj.optInt(NoticeTreeItem.KEY_STATUS, NoticeTreeItem.STATUS_NORMAL));
 		ArrayDeque<Pair<JSONObject,ObservableList<TreeItem<String>>>> stack = new ArrayDeque<>();
 		stack.push(new Pair(jsobj, null));
 		while(!stack.isEmpty()) {
 			final Pair<JSONObject,ObservableList<TreeItem<String>>> currentPair = stack.pop();
 			final JSONObject currentObject = currentPair.getKey();
 			NoticeTreeItem currentItem = new NoticeTreeItem(currentObject.getString(NoticeTreeItem.KEY_TITLE),
-									currentObject.optString(NoticeTreeItem.KEY_CONTENT, null));
+									currentObject.optString(NoticeTreeItem.KEY_CONTENT, null),
+									currentObject.optInt(NoticeTreeItem.KEY_STATUS, NoticeTreeItem.STATUS_NORMAL));
 			JSONArray arr = currentObject.getJSONArray(NoticeTreeItem.KEY_CHILDREN);
-			for(int i = arr.length() - 1; i>-1; i++) {
+			for(int i = arr.length() - 1; i>=0; i--) {
 				stack.push(new Pair(arr.getJSONObject(i), currentItem.getChildren()));
 			}
 			if(currentPair.getValue()!=null) currentPair.getValue().add(currentItem);
@@ -72,7 +73,8 @@ public class NoticeTree {
 	public JSONObject toJson() throws JSONException {
 		JSONObject jsobj = new JSONObject();
 		jsobj.put(NoticeTreeItem.KEY_TITLE, root.getTitle());
-		jsobj.put(NoticeTreeItem.KEY_CONTENT, root.getContent());
+		jsobj.putOpt(NoticeTreeItem.KEY_STATUS, root.getStatus());
+		jsobj.putOpt(NoticeTreeItem.KEY_CONTENT, root.getContent());
 		ArrayDeque<Pair<NoticeTreeItem,JSONArray>> stack = new ArrayDeque<>();
 		stack.push(new Pair(root, null));
 		while(!stack.isEmpty()) {
@@ -80,7 +82,8 @@ public class NoticeTree {
 			final NoticeTreeItem currentItem = currentPair.getKey();
 			JSONObject currentObject = new JSONObject();
 			currentObject.put(NoticeTreeItem.KEY_TITLE, currentItem.getTitle());
-			currentObject.putOpt(NoticeTreeItem.KEY_CONTENT, root.getContent());
+			currentObject.putOpt(NoticeTreeItem.KEY_STATUS, currentItem.getStatus());
+			currentObject.putOpt(NoticeTreeItem.KEY_CONTENT, currentItem.getContent());
 			ObservableList<TreeItem<String>> arr = currentItem.getChildren();
 			for(TreeItem<String> item : arr) {
 				stack.push(new Pair(item, new JSONArray())); 
