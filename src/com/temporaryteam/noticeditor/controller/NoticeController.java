@@ -28,19 +28,18 @@ import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
-import com.temporaryteam.noticeditor.view.NoticeTreeView;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import jfx.messagebox.MessageBox;
 
 public class NoticeController {
 
 	private static final Logger logger = Logger.getLogger(NoticeController.class.getName());
-	
+
 	@FXML
 	private SplitPane editorPanel;
 
@@ -60,13 +59,18 @@ public class NoticeController {
 	private Menu previewStyleMenu;
 
 	@FXML
-	private NoticeTreeView noticeTree;
+	private TreeView<String> noticeTreeView;
+
+	@FXML
+	private ResourceBundle resources; // magic!
 
 	private final Main main;
 	private WebEngine engine;
 	private final PegDownProcessor processor;
+	private NoticeTree noticeTree;
 	private NoticeTreeItem currentTreeItem;
 	private File fileSaved;
+	private NoticeSettingsController noticeSettingsController;
 
 	public NoticeController(Main main) {
 		this.main = main;
@@ -78,8 +82,6 @@ public class NoticeController {
 	 */
 	@FXML
 	private void initialize() {
-		noticeArea.setText("help");
-		noticeTree.setShowRoot(false);
 		engine = viewer.getEngine();
 
 		// Set preview styles menu items
@@ -103,66 +105,57 @@ public class NoticeController {
 			previewStyleMenu.getItems().add(item);
 		}
 
-		rebuild("help");
-		noticeTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		noticeTree.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
+		noticeTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<String>> observable, TreeItem<String> oldValue, TreeItem<String> newValue) {
-				if (newValue == null) {
-					return;
-				}
 				currentTreeItem = (NoticeTreeItem) newValue;
-				noticeArea.setEditable(currentTreeItem.isLeaf());
-				if (currentTreeItem.isLeaf()) {
-					open(currentTreeItem);
-				}
+				open();
 			}
 		});
-		noticeTree.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+		noticeTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 			@Override
 			public TreeCell<String> call(TreeView<String> p) {
 				return new EditNoticeTreeCell();
 			}
 		});
 
-		engine.loadContent(noticeArea.getText());
 		noticeArea.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				engine.loadContent(operate(newValue));
-				currentTreeItem.changeContent(newValue);
+				engine.loadContent(processor.markdownToHtml(newValue));
+				if (currentTreeItem != null) {
+					currentTreeItem.changeContent(newValue);
+				}
 			}
 		});
 		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
-	}
-	
-	public NoticeTreeItem getCurrentNotice() {
-		return currentTreeItem;
+		rebuildTree(resources.getString("help"));
 	}
 
 	/**
 	 * Rebuild tree
 	 */
-	public void rebuild(String defaultNoticeContent) {
-		NoticeTreeItem rootItem = new NoticeTreeItem("Root");
-		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent);
-		rootItem.getChildren().add(currentTreeItem);
-		NoticeTree curTree = new NoticeTree(rootItem);
-		noticeTree.setDataTree(curTree);
+	public void rebuildTree(String defaultNoticeContent) {
+		noticeTree = new NoticeTree(new NoticeTreeItem("Root"));
+		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent, NoticeTreeItem.STATUS_NORMAL);
+		noticeTree.addItem(currentTreeItem, noticeTree.getRoot());
+		noticeTreeView.setRoot(noticeTree.getRoot());
+		open();
 	}
 
 	/**
-	 * Open notice in TextArea
+	 * Open current item in UI. If current item == null or isBranch, interface will be cleared from last data.
 	 */
-	public void open(NoticeTreeItem notice) {
-		noticeArea.setText(notice.getContent());
-	}
-
-	/**
-	 * Method for operate with markdown
-	 */
-	private String operate(String source) {
-		return processor.markdownToHtml(source);
+	public void open() {
+		if (currentTreeItem == null || currentTreeItem.isBranch()) {
+			noticeArea.setEditable(false);
+			noticeArea.setText("");
+		} else {
+			noticeArea.setEditable(true);
+			noticeArea.setText(currentTreeItem.getContent());
+		}
+		noticeSettingsController.open(currentTreeItem);
 	}
 
 	/**
@@ -171,32 +164,22 @@ public class NoticeController {
 	@FXML
 	private void handleContextMenu(ActionEvent event) {
 		Object source = event.getSource();
-		ObservableList<? super NoticeTreeItem> childTreeItems;
-		if (currentTreeItem != null) {
-			if (currentTreeItem.isLeaf() || source == deleteItem) {
-				childTreeItems = currentTreeItem.getParent().getChildren();
-			} else {
-				childTreeItems = currentTreeItem.getChildren();
-			}
-		} else {
-			childTreeItems = noticeTree.getRoot().getChildren();
-		}
 		if (source == addBranchItem) {
-			childTreeItems.add(new NoticeTreeItem("New branch"));
+			noticeTree.addItem(new NoticeTreeItem("New branch"), currentTreeItem);
 		} else if (source == addNoticeItem) {
-			childTreeItems.add(new NoticeTreeItem("New notice", ""));
+			noticeTree.addItem(new NoticeTreeItem("New notice", "", NoticeTreeItem.STATUS_NORMAL), currentTreeItem);
 		} else if (source == deleteItem) {
-			childTreeItems.remove(currentTreeItem);
-			if (currentTreeItem.getParent() == null) {
+			noticeTree.removeItem(currentTreeItem);
+			if (currentTreeItem != null && currentTreeItem.getParent() == null) {
 				currentTreeItem = null;
+				noticeSettingsController.open(null);
 			}
 		}
 	}
 
 	@FXML
 	private void handleNew(ActionEvent event) {
-		noticeArea.setText("help");
-		rebuild("help");
+		rebuildTree(resources.getString("help"));
 		fileSaved = null;
 	}
 
@@ -204,12 +187,17 @@ public class NoticeController {
 	private void handleOpen(ActionEvent event) {
 		try {
 			fileSaved = Chooser.file().open()
-				.filter(Chooser.SUPPORTED, Chooser.ALL)
-				.title("Open notice")
-				.show(main.getPrimaryStage());
-			if(fileSaved == null) return;
-			noticeTree.setDataTree(DocumentFormat.open(fileSaved));
-			noticeArea.setText("");
+					.filter(Chooser.SUPPORTED, Chooser.ALL)
+					.title("Open notice")
+					.show(main.getPrimaryStage());
+			if (fileSaved == null) {
+				return;
+			}
+
+			noticeTree = DocumentFormat.open(fileSaved);
+			noticeTreeView.setRoot(noticeTree.getRoot());
+			currentTreeItem = null;
+			open();
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
 		}
@@ -230,31 +218,33 @@ public class NoticeController {
 				.filter(Chooser.ZIP, Chooser.JSON)
 				.title("Save notice")
 				.show(main.getPrimaryStage());
-		if (fileSaved == null) return;
-		
+		if (fileSaved == null)
+			return;
+
 		saveDocument(fileSaved);
 	}
-	
+
 	private void saveDocument(File file) {
 		ExportStrategy strategy;
-		if (Chooser.JSON.equals( Chooser.getLastSelectedExtensionFilter() )) {
+		if (Chooser.JSON.equals(Chooser.getLastSelectedExtensionFilter())) {
 			strategy = ExportStrategyHolder.JSON;
 		} else {
 			strategy = ExportStrategyHolder.ZIP;
 		}
-		DocumentFormat.save(file, noticeTree.getDataTree(), strategy);
+		DocumentFormat.save(file, noticeTree, strategy);
 	}
 
 	@FXML
 	private void handleExportHtml(ActionEvent event) {
 		File destDir = Chooser.directory()
-					.title("Select directory to save HTML files")
-					.show(main.getPrimaryStage());
-		if (destDir == null) return;
-		
+				.title("Select directory to save HTML files")
+				.show(main.getPrimaryStage());
+		if (destDir == null)
+			return;
+
 		try {
 			ExportStrategyHolder.HTML.setProcessor(processor);
-			ExportStrategyHolder.HTML.export(destDir, noticeTree.getDataTree());
+			ExportStrategyHolder.HTML.export(destDir, noticeTree);
 			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);
@@ -278,4 +268,12 @@ public class NoticeController {
 
 	}
 	
+	public void setNoticeSettingsController(NoticeSettingsController controller) {
+		noticeSettingsController = controller;
+	}
+	
+	public NoticeTreeItem getCurrentNotice() {
+		return currentTreeItem;
+	}
+
 }

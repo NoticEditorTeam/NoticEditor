@@ -38,7 +38,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 	}
 
 	/**
-	 * Save item as HTML pages. Root item was saved to index.html
+	 * Save item as HTML pages. Root item will be saved to index.html
 	 *
 	 * @param item node to recursively save
 	 * @param dir directory to save
