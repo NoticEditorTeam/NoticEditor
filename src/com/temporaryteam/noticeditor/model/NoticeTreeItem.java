@@ -17,14 +17,14 @@ public class NoticeTreeItem extends TreeItem<String> {
 
 	public static final String KEY_TITLE = "title";
 	public static final String KEY_CONTENT = "content";
-	public static final String KEY_CHILDREN = "childs";
+	public static final String KEY_CHILDREN = "children";
 	public static final String KEY_STATUS = "status";
 
 	public static final int STATUS_NORMAL = 0;
 	public static final int STATUS_IMPORTANT = 1;
 
 	private String title;
-	private ObservableList<TreeItem<String>> childs;
+	private ObservableList<TreeItem<String>> children;
 	private String content;
 	private int status;
 
@@ -49,19 +49,19 @@ public class NoticeTreeItem extends TreeItem<String> {
 		this.title = title;
 		this.content = content;
 		this.status = status;
-		childs = getChildren();
+		children = getChildren();
 	}
 
 	public NoticeTreeItem(JSONObject json) throws JSONException {
 		this(json.getString(KEY_TITLE), json.optString(KEY_CONTENT, null), json.optInt(KEY_STATUS, STATUS_NORMAL));
 		JSONArray arr = json.getJSONArray(KEY_CHILDREN);
 		for (int i = 0; i < arr.length(); i++) {
-			childs.add(new NoticeTreeItem(arr.getJSONObject(i)));
+			children.add(new NoticeTreeItem(arr.getJSONObject(i)));
 		}
 	}
 
 	public void addChild(NoticeTreeItem item) {
-		childs.add(item);
+		children.add(item);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class NoticeTreeItem extends TreeItem<String> {
 			json.put(KEY_CONTENT, content);
 		}
 		ArrayList list = new ArrayList();
-		for (TreeItem<String> treeItem : childs) {
+		for (TreeItem<String> treeItem : children) {
 			NoticeTreeItem child = (NoticeTreeItem) treeItem;
 			list.add(child.toJson());
 		}
