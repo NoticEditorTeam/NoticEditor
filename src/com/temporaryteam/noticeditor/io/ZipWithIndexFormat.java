@@ -29,7 +29,7 @@ public class ZipWithIndexFormat {
 	private static final String KEY_TITLE = "title";
 	private static final String KEY_FILENAME = "filename";
 	private static final String KEY_STATUS = "status";
-	private static final String KEY_CHILDS = "childs";
+	private static final String KEY_CHILDREN = "children";
 	
 	private static final String BRANCH_PREFIX = "branch_";
 	private static final String NOTE_PREFIX = "note_";
@@ -68,14 +68,14 @@ public class ZipWithIndexFormat {
 		final String title = index.getString(KEY_TITLE);
 		final String filename = index.getString(KEY_FILENAME);
 		final int status = index.optInt(KEY_STATUS, NoticeTreeItem.STATUS_NORMAL);
-		final String dirPrefix = index.has(KEY_CHILDS) ? BRANCH_PREFIX : NOTE_PREFIX;
+		final String dirPrefix = index.has(KEY_CHILDREN) ? BRANCH_PREFIX : NOTE_PREFIX;
 		
 		final String newDir = dir + dirPrefix + filename + "/";
-		if (index.has(KEY_CHILDS)) {
-			JSONArray childs = index.getJSONArray(KEY_CHILDS);
+		if (index.has(KEY_CHILDREN)) {
+			JSONArray children = index.getJSONArray(KEY_CHILDREN);
 			NoticeTreeItem branch = new NoticeTreeItem(title);
-			for (int i = 0; i < childs.length(); i++) {
-				branch.addChild( readNotices(newDir, childs.getJSONObject(i)) );
+			for (int i = 0; i < children.length(); i++) {
+				branch.addChild( readNotices(newDir, children.getJSONObject(i)) );
 			}
 			return branch;
 		} else {
@@ -137,7 +137,7 @@ public class ZipWithIndexFormat {
 				writeNoticesAndFillIndex(newDir + "/", child, indexEntry);
 				list.add(indexEntry);
 			}
-			index.put(KEY_CHILDS, new JSONArray(list));
+			index.put(KEY_CHILDREN, new JSONArray(list));
 		} else {
 			// ../note_filename/filename.md
 			index.put(KEY_STATUS, item.getStatus());
