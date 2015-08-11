@@ -4,11 +4,9 @@ import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.scene.control.TreeItem;
-import javafx.util.Pair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -65,23 +63,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 	 * @param filename name of the file without extension
 	 */
 	private void exportToHtmlPages(NoticeTree tree, File dir, String filename) throws IOException {
-		Document doc = Jsoup.parse(getClass().getResourceAsStream("/resources/export_template.html"), null, "");
-		ArrayDeque<Pair<NoticeTreeItem,String>> stack = new ArrayDeque<>();
-		File file;
-		stack.push(new Pair(tree.getRoot(), filename));
-		while(!stack.isEmpty()) {
-			final Pair<NoticeTreeItem,String> currentPair = stack.pop();
-			final NoticeTreeItem currentItem = currentPair.getKey();
-			generatePage(currentItem, doc);
-			file = new File(dir, currentPair.getValue() + ".html");
-			IOUtil.writeContent(file, doc.outerHtml());
-			if(currentItem.isBranch()) {
-				for (TreeItem<String> obj : currentItem.getChildren()) {
-					NoticeTreeItem child = (NoticeTreeItem) obj;
-					stack.push(new Pair(child, generateFilename(child)));
-				}
-			}
-		}
+		exportToHtmlPages((NoticeTreeItem)tree.getRoot(), dir, filename);
 	}
 	
 	private void generatePage(NoticeTreeItem note, Document doc) {
