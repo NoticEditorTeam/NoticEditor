@@ -40,8 +40,13 @@
     <center>
         <SplitPane dividerPositions="0.25" prefWidth="200.0" prefHeight="160.0">
             <items>
-                <SplitPane SplitPane.resizableWithParent="false" dividerPositions="0.8" orientation="VERTICAL">
+                <SplitPane SplitPane.resizableWithParent="false" dividerPositions="0.1, 0.8" orientation="VERTICAL">
                     <items>
+                        <TextField fx:id="searchField" promptText="%search" focusTraversable="false" >
+                            <padding>
+                                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                            </padding>
+                        </TextField>
                         <TreeView fx:id="noticeTreeView" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false">
                             <contextMenu>
                                 <ContextMenu>

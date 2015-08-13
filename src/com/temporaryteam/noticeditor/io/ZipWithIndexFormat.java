@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.io;
 
+import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.io.File;
@@ -67,7 +68,7 @@ public class ZipWithIndexFormat {
 	private NoticeTreeItem readNotices(String dir, JSONObject index) throws IOException, JSONException, ZipException {
 		final String title = index.getString(KEY_TITLE);
 		final String filename = index.getString(KEY_FILENAME);
-		final int status = index.optInt(KEY_STATUS, NoticeTreeItem.STATUS_NORMAL);
+		final int status = index.optInt(KEY_STATUS, NoticeItem.STATUS_NORMAL);
 		final String dirPrefix = index.has(KEY_CHILDREN) ? BRANCH_PREFIX : NOTE_PREFIX;
 		
 		final String newDir = dir + dirPrefix + filename + "/";
@@ -130,7 +131,7 @@ public class ZipWithIndexFormat {
 		if (item.isBranch()) {
 			// ../branch_filename
 			ArrayList list = new ArrayList();
-			for (TreeItem<String> object : item.getChildren()) {
+			for (TreeItem<NoticeItem> object : item.getInternalChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) object;
 				
 				JSONObject indexEntry = new JSONObject();

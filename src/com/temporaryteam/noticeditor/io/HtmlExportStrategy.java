@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.io;
 
+import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.io.File;
@@ -50,7 +51,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 		File file = new File(dir, filename + ".html");
 		IOUtil.writeContent(file, doc.outerHtml());
 		if (item.isBranch()) {
-			for (TreeItem<String> obj : item.getChildren()) {
+			for (TreeItem<NoticeItem> obj : item.getInternalChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) obj;
 				exportToHtmlPages(child, dir, generateFilename(child));
 			}
@@ -76,7 +77,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 			file = new File(dir, currentPair.getValue() + ".html");
 			IOUtil.writeContent(file, doc.outerHtml());
 			if(currentItem.isBranch()) {
-				for (TreeItem<String> obj : currentItem.getChildren()) {
+				for (TreeItem<NoticeItem> obj : currentItem.getInternalChildren()) {
 					NoticeTreeItem child = (NoticeTreeItem) obj;
 					stack.push(new Pair(child, generateFilename(child)));
 				}
@@ -90,7 +91,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 		Element data = doc.select("#content").first();
 		if (note.isBranch()) {
 			Element list = doc.createElement("div").addClass("list-group");
-			for (TreeItem<String> treeItem : note.getChildren()) {
+			for (TreeItem<NoticeItem> treeItem : note.getInternalChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) treeItem;
 				Element item = doc.createElement("div").addClass("list-group-item");
 				generateIcon(child, item);
@@ -110,7 +111,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 			item.appendElement("span").addClass("glyphicon glyphicon-folder-open");
 		} else {
 			switch (child.getStatus()) {
-				case NoticeTreeItem.STATUS_IMPORTANT:
+				case NoticeItem.STATUS_IMPORTANT:
 					item.appendElement("span").addClass("glyphicon glyphicon-pushpin important");
 					break;
 				default:

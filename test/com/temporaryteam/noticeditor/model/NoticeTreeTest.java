@@ -22,10 +22,10 @@ public class NoticeTreeTest {
 		NoticeTreeItem leaf = new NoticeTreeItem("leaf", "content");
 		tree.addItem(leaf, root);
 		tree.addItem(new NoticeTreeItem("branch"), null);
-		assertEquals(2, tree.getRoot().getChildren().size());
+		assertEquals(2, tree.getRoot().getInternalChildren().size());
 		
 		tree.removeItem(leaf);
-		assertEquals(1, tree.getRoot().getChildren().size());
+		assertEquals(1, tree.getRoot().getInternalChildren().size());
 	}
 	
 	@Test

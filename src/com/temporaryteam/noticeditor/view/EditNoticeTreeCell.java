@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.view;
 
+import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 
 import javafx.event.EventHandler;
@@ -11,52 +12,52 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-public class EditNoticeTreeCell extends TreeCell<String> {
+public class EditNoticeTreeCell extends TreeCell<NoticeItem> {
 
 	private final Circle CIRCLE_AQUAMARINE = new Circle(5, Color.AQUAMARINE);
 	private final Circle CIRCLE_YELLOW = new Circle(5, Color.YELLOW);
 	
-	private TextField noticeName;
+	private TextField noticeNameField;
 
 	@Override
 	public void startEdit() {
 		super.startEdit();
-		if (noticeName == null) {
+		if (noticeNameField == null) {
 			createTextField();
 		}
 		setText(null);
-		setGraphic(noticeName);
-		noticeName.selectAll();
+		setGraphic(noticeNameField);
+		noticeNameField.selectAll();
 	}
 
 	@Override
 	public void cancelEdit() {
 		super.cancelEdit();
-		setText(getItem());
+		setText(getItem().getTitle());
 		setGraphic(getIcon());
 	}
 
 	@Override
-	public void commitEdit(String str) {
-		super.commitEdit(str);
-		getNoticeTreeItem().setTitle(str);
+	public void commitEdit(NoticeItem item) {
+		super.commitEdit(item);
+		getNoticeTreeItem().setTitle(item.getTitle());
 	}
 
 	@Override
-	public void updateItem(String item, boolean empty) {
+	public void updateItem(NoticeItem item, boolean empty) {
 		super.updateItem(item, empty);
 		if (empty) {
 			setText(null);
 			setGraphic(null);
 		} else {
 			if (isEditing()) {
-				if (noticeName != null) {
-					noticeName.setText(getString());
+				if (noticeNameField != null) {
+					noticeNameField.setText(getTitle());
 				}
 				setText(null);
-				setGraphic(noticeName);
+				setGraphic(noticeNameField);
 			} else {
-				setText(getString());
+				setText(getTitle());
 				setGraphic(getIcon());
 			}
 		}
@@ -67,12 +68,13 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	}
 
 	private void createTextField() {
-		noticeName = new TextField(getString());
-		noticeName.setOnKeyReleased(new EventHandler<KeyEvent>() {
+		noticeNameField = new TextField(getTitle());
+		noticeNameField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent t) {
 				if (t.getCode() == KeyCode.ENTER) {
-					commitEdit(noticeName.getText());
+					getItem().setTitle(noticeNameField.getText());
+					commitEdit(getItem());
 				} else if (t.getCode() == KeyCode.ESCAPE) {
 					cancelEdit();
 				}
@@ -85,7 +87,7 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 			return null;
 		}
 		switch (getNoticeTreeItem().getStatus()) {
-			case NoticeTreeItem.STATUS_IMPORTANT:
+			case NoticeItem.STATUS_IMPORTANT:
 				return CIRCLE_YELLOW;
 			default:
 				return CIRCLE_AQUAMARINE;
@@ -94,10 +96,10 @@ public class EditNoticeTreeCell extends TreeCell<String> {
 	
 	/**
 	 *
-	 * @return selected item or empty string
+	 * @return selected item's title or empty string
 	 */
-	private String getString() {
-		return ((getItem() == null) ? "" : getItem());
+	private String getTitle() {
+		return ((getItem() == null) ? "" : getItem().getTitle());
 	}
 
 }
