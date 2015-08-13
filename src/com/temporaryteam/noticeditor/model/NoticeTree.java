@@ -1,6 +1,6 @@
 package com.temporaryteam.noticeditor.model;
 
-import static com.temporaryteam.noticeditor.model.NoticeTreeItem.*;
+import static com.temporaryteam.noticeditor.model.NoticeItem.*;
 import java.util.ArrayDeque;
 
 import org.json.JSONArray;
@@ -36,14 +36,14 @@ public class NoticeTree {
 				jsobj.optString(KEY_CONTENT, null),
 				jsobj.optInt(KEY_STATUS, STATUS_NORMAL));
 		
-		ArrayDeque<Pair<JSONObject,ObservableList<TreeItem<String>>>> stack = new ArrayDeque<>();
+		ArrayDeque<Pair<JSONObject, ObservableList<TreeItem<NoticeItem>>>> stack = new ArrayDeque<>();
 		// Add root items to stack
 		final JSONArray rootChildrenArray = jsobj.getJSONArray(KEY_CHILDREN);
 		for (int i = 0; i < rootChildrenArray.length(); i++) {
 			stack.addLast(new Pair<>(rootChildrenArray.getJSONObject(i), root.getChildren()));
 		}
 		while(!stack.isEmpty()) {
-			final Pair<JSONObject, ObservableList<TreeItem<String>>> currentPair = stack.pop();
+			final Pair<JSONObject, ObservableList<TreeItem<NoticeItem>>> currentPair = stack.pop();
 			final JSONObject currentObject = currentPair.getKey();
 			
 			NoticeTreeItem currentItem = new NoticeTreeItem(
@@ -94,7 +94,7 @@ public class NoticeTree {
 		
 		ArrayDeque<Pair<NoticeTreeItem, JSONObject>> stack = new ArrayDeque<>();
 		// Add root items to stack
-		for (TreeItem<String> item : root.getChildren()) {
+		for (TreeItem<NoticeItem> item : root.getChildren()) {
 			stack.addLast(new Pair(item, jsobj)); 
 		}
 		while(!stack.isEmpty()) {
@@ -110,7 +110,7 @@ public class NoticeTree {
 			if (currentItem.isBranch()) {
 				// Mark newObject as parent for next children
 				newObject.put(KEY_CHILDREN, new JSONArray());
-				for (TreeItem<String> item : currentItem.getChildren()) {
+				for (TreeItem<NoticeItem> item : currentItem.getChildren()) {
 					stack.addLast(new Pair(item, newObject)); 
 				}
 			}

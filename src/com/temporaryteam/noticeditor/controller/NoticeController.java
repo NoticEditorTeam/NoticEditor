@@ -23,6 +23,7 @@ import com.temporaryteam.noticeditor.io.DocumentFormat;
 import com.temporaryteam.noticeditor.io.ExportException;
 import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
+import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
@@ -59,7 +60,7 @@ public class NoticeController {
 	private Menu previewStyleMenu;
 
 	@FXML
-	private TreeView<String> noticeTreeView;
+	private TreeView<NoticeItem> noticeTreeView;
 
 	@FXML
 	private ResourceBundle resources; // magic!
@@ -106,16 +107,16 @@ public class NoticeController {
 		}
 
 		noticeTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
+		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<NoticeItem>>() {
 			@Override
-			public void changed(ObservableValue<? extends TreeItem<String>> observable, TreeItem<String> oldValue, TreeItem<String> newValue) {
+			public void changed(ObservableValue<? extends TreeItem<NoticeItem>> observable, TreeItem<NoticeItem> oldValue, TreeItem<NoticeItem> newValue) {
 				currentTreeItem = (NoticeTreeItem) newValue;
 				open();
 			}
 		});
-		noticeTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+		noticeTreeView.setCellFactory(new Callback<TreeView<NoticeItem>, TreeCell<NoticeItem>>() {
 			@Override
-			public TreeCell<String> call(TreeView<String> p) {
+			public TreeCell<NoticeItem> call(TreeView<NoticeItem> p) {
 				return new EditNoticeTreeCell();
 			}
 		});
@@ -138,7 +139,7 @@ public class NoticeController {
 	 */
 	public void rebuildTree(String defaultNoticeContent) {
 		noticeTree = new NoticeTree(new NoticeTreeItem("Root"));
-		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent, NoticeTreeItem.STATUS_NORMAL);
+		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent, NoticeItem.STATUS_NORMAL);
 		noticeTree.addItem(currentTreeItem, noticeTree.getRoot());
 		noticeTreeView.setRoot(noticeTree.getRoot());
 		open();
@@ -167,7 +168,7 @@ public class NoticeController {
 		if (source == addBranchItem) {
 			noticeTree.addItem(new NoticeTreeItem("New branch"), currentTreeItem);
 		} else if (source == addNoticeItem) {
-			noticeTree.addItem(new NoticeTreeItem("New notice", "", NoticeTreeItem.STATUS_NORMAL), currentTreeItem);
+			noticeTree.addItem(new NoticeTreeItem("New notice", "", NoticeItem.STATUS_NORMAL), currentTreeItem);
 		} else if (source == deleteItem) {
 			noticeTree.removeItem(currentTreeItem);
 			if (currentTreeItem != null && currentTreeItem.getParent() == null) {
