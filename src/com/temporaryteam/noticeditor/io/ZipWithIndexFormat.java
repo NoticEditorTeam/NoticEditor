@@ -131,7 +131,7 @@ public class ZipWithIndexFormat {
 		if (item.isBranch()) {
 			// ../branch_filename
 			ArrayList list = new ArrayList();
-			for (TreeItem<NoticeItem> object : item.getChildren()) {
+			for (TreeItem<NoticeItem> object : item.getInternalChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) object;
 				
 				JSONObject indexEntry = new JSONObject();

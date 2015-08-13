@@ -40,7 +40,7 @@ public class NoticeTree {
 		// Add root items to stack
 		final JSONArray rootChildrenArray = jsobj.getJSONArray(KEY_CHILDREN);
 		for (int i = 0; i < rootChildrenArray.length(); i++) {
-			stack.addLast(new Pair<>(rootChildrenArray.getJSONObject(i), root.getChildren()));
+			stack.addLast(new Pair<>(rootChildrenArray.getJSONObject(i), root.getInternalChildren()));
 		}
 		while(!stack.isEmpty()) {
 			final Pair<JSONObject, ObservableList<TreeItem<NoticeItem>>> currentPair = stack.pop();
@@ -53,7 +53,7 @@ public class NoticeTree {
 			if (currentObject.has(KEY_CHILDREN)) {
 				JSONArray childrenArray = currentObject.getJSONArray(KEY_CHILDREN);
 				for (int i = 0; i < childrenArray.length(); i++) {
-					stack.addLast(new Pair(childrenArray.getJSONObject(i), currentItem.getChildren()));
+					stack.addLast(new Pair(childrenArray.getJSONObject(i), currentItem.getInternalChildren()));
 				}
 			}
 			if (currentPair.getValue() != null) {
@@ -76,13 +76,15 @@ public class NoticeTree {
 		} else if (parent.isLeaf()) {
 			parent = (NoticeTreeItem) parent.getParent();
 		}
-		parent.getChildren().add(item);
+		parent.getInternalChildren().add(item);
 		parent.setExpanded(true);
 	}
 
 	public void removeItem(NoticeTreeItem item) {
 		if (item == null) return;
-		item.getParent().getChildren().remove(item);
+		NoticeTreeItem parent = (NoticeTreeItem) item.getParent();
+		if (parent == null) return;
+		parent.getInternalChildren().remove(item);
 	}
 
 	public JSONObject toJson() throws JSONException {
@@ -94,7 +96,7 @@ public class NoticeTree {
 		
 		ArrayDeque<Pair<NoticeTreeItem, JSONObject>> stack = new ArrayDeque<>();
 		// Add root items to stack
-		for (TreeItem<NoticeItem> item : root.getChildren()) {
+		for (TreeItem<NoticeItem> item : root.getInternalChildren()) {
 			stack.addLast(new Pair(item, jsobj)); 
 		}
 		while(!stack.isEmpty()) {
@@ -110,7 +112,7 @@ public class NoticeTree {
 			if (currentItem.isBranch()) {
 				// Mark newObject as parent for next children
 				newObject.put(KEY_CHILDREN, new JSONArray());
-				for (TreeItem<NoticeItem> item : currentItem.getChildren()) {
+				for (TreeItem<NoticeItem> item : currentItem.getInternalChildren()) {
 					stack.addLast(new Pair(item, newObject)); 
 				}
 			}

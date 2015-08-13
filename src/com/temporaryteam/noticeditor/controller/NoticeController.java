@@ -32,6 +32,7 @@ import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -58,6 +59,9 @@ public class NoticeController {
 
 	@FXML
 	private Menu previewStyleMenu;
+	
+	@FXML
+    private TextField searchField;
 
 	@FXML
 	private TreeView<NoticeItem> noticeTreeView;
@@ -138,11 +142,42 @@ public class NoticeController {
 	 * Rebuild tree
 	 */
 	public void rebuildTree(String defaultNoticeContent) {
-		noticeTree = new NoticeTree(new NoticeTreeItem("Root"));
+		final NoticeTreeItem root = new NoticeTreeItem("Root");
+		noticeTree = new NoticeTree(root);
 		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent, NoticeItem.STATUS_NORMAL);
-		noticeTree.addItem(currentTreeItem, noticeTree.getRoot());
-		noticeTreeView.setRoot(noticeTree.getRoot());
+		noticeTree.addItem(currentTreeItem, root);
+		noticeTreeView.setRoot(root);
+		createSearchBinding(root);
 		open();
+	}
+
+	private void createSearchBinding(final NoticeTreeItem root) {
+		searchField.clear();
+		root.predicateProperty().bind(
+				Bindings.createObjectBinding(this::searchTreeItemPredicate, searchField.textProperty()));
+	}
+	
+	private NoticeTreeItem.Predicate<NoticeItem> searchTreeItemPredicate() {
+		if ( (searchField.getText() == null) || (searchField.getText().isEmpty()) ) {
+			return null;
+		}
+		return this::noticeSearch;
+	}
+	
+	/**
+	 * Search by title and content
+	 * @return 
+	 */
+	private boolean noticeSearch(TreeItem<NoticeItem> parent, NoticeItem note) {
+		final String searchString = searchField.getText().toLowerCase();
+
+		final String title = note.getTitle().toLowerCase();
+		if (title.contains(searchString)) return true;
+
+		final String content = note.getContent();
+		if (content == null || content.isEmpty()) return false;
+
+		return content.toLowerCase().contains(searchString);
 	}
 
 	/**
@@ -197,6 +232,7 @@ public class NoticeController {
 
 			noticeTree = DocumentFormat.open(fileSaved);
 			noticeTreeView.setRoot(noticeTree.getRoot());
+			createSearchBinding(noticeTree.getRoot());
 			currentTreeItem = null;
 			open();
 		} catch (IOException | JSONException e) {

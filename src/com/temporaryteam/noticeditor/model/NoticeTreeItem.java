@@ -1,7 +1,5 @@
 package com.temporaryteam.noticeditor.model;
 
-import javafx.event.Event;
-import javafx.scene.control.TreeItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +8,7 @@ import org.json.JSONObject;
  *
  * @author naik, setser, annimon, kalter
  */
-public class NoticeTreeItem extends TreeItem<NoticeItem> {
+public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
 
 	/**
 	 * Create branch node on tree.
@@ -46,8 +44,12 @@ public class NoticeTreeItem extends TreeItem<NoticeItem> {
 	}
 
 	public void addChild(NoticeTreeItem item) {
-		getValue().addChild(item.getValue());
-		getChildren().add(item);
+		getInternalChildren().add(item);
+		if (item != null) {
+			getValue().addChild(item.getValue());
+		} else {
+			getValue().addChild(null);
+		}
 	}
 
 	@Override
@@ -95,9 +97,4 @@ public class NoticeTreeItem extends TreeItem<NoticeItem> {
 		getValue().setStatus(status);
 		fireChangeItem();
 	}
-	
-	private void fireChangeItem() {
- 		Event.fireEvent(this, new TreeModificationEvent(childrenModificationEvent(), this));
- 	}
-
 }

@@ -51,7 +51,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 		File file = new File(dir, filename + ".html");
 		IOUtil.writeContent(file, doc.outerHtml());
 		if (item.isBranch()) {
-			for (TreeItem<NoticeItem> obj : item.getChildren()) {
+			for (TreeItem<NoticeItem> obj : item.getInternalChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) obj;
 				exportToHtmlPages(child, dir, generateFilename(child));
 			}
@@ -77,7 +77,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 			file = new File(dir, currentPair.getValue() + ".html");
 			IOUtil.writeContent(file, doc.outerHtml());
 			if(currentItem.isBranch()) {
-				for (TreeItem<NoticeItem> obj : currentItem.getChildren()) {
+				for (TreeItem<NoticeItem> obj : currentItem.getInternalChildren()) {
 					NoticeTreeItem child = (NoticeTreeItem) obj;
 					stack.push(new Pair(child, generateFilename(child)));
 				}
@@ -91,7 +91,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 		Element data = doc.select("#content").first();
 		if (note.isBranch()) {
 			Element list = doc.createElement("div").addClass("list-group");
-			for (TreeItem<NoticeItem> treeItem : note.getChildren()) {
+			for (TreeItem<NoticeItem> treeItem : note.getInternalChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) treeItem;
 				Element item = doc.createElement("div").addClass("list-group-item");
 				generateIcon(child, item);

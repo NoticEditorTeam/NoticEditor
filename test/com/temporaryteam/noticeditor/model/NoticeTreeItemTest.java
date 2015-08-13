@@ -10,13 +10,13 @@ public class NoticeTreeItemTest {
 		NoticeTreeItem branch = new NoticeTreeItem("branch");
 		assertTrue(branch.isBranch());
 		assertFalse(branch.isLeaf());
-		assertEquals(0, branch.getChildren().size());
+		assertEquals(0, branch.getInternalChildren().size());
 		
 		branch.addChild(new NoticeTreeItem("branch"));
 		branch.addChild(new NoticeTreeItem("leaf", "content"));
-		assertEquals(2, branch.getChildren().size());
+		assertEquals(2, branch.getInternalChildren().size());
 		
-		assertEquals("leaf", ((NoticeTreeItem)branch.getChildren().get(1)).getTitle());
+		assertEquals("leaf", ((NoticeTreeItem)branch.getInternalChildren().get(1)).getTitle());
 	}
 	
 	@Test
@@ -25,17 +25,17 @@ public class NoticeTreeItemTest {
 		assertEquals("leaf", leaf.getTitle());
 		assertFalse(leaf.isBranch());
 		assertTrue(leaf.isLeaf());
-		assertEquals(0, leaf.getChildren().size());
+		assertEquals(0, leaf.getInternalChildren().size());
 	}
 	
 	@Test
 	public void testAddChild() {
 		NoticeTreeItem branch = new NoticeTreeItem("branch");
-		assertEquals(0, branch.getChildren().size());
+		assertEquals(0, branch.getInternalChildren().size());
 		for (int i = 0; i < 10; i++) {
 			branch.addChild(null);
 		}
-		assertEquals(10, branch.getChildren().size());
+		assertEquals(10, branch.getInternalChildren().size());
 	}
 	
 	@Test
