@@ -28,7 +28,7 @@ public class NoticeTreeItemBenchmarksTest {
 	@BenchmarkOptions(benchmarkRounds = 1, warmupRounds = 1)
 	@Test
 	public void testJsonExport() throws JSONException {
-		root.toJson();
+		root.getValue().toJson();
 	}
 	
 	@BenchmarkOptions(benchmarkRounds = 1, warmupRounds = 1)

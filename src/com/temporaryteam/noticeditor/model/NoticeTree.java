@@ -1,6 +1,7 @@
 package com.temporaryteam.noticeditor.model;
 
 import static com.temporaryteam.noticeditor.model.NoticeTreeItem.*;
+import static com.temporaryteam.noticeditor.model.NoticeItem.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,13 +47,15 @@ public class NoticeTree {
 		} else if (parent.isLeaf()) {
 			parent = (NoticeTreeItem) parent.getParent();
 		}
-		parent.getChildren().add(item);
+		parent.getInternalChildren().add(item);
 		parent.setExpanded(true);
 	}
 
 	public void removeItem(NoticeTreeItem item) {
 		if (item == null) return;
-		item.getParent().getChildren().remove(item);
+		NoticeTreeItem parent = (NoticeTreeItem) item.getParent();
+		if (parent == null) return;
+		parent.getInternalChildren().remove(item);
 	}
 
 	public JSONObject toJson() throws JSONException {

@@ -23,6 +23,7 @@ import com.temporaryteam.noticeditor.io.DocumentFormat;
 import com.temporaryteam.noticeditor.io.ExportException;
 import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
+import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import com.temporaryteam.noticeditor.model.PreviewStyles;
@@ -31,6 +32,7 @@ import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -57,9 +59,12 @@ public class NoticeController {
 
 	@FXML
 	private Menu previewStyleMenu;
+	
+	@FXML
+    private TextField searchField;
 
 	@FXML
-	private TreeView<String> noticeTreeView;
+	private TreeView<NoticeItem> noticeTreeView;
 
 	@FXML
 	private ResourceBundle resources; // magic!
@@ -106,16 +111,16 @@ public class NoticeController {
 		}
 
 		noticeTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<String>>() {
+		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<NoticeItem>>() {
 			@Override
-			public void changed(ObservableValue<? extends TreeItem<String>> observable, TreeItem<String> oldValue, TreeItem<String> newValue) {
+			public void changed(ObservableValue<? extends TreeItem<NoticeItem>> observable, TreeItem<NoticeItem> oldValue, TreeItem<NoticeItem> newValue) {
 				currentTreeItem = (NoticeTreeItem) newValue;
 				open();
 			}
 		});
-		noticeTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+		noticeTreeView.setCellFactory(new Callback<TreeView<NoticeItem>, TreeCell<NoticeItem>>() {
 			@Override
-			public TreeCell<String> call(TreeView<String> p) {
+			public TreeCell<NoticeItem> call(TreeView<NoticeItem> p) {
 				return new EditNoticeTreeCell();
 			}
 		});
@@ -137,11 +142,42 @@ public class NoticeController {
 	 * Rebuild tree
 	 */
 	public void rebuildTree(String defaultNoticeContent) {
-		noticeTree = new NoticeTree(new NoticeTreeItem("Root"));
-		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent, NoticeTreeItem.STATUS_NORMAL);
-		noticeTree.addItem(currentTreeItem, noticeTree.getRoot());
-		noticeTreeView.setRoot(noticeTree.getRoot());
+		final NoticeTreeItem root = new NoticeTreeItem("Root");
+		noticeTree = new NoticeTree(root);
+		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent, NoticeItem.STATUS_NORMAL);
+		noticeTree.addItem(currentTreeItem, root);
+		noticeTreeView.setRoot(root);
+		createSearchBinding(root);
 		open();
+	}
+
+	private void createSearchBinding(final NoticeTreeItem root) {
+		searchField.clear();
+		root.predicateProperty().bind(
+				Bindings.createObjectBinding(this::searchTreeItemPredicate, searchField.textProperty()));
+	}
+	
+	private NoticeTreeItem.Predicate<NoticeItem> searchTreeItemPredicate() {
+		if ( (searchField.getText() == null) || (searchField.getText().isEmpty()) ) {
+			return null;
+		}
+		return this::noticeSearch;
+	}
+	
+	/**
+	 * Search by title and content
+	 * @return 
+	 */
+	private boolean noticeSearch(TreeItem<NoticeItem> parent, NoticeItem note) {
+		final String searchString = searchField.getText().toLowerCase();
+
+		final String title = note.getTitle().toLowerCase();
+		if (title.contains(searchString)) return true;
+
+		final String content = note.getContent();
+		if (content == null || content.isEmpty()) return false;
+
+		return content.toLowerCase().contains(searchString);
 	}
 
 	/**
@@ -167,7 +203,7 @@ public class NoticeController {
 		if (source == addBranchItem) {
 			noticeTree.addItem(new NoticeTreeItem("New branch"), currentTreeItem);
 		} else if (source == addNoticeItem) {
-			noticeTree.addItem(new NoticeTreeItem("New notice", "", NoticeTreeItem.STATUS_NORMAL), currentTreeItem);
+			noticeTree.addItem(new NoticeTreeItem("New notice", "", NoticeItem.STATUS_NORMAL), currentTreeItem);
 		} else if (source == deleteItem) {
 			noticeTree.removeItem(currentTreeItem);
 			if (currentTreeItem != null && currentTreeItem.getParent() == null) {
@@ -196,6 +232,7 @@ public class NoticeController {
 
 			noticeTree = DocumentFormat.open(fileSaved);
 			noticeTreeView.setRoot(noticeTree.getRoot());
+			createSearchBinding(noticeTree.getRoot());
 			currentTreeItem = null;
 			open();
 		} catch (IOException | JSONException e) {
