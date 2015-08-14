@@ -3,3 +3,4 @@
 .vimrc
 *.swp
 /nbproject/private/
+.gradle/

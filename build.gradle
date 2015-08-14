@@ -1,0 +1,39 @@
+apply plugin: "java"
+
+sourceCompatibility = 1.8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+project.ext.mainClassName = "com.temporaryteam.noticeditor.Main"
+
+sourceSets {
+    main {
+        java {
+            srcDir "src/"
+        }
+        resources {
+            srcDir 'src/'
+            exclude 'com/**'
+        }
+    }
+}
+
+dependencies{
+    compile fileTree(dir: 'libs', include: '*.jar')
+}
+
+task run(dependsOn: classes, type: JavaExec) {
+    main = project.mainClassName
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    ignoreExitValue = true
+}
+
+task dist(dependsOn: classes, type: Jar) {
+    from files(sourceSets.main.output.classesDir)
+    from {configurations.compile.collect {zipTree(it)}}
+    from files(sourceSets.main.resources)
+    libsDirName = "$rootProject.projectDir/dist"
+    
+    manifest {
+        attributes 'Main-Class': project.mainClassName
+    }
+}
