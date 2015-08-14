@@ -2,6 +2,7 @@ package com.temporaryteam.noticeditor.model;
 
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
+import com.temporaryteam.noticeditor.io.JsonFormat;
 import org.json.JSONException;
 import org.junit.*;
 import org.junit.rules.TestRule;
@@ -26,14 +27,9 @@ public class NoticeTreeItemBenchmarksTest {
 	}
 	
 	@BenchmarkOptions(benchmarkRounds = 1, warmupRounds = 1)
+	@Ignore
 	@Test
 	public void testJsonExport() throws JSONException {
-		root.getValue().toJson();
-	}
-	
-	@BenchmarkOptions(benchmarkRounds = 1, warmupRounds = 1)
-	@Test
-	public void testJsonExportFromTree() throws JSONException {
-		new NoticeTree(root).toJson();
+		JsonFormat.with(null).export(root);
 	}
 }

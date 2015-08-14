@@ -1,11 +1,7 @@
 package com.temporaryteam.noticeditor.model;
 
-import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Model representation of notice. Contains notice data or branch data
@@ -13,11 +9,6 @@ import org.json.JSONObject;
  * @author naik, setser, annimon, kalter
  */
 public class NoticeItem {
-
-	public static final String KEY_TITLE = "title";
-	public static final String KEY_CONTENT = "content";
-	public static final String KEY_CHILDREN = "children";
-	public static final String KEY_STATUS = "status";
 
 	public static final int STATUS_NORMAL = 0;
 	public static final int STATUS_IMPORTANT = 1;
@@ -57,14 +48,6 @@ public class NoticeItem {
 		this.content = content;
 		this.status = status;
 		children = FXCollections.observableArrayList();
-	}
-
-	public NoticeItem(JSONObject json) throws JSONException {
-		this(json.getString(KEY_TITLE), json.optString(KEY_CONTENT, null), json.optInt(KEY_STATUS, STATUS_NORMAL));
-		JSONArray arr = json.getJSONArray(KEY_CHILDREN);
-		for (int i = 0; i < arr.length(); i++) {
-			children.add(new NoticeItem(arr.getJSONObject(i)));
-		}
 	}
 
 	public void addChild(NoticeItem item) {
@@ -114,21 +97,6 @@ public class NoticeItem {
 
 	public int getStatus() {
 		return status;
-	}
-
-	public JSONObject toJson() throws JSONException {
-		JSONObject json = new JSONObject();
-		json.put(KEY_TITLE, title);
-		if (isLeaf()) {
-			json.put(KEY_STATUS, status);
-			json.put(KEY_CONTENT, content);
-		}
-		ArrayList list = new ArrayList();
-		for (NoticeItem child : children) {
-			list.add(child.toJson());
-		}
-		json.put(KEY_CHILDREN, new JSONArray(list));
-		return json;
 	}
 
 	@Override

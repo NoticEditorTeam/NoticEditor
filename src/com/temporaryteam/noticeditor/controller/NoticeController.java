@@ -263,7 +263,8 @@ public class NoticeController {
 
 	private void saveDocument(File file) {
 		ExportStrategy strategy;
-		if (Chooser.JSON.equals(Chooser.getLastSelectedExtensionFilter())) {
+		if (Chooser.JSON.equals(Chooser.getLastSelectedExtensionFilter())
+				|| file.getName().toLowerCase().endsWith(".json")) {
 			strategy = ExportStrategyHolder.JSON;
 		} else {
 			strategy = ExportStrategyHolder.ZIP;

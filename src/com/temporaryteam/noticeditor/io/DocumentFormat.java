@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import net.lingala.zip4j.exception.ZipException;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Provides common operations with document.
@@ -17,8 +16,7 @@ public final class DocumentFormat {
 		try {
 			return ZipWithIndexFormat.with(file).importDocument();
 		} catch (ZipException | IOException | JSONException e) {
-			JSONObject json = new JSONObject(IOUtil.readContent(file));
-			return new NoticeTree(json);
+			return JsonFormat.with(file).importDocument();
 		}
 	}
 	

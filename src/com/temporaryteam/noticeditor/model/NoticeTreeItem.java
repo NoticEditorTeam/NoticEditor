@@ -1,8 +1,5 @@
 package com.temporaryteam.noticeditor.model;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Model representation of notice. Contains notice data or branch data
  *
@@ -37,10 +34,6 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
 	 */
 	public NoticeTreeItem(String title, String content, int status) {
 		super(new NoticeItem(title, content, status));
-	}
-
-	public NoticeTreeItem(JSONObject json) throws JSONException {
-		super(new NoticeItem(json));
 	}
 
 	public void addChild(NoticeTreeItem item) {

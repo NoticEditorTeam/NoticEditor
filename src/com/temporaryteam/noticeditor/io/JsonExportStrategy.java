@@ -7,14 +7,15 @@ import org.json.JSONException;
 
 /**
  * Export notices to json.
+ *
  * @author aNNiMON
  */
 public class JsonExportStrategy implements ExportStrategy {
 
 	@Override
-	public void export(File file, NoticeTree notice) {
+	public void export(File file, NoticeTree tree) {
 		try {
-			IOUtil.writeJson(file, notice.toJson());
+			JsonFormat.with(file).export(tree);
 		} catch (IOException | JSONException e) {
 			throw new ExportException(e);
 		}
