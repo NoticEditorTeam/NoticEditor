@@ -43,12 +43,16 @@ public class JsonFormat {
 	}
 
 	public void export(NoticeTree tree) throws JSONException, IOException {
-		JSONObject json = new JSONObject();
-		treeToJson(tree.getRoot(), json);
 		if (file.exists()) {
 			file.delete();
 		}
-		IOUtil.writeJson(file, json);
+		IOUtil.writeJson(file, export(tree.getRoot()));
+	}
+	
+	public JSONObject export(NoticeTreeItem root) throws JSONException {
+		JSONObject json = new JSONObject();
+		treeToJson(root, json);
+		return json;
 	}
 
 	private void treeToJson(NoticeTreeItem item, JSONObject json) throws JSONException {
