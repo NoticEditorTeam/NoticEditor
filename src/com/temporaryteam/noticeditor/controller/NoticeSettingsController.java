@@ -30,9 +30,9 @@ public class NoticeSettingsController implements Initializable {
 	@FXML
 	private ChoiceBox<String> choiceBoxNoticeStatus;
 	
-	private final NoticeController noticeController;
+	private NoticeController noticeController;
 
-	public NoticeSettingsController(NoticeController noticeController) {
+	public void setNoticeController(NoticeController noticeController) {
 		this.noticeController = noticeController;
 	}
 	

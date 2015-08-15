@@ -67,19 +67,24 @@ public class NoticeController {
 	private TreeView<NoticeItem> noticeTreeView;
 
 	@FXML
-	private ResourceBundle resources; // magic!
+	private NoticeSettingsController noticeSettingsController;
+	
+	@FXML
+	private ResourceBundle resources;
 
-	private final Main main;
-	private WebEngine engine;
 	private final PegDownProcessor processor;
+	private Main main;
+	private WebEngine engine;
 	private NoticeTree noticeTree;
 	private NoticeTreeItem currentTreeItem;
 	private File fileSaved;
-	private NoticeSettingsController noticeSettingsController;
-
-	public NoticeController(Main main) {
-		this.main = main;
+	
+	public NoticeController() {
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
+	}
+	
+	public void setApplication(Main main) {
+		this.main = main;
 	}
 
 	/**
@@ -124,6 +129,8 @@ public class NoticeController {
 				return new EditNoticeTreeCell();
 			}
 		});
+		
+		noticeSettingsController.setNoticeController(this);
 
 		noticeArea.textProperty().addListener(new ChangeListener<String>() {
 			@Override
@@ -304,10 +311,6 @@ public class NoticeController {
 	@FXML
 	private void handleAbout(ActionEvent event) {
 
-	}
-	
-	public void setNoticeSettingsController(NoticeSettingsController controller) {
-		noticeSettingsController = controller;
 	}
 	
 	public NoticeTreeItem getCurrentNotice() {
