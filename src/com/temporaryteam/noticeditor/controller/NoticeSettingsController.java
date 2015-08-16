@@ -1,6 +1,7 @@
 package com.temporaryteam.noticeditor.controller;
 
 import com.temporaryteam.noticeditor.model.NoticeStatus;
+import com.temporaryteam.noticeditor.model.NoticeStatusList;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,7 +30,7 @@ public class NoticeSettingsController implements Initializable {
 	@FXML
 	private Button btnSelectFile;
 	@FXML
-	private ChoiceBox<String> choiceBoxNoticeStatus;
+	private ChoiceBox<NoticeStatus> choiceBoxNoticeStatus;
 	
 	private NoticeController noticeController;
 
@@ -42,25 +43,25 @@ public class NoticeSettingsController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		NoticeStatus.add(rb.getString("normal"));
-		NoticeStatus.add(rb.getString("important"));
-		NoticeStatus.save();
+		NoticeStatusList.add(rb.getString("normal"));
+		NoticeStatusList.add(rb.getString("important"));
+		NoticeStatusList.save();
+		updateStatuses();
 		
-		choiceBoxNoticeStatus.setItems(NoticeStatus.asObservable());
-		choiceBoxNoticeStatus.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		choiceBoxNoticeStatus.getSelectionModel().selectedItemProperty().addListener(
+			(ObservableValue<? extends NoticeStatus> observable, NoticeStatus oldValue, NoticeStatus newValue) -> {
 				NoticeTreeItem currentNotice = noticeController.getCurrentNotice();
-				if (null != currentNotice && newValue != null && currentNotice.isLeaf()) {
-					currentNotice.setStatus(NoticeStatus.getStatusCode(newValue));
+				if (currentNotice != null && newValue != null && currentNotice.isLeaf()) {
+					currentNotice.setStatus(newValue.getCode());
 				}
 			}
-		});
+		);
+		
 		open(null);
 	}
 	
 	public void updateStatuses() {
-		choiceBoxNoticeStatus.setItems(NoticeStatus.asObservable());
+		choiceBoxNoticeStatus.setItems(NoticeStatusList.asObservable());
 	}
 	
 	public void open(NoticeTreeItem item) {
@@ -68,7 +69,7 @@ public class NoticeSettingsController implements Initializable {
 			choiceBoxNoticeStatus.getSelectionModel().clearSelection();
 			settingsPane.setDisable(true);
 		} else {
-			choiceBoxNoticeStatus.getSelectionModel().select(NoticeStatus.getStatusName(item.getStatus()));
+			choiceBoxNoticeStatus.getSelectionModel().select(NoticeStatusList.getStatus(item.getStatus()));
 			settingsPane.setDisable(false);
 		}
 	}

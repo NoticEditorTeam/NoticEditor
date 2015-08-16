@@ -221,7 +221,7 @@ public class NoticeController {
 	private void handleNew(ActionEvent event) {
 		rebuildTree(resources.getString("help"));
 		fileSaved = null;
-		NoticeStatus.load();
+		NoticeStatusList.restore();
 	}
 
 	@FXML
