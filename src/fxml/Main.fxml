@@ -72,7 +72,7 @@
               </SplitPane>
             <VBox fx:id="notificationBox" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="notificationBox" visible="false" StackPane.alignment="BOTTOM_CENTER">
                <children>
-                  <Label fx:id="notificationLabel" styleClass="notificationLabel" />
+                  <Label fx:id="notificationLabel" styleClass="notificationLabel" textAlignment="CENTER" />
                </children>
             </VBox>
          </children>
