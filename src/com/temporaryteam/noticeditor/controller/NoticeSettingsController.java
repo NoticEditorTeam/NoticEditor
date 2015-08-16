@@ -44,6 +44,7 @@ public class NoticeSettingsController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		NoticeStatus.add(rb.getString("normal"));
 		NoticeStatus.add(rb.getString("important"));
+		NoticeStatus.save();
 		
 		choiceBoxNoticeStatus.setItems(NoticeStatus.asObservable());
 		choiceBoxNoticeStatus.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
@@ -58,12 +59,15 @@ public class NoticeSettingsController implements Initializable {
 		open(null);
 	}
 	
+	public void updateStatuses() {
+		choiceBoxNoticeStatus.setItems(NoticeStatus.asObservable());
+	}
+	
 	public void open(NoticeTreeItem item) {
 		if (item == null || item.isBranch()) {
 			choiceBoxNoticeStatus.getSelectionModel().clearSelection();
 			settingsPane.setDisable(true);
 		} else {
-			choiceBoxNoticeStatus.setItems(NoticeStatus.asObservable());
 			choiceBoxNoticeStatus.getSelectionModel().select(NoticeStatus.getStatusName(item.getStatus()));
 			settingsPane.setDisable(false);
 		}

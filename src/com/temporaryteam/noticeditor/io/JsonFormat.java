@@ -42,6 +42,8 @@ public class JsonFormat {
 				String key = it.next().toString();
 				NoticeStatus.add(key, status.getInt(key));
 			}
+		} else {
+			NoticeStatus.load();
 		}
 		
 		return new NoticeTree(jsonToTree(json));

@@ -13,12 +13,31 @@ import javafx.collections.ObservableMap;
  * @author Maximillian M.
  */
 public class NoticeStatus {
-	private static final HashMap<String, Integer> map;
+	private static HashMap<String, Integer> map;
 	private static int lastIndex;
+	
+	private static HashMap<String, Integer> mementoMap;
+	private static int mementoIndex;
 	
 	static {
 		map = new HashMap<>();
 		lastIndex = -1;
+	}
+	
+	/**
+	 * Saves statuses
+	 */
+	public static void save() {
+		mementoIndex = lastIndex;
+		mementoMap = (HashMap) map.clone();
+	}
+	
+	/**
+	 * Restores statuses to the saved state
+	 */
+	public static void load() {
+		lastIndex = mementoIndex;
+		map = mementoMap;
 	}
 	
 	/**
