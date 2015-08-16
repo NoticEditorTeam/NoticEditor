@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.controller;
 
+import com.temporaryteam.noticeditor.model.NoticeStatus;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,16 +42,16 @@ public class NoticeSettingsController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		choiceBoxNoticeStatus.setItems(FXCollections.observableArrayList(
-				rb.getString("normal"), rb.getString("important")
-		));
-		choiceBoxNoticeStatus.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-
+		NoticeStatus.add(rb.getString("normal"));
+		NoticeStatus.add(rb.getString("important"));
+		
+		choiceBoxNoticeStatus.setItems(NoticeStatus.asObservable());
+		choiceBoxNoticeStatus.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				NoticeTreeItem currentNotice = noticeController.getCurrentNotice();
-				if (currentNotice != null && currentNotice.isLeaf()) {
-					currentNotice.setStatus(newValue.intValue());
+				if (null != currentNotice && newValue != null && currentNotice.isLeaf()) {
+					currentNotice.setStatus(NoticeStatus.getStatusCode(newValue));
 				}
 			}
 		});
@@ -62,7 +63,8 @@ public class NoticeSettingsController implements Initializable {
 			choiceBoxNoticeStatus.getSelectionModel().clearSelection();
 			settingsPane.setDisable(true);
 		} else {
-			choiceBoxNoticeStatus.getSelectionModel().select(item.getStatus());
+			choiceBoxNoticeStatus.setItems(NoticeStatus.asObservable());
+			choiceBoxNoticeStatus.getSelectionModel().select(NoticeStatus.getStatusName(item.getStatus()));
 			settingsPane.setDisable(false);
 		}
 	}

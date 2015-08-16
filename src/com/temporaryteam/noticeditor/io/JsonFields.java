@@ -10,4 +10,6 @@ public class JsonFields {
 	static final String KEY_STATUS = "status";
 	static final String KEY_CHILDREN = "children";
 	static final String KEY_CONTENT = "content";
+	
+	static final String KEY_STATUSINFO = "statusInfo";
 }

@@ -2,10 +2,12 @@ package com.temporaryteam.noticeditor.io;
 
 import static com.temporaryteam.noticeditor.io.JsonFields.*;
 import com.temporaryteam.noticeditor.model.NoticeItem;
+import com.temporaryteam.noticeditor.model.NoticeStatus;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import javafx.scene.control.TreeItem;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +31,19 @@ public class JsonFormat {
 
 	public NoticeTree importDocument() throws IOException, JSONException {
 		JSONObject json = new JSONObject(IOUtil.readContent(file));
+
+		if (json.has(KEY_STATUSINFO)) {
+			JSONObject status = json.getJSONObject(KEY_STATUSINFO);
+			Iterator it = status.keys();
+			if (it.hasNext()) {
+				NoticeStatus.clear();
+			}
+			while (it.hasNext()) {
+				String key = it.next().toString();
+				NoticeStatus.add(key, status.getInt(key));
+			}
+		}
+		
 		return new NoticeTree(jsonToTree(json));
 	}
 	
@@ -52,6 +67,7 @@ public class JsonFormat {
 	public JSONObject export(NoticeTreeItem root) throws JSONException {
 		JSONObject json = new JSONObject();
 		treeToJson(root, json);
+		json.put("statusInfo", NoticeStatus.asObservableMap());
 		return json;
 	}
 
