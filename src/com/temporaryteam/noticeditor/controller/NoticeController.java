@@ -23,10 +23,7 @@ import com.temporaryteam.noticeditor.io.DocumentFormat;
 import com.temporaryteam.noticeditor.io.ExportException;
 import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
-import com.temporaryteam.noticeditor.model.NoticeItem;
-import com.temporaryteam.noticeditor.model.NoticeTree;
-import com.temporaryteam.noticeditor.model.NoticeTreeItem;
-import com.temporaryteam.noticeditor.model.PreviewStyles;
+import com.temporaryteam.noticeditor.model.*;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 import java.util.ResourceBundle;
@@ -224,6 +221,7 @@ public class NoticeController {
 	private void handleNew(ActionEvent event) {
 		rebuildTree(resources.getString("help"));
 		fileSaved = null;
+		NoticeStatusList.restore();
 	}
 
 	@FXML
@@ -242,6 +240,7 @@ public class NoticeController {
 			createSearchBinding(noticeTree.getRoot());
 			currentTreeItem = null;
 			open();
+			noticeSettingsController.updateStatuses();
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
 		}
