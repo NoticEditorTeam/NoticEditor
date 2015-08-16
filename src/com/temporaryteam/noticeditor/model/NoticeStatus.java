@@ -1,29 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.temporaryteam.noticeditor.model;
 
 /**
- *
+ * Representation of notice status
  * @author Maximillian M.
  */
 public class NoticeStatus {
 	private String name;
 	private int code;
 	
+	/**
+	 * Instantiates notice status
+	 * @param name Status name
+	 * @param code Status code
+	 */
 	public NoticeStatus(String name, int code) {
 		this.name = name;
 		this.code = code;
 	}
-			
+		
+	/**
+	 * @return Status code
+	 */
 	public int getCode() {
 		return code;
 	}
+	
 	public void setCode(int code) {
 		this.code = code;
 	}
+	
+	/**
+	 * @return Status name
+	 */
 	public String getName() {
 		return name;
 	}

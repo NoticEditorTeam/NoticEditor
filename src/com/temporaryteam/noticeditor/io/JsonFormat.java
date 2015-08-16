@@ -4,7 +4,6 @@ import static com.temporaryteam.noticeditor.io.JsonFields.*;
 import com.temporaryteam.noticeditor.model.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import javafx.scene.control.TreeItem;
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.temporaryteam.noticeditor.model;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -42,27 +36,49 @@ public class NoticeStatusList {
 		lastIndex = mementoLastIndex;
 	}
 	
+	/**
+	 * Adds new status with next status code
+	 * @param statusName Status name
+	 */
 	public static void add(String statusName) {
 		++lastIndex;
 		NoticeStatus newStatus = new NoticeStatus(statusName, lastIndex);
 		list.add(newStatus);
 	}
 	
+	/**
+	 * Adds new status with specified status code
+	 * @param statusName Status name
+	 * @param statusCode Status code
+	 */
 	public static void add(String statusName, int statusCode) {
 		lastIndex = (lastIndex < statusCode) ? statusCode : lastIndex + 1;
 		NoticeStatus newStatus = new NoticeStatus(statusName, statusCode);
 		list.add(newStatus);
 	}
 	
+	/**
+	 * Clears status list
+	 */
 	public static void clear() {
 		list = new ArrayList<>();
 	}
 	
+	/**
+	 * Returns status by code
+	 * @param statusCode Status code
+	 * @return Status
+	 */
 	public static NoticeStatus getStatus(int statusCode) {
 		NoticeStatus foo = list.stream().filter(status -> status.getCode() == statusCode).findFirst().orElse(list.get(0));
 		return foo;
 	}
 	
+	/**
+	 * Returns status code by name
+	 * @param statusName Status name
+	 * @return Status code
+	 */
 	public static int getStatusCode(String statusName) {
 		for (NoticeStatus status : list) {
 			if (status.getName().equals(statusName)) {

@@ -60,6 +60,9 @@ public class NoticeSettingsController implements Initializable {
 		open(null);
 	}
 	
+	/**
+	 * Updates items (statuses) in choice box
+	 */
 	public void updateStatuses() {
 		choiceBoxNoticeStatus.setItems(NoticeStatusList.asObservable());
 	}
