@@ -26,6 +26,7 @@ import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
 import com.temporaryteam.noticeditor.model.*;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
+import com.temporaryteam.noticeditor.view.Notification;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +34,7 @@ import javafx.beans.binding.Bindings;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import jfx.messagebox.MessageBox;
+import javafx.scene.layout.VBox;
 
 public class NoticeController {
 
@@ -58,13 +59,19 @@ public class NoticeController {
 	private Menu previewStyleMenu;
 	
 	@FXML
-    private TextField searchField;
+	private TextField searchField;
 
 	@FXML
 	private TreeView<NoticeItem> noticeTreeView;
 
 	@FXML
 	private NoticeSettingsController noticeSettingsController;
+	
+	@FXML
+	private VBox notificationBox;
+	
+	@FXML
+	private Label notificationLabel;
 	
 	@FXML
 	private ResourceBundle resources;
@@ -89,6 +96,7 @@ public class NoticeController {
 	 */
 	@FXML
 	private void initialize() {
+		Notification.init(notificationBox, notificationLabel);
 		engine = viewer.getEngine();
 
 		// Set preview styles menu items
@@ -101,6 +109,7 @@ public class NoticeController {
 				item.setSelected(true);
 			}
 			item.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
 				public void handle(ActionEvent e) {
 					String path = cssPath;
 					if (path != null) {
@@ -243,6 +252,7 @@ public class NoticeController {
 			noticeSettingsController.updateStatuses();
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
+			Notification.error("Unable to open " + fileSaved.getName());
 		}
 	}
 
@@ -261,8 +271,9 @@ public class NoticeController {
 				.filter(Chooser.ZIP, Chooser.JSON)
 				.title("Save notice")
 				.show(main.getPrimaryStage());
-		if (fileSaved == null)
+		if (fileSaved == null) {
 			return;
+		}
 
 		saveDocument(fileSaved);
 	}
@@ -275,7 +286,14 @@ public class NoticeController {
 		} else {
 			strategy = ExportStrategyHolder.ZIP;
 		}
-		DocumentFormat.save(file, noticeTree, strategy);
+		try {
+			DocumentFormat.save(file, noticeTree, strategy);
+			Notification.success("Successfully saved!");
+		} catch (ExportException e) {
+			logger.log(Level.SEVERE, null, e);
+			Notification.error("Successfully failed!");
+		}
+		
 	}
 
 	@FXML
@@ -283,16 +301,17 @@ public class NoticeController {
 		File destDir = Chooser.directory()
 				.title("Select directory to save HTML files")
 				.show(main.getPrimaryStage());
-		if (destDir == null)
+		if (destDir == null) {
 			return;
+		}
 
 		try {
 			ExportStrategyHolder.HTML.setProcessor(processor);
 			ExportStrategyHolder.HTML.export(destDir, noticeTree);
-			MessageBox.show(main.getPrimaryStage(), "Export success!", "", MessageBox.OK);
+			Notification.success("Export success!");
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);
-			MessageBox.show(main.getPrimaryStage(), "Export failed!", "", MessageBox.OK);
+			Notification.error("Export failed!");
 		}
 	}
 
@@ -309,7 +328,7 @@ public class NoticeController {
 
 	@FXML
 	private void handleAbout(ActionEvent event) {
-
+		Notification.show("NoticEditor\n==========\n\nhttps://github.com/TemporaryTeam/NoticEditor");
 	}
 	
 	public NoticeTreeItem getCurrentNotice() {

@@ -1,0 +1,10 @@
+.notificationBox {
+    -fx-background-color: #000000AA;
+    -fx-padding: 10;
+    -fx-background-radius: 3 3 0 0;
+    -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1);
+}
+.notificationLabel {
+    -fx-text-fill: #FFF;
+    -fx-font-size: 14;
+}
