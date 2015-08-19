@@ -26,7 +26,7 @@ public class Main extends Application {
 	public void initRootLayout() {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"),
-					ResourceBundle.getBundle("resources.translate.Language", Locale.getDefault()));
+					ResourceBundle.getBundle("resources.i18n.Language", Locale.getDefault()));
 			Scene scene = new Scene(loader.load());
 			primaryStage.setScene(scene);
 			NoticeController controller = (NoticeController) loader.getController();
