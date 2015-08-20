@@ -65,6 +65,8 @@ public class WebImportController implements Initializable {
 
     @FXML
     private void handlePreview(ActionEvent event) {
+		if (!isUrlValid()) return;
+		
 		importer.importFrom(urlField.getText(), importMode, (html, ex) -> {
 			if (html != null) {
 				pagePreview.getEngine().loadContent(html, "text/html");
@@ -74,6 +76,13 @@ public class WebImportController implements Initializable {
 
     @FXML
     private void handleImport(ActionEvent event) {
+		if (!isUrlValid()) return;
+		
 		importer.importFrom(urlField.getText(), importMode, importCallback);
     }
+	
+	private boolean isUrlValid() {
+		final String url = urlField.getText();
+		return !url.isEmpty();
+	}
 }
