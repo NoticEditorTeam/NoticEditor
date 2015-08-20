@@ -38,3 +38,7 @@ pack:
 		unzip $$j -x META-INF/* -d $(BUILD) > /dev/null ; \
 	done
 	$(PACKCMD)
+
+install:
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	install -m 0755 dist/NoticEditor.jar $(DESTDIR)$(PREFIX)/bin/noticed.jar
