@@ -27,6 +27,7 @@ import com.temporaryteam.noticeditor.model.*;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 import com.temporaryteam.noticeditor.view.Notification;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,7 +35,11 @@ import javafx.beans.binding.Bindings;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class NoticeController {
 
@@ -329,6 +334,34 @@ public class NoticeController {
 	@FXML
 	private void handleAbout(ActionEvent event) {
 		Notification.show("NoticEditor\n==========\n\nhttps://github.com/TemporaryTeam/NoticEditor");
+	}
+	
+	@FXML
+	private void handleImportUrl(ActionEvent event) {
+		try {
+			final ResourceBundle resource = ResourceBundle.getBundle("resources.i18n.WebImport", Locale.getDefault());
+			
+			Stage stage = new Stage();
+			stage.setTitle(resource.getString("import"));
+			stage.initOwner(main.getPrimaryStage());
+			stage.initModality(Modality.WINDOW_MODAL);
+			
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WebImport.fxml"), resource);
+			Scene scene = new Scene(loader.load());
+			stage.setScene(scene);
+			WebImportController controller = (WebImportController) loader.getController();
+			controller.setImportCallback((html, ex) -> {
+				if (ex != null) {
+					Notification.error(ex.toString());
+				} else if (html != null) {
+					noticeArea.setText(html);
+				}
+				stage.close();
+			});
+			stage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public NoticeTreeItem getCurrentNotice() {
