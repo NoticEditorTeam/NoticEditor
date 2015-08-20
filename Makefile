@@ -7,6 +7,7 @@ BUILD=./build
 LIBS=./libs
 DIST=./dist
 SRC=./src
+EXAMPLES=./examples
 
 XMLIN=$(SRC)/fxml
 XMLOUT=$(BUILD)/fxml
@@ -41,4 +42,6 @@ pack:
 
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	mkdir -p $(DESTDIR)$(PREFIX)/share/NoticEditor/examples
 	install -m 0755 dist/NoticEditor.jar $(DESTDIR)$(PREFIX)/bin/noticed.jar
+	install -m 0755 $(EXAMPLES)/Earth.zip $(DESTDIR)$(PREFIX)/share/NoticEditor/examples/Earth.zip
