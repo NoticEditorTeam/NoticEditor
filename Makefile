@@ -45,3 +45,4 @@ install:
 	mkdir -p $(DESTDIR)$(PREFIX)/share/NoticEditor/examples
 	install -m 0755 $(DIST)/$(OUTPUT) $(DESTDIR)$(PREFIX)/bin/$(OUTPUT)
 	cp -rf $(EXAMPLES) $(DESTDIR)$(PREFIX)/share/NoticEditor/examples
+	chmod -R 0755 $(DESTDIR)$(PREFIX)/share/NoticEditor/examples
