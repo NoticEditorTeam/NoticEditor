@@ -20,6 +20,11 @@
                         <MenuItem onAction="#handleSave" text="Save" />
                         <MenuItem onAction="#handleSaveAs" text="Save As" />
                         <MenuItem onAction="#handleExportHtml" text="Export to HTML" />
+                        <Menu mnemonicParsing="false" text="Import">
+                            <items>
+                                <MenuItem onAction="#handleImportUrl" text="From url" />
+                            </items>
+                        </Menu>
                         <MenuItem onAction="#handleExit" text="Exit" />
                     </items>
                 </Menu>
