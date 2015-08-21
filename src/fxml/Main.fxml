@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import javafx.scene.web.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
@@ -67,12 +66,7 @@
                               <fx:include fx:id="noticeSettings" source="NoticeSettings.fxml" />
                           </items>
                       </SplitPane>
-                      <SplitPane fx:id="editorPanel" dividerPositions="0.5" prefWidth="390.0" prefHeight="400.0">
-                          <items>
-                              <TextArea fx:id="noticeArea" prefWidth="215.0" prefHeight="400.0" />
-                              <WebView fx:id="viewer" prefWidth="310.0" prefHeight="400.0" />
-                          </items>
-                      </SplitPane>
+                      <fx:include fx:id="noticeView" source="NoticeView.fxml" />
                   </items>
               </SplitPane>
             <VBox fx:id="notificationBox" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="notificationBox" visible="false" StackPane.alignment="BOTTOM_CENTER">
