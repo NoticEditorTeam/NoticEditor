@@ -46,13 +46,10 @@ public class NoticeController {
 	private static final Logger logger = Logger.getLogger(NoticeController.class.getName());
 
 	@FXML
-	private SplitPane editorPanel;
+	private SplitPane noticeView;
 
 	@FXML
-	private TextArea noticeArea;
-
-	@FXML
-	private WebView viewer;
+	private NoticeViewController noticeViewController;
 
 	@FXML
 	private MenuItem addBranchItem, addNoticeItem, deleteItem;
@@ -81,17 +78,16 @@ public class NoticeController {
 	@FXML
 	private ResourceBundle resources;
 
-	private final PegDownProcessor processor;
+	private static NoticeController instance;
 	private Main main;
-	private WebEngine engine;
 	private NoticeTree noticeTree;
 	private NoticeTreeItem currentTreeItem;
 	private File fileSaved;
-	
+
 	public NoticeController() {
-		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
+		instance = this;
 	}
-	
+
 	public void setApplication(Main main) {
 		this.main = main;
 	}
@@ -102,27 +98,18 @@ public class NoticeController {
 	@FXML
 	private void initialize() {
 		Notification.init(notificationBox, notificationLabel);
-		engine = viewer.getEngine();
 
 		// Set preview styles menu items
 		ToggleGroup previewStyleGroup = new ToggleGroup();
 		for (PreviewStyles style : PreviewStyles.values()) {
 			final String cssPath = style.getCssPath();
 			RadioMenuItem item = new RadioMenuItem(style.getName());
+			item.setUserData(cssPath);
 			item.setToggleGroup(previewStyleGroup);
 			if (cssPath == null) {
 				item.setSelected(true);
 			}
-			item.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					String path = cssPath;
-					if (path != null) {
-						path = getClass().getResource(path).toExternalForm();
-					}
-					engine.setUserStyleSheetLocation(path);
-				}
-			});
+			item.setOnAction(noticeViewController.onPreviewStyleChange);
 			previewStyleMenu.getItems().add(item);
 		}
 
@@ -143,16 +130,7 @@ public class NoticeController {
 		
 		noticeSettingsController.setNoticeController(this);
 
-		noticeArea.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				engine.loadContent(processor.markdownToHtml(newValue));
-				if (currentTreeItem != null) {
-					currentTreeItem.changeContent(newValue);
-				}
-			}
-		});
-		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
+		noticeViewController.getEditor().wrapTextProperty().bind(wordWrapItem.selectedProperty());
 		rebuildTree(resources.getString("help"));
 	}
 
@@ -203,11 +181,11 @@ public class NoticeController {
 	 */
 	public void open() {
 		if (currentTreeItem == null || currentTreeItem.isBranch()) {
-			noticeArea.setEditable(false);
-			noticeArea.setText("");
+			noticeViewController.getEditor().setDisable(true);
+			noticeViewController.getEditor().setText("");
 		} else {
-			noticeArea.setEditable(true);
-			noticeArea.setText(currentTreeItem.getContent());
+			noticeViewController.getEditor().setDisable(false);
+			noticeViewController.getEditor().setText(currentTreeItem.getContent());
 		}
 		noticeSettingsController.open(currentTreeItem);
 	}
@@ -311,7 +289,7 @@ public class NoticeController {
 		}
 
 		try {
-			ExportStrategyHolder.HTML.setProcessor(processor);
+			ExportStrategyHolder.HTML.setProcessor(noticeViewController.processor);
 			ExportStrategyHolder.HTML.export(destDir, noticeTree);
 			Notification.success("Export success!");
 		} catch (ExportException e) {
@@ -327,7 +305,7 @@ public class NoticeController {
 
 	@FXML
 	private void handleSwitchOrientation(ActionEvent event) {
-		editorPanel.setOrientation(editorPanel.getOrientation() == Orientation.HORIZONTAL
+		noticeView.setOrientation(noticeView.getOrientation() == Orientation.HORIZONTAL
 				? Orientation.VERTICAL : Orientation.HORIZONTAL);
 	}
 
@@ -354,7 +332,7 @@ public class NoticeController {
 				if (ex != null) {
 					Notification.error(ex.toString());
 				} else if (html != null) {
-					noticeArea.setText(html);
+					noticeViewController.getEditor().setText(html);
 				}
 				stage.close();
 			});
@@ -363,7 +341,11 @@ public class NoticeController {
 			e.printStackTrace();
 		}
 	}
-	
+
+	public static NoticeController getController() {
+		return instance;
+	}
+
 	public NoticeTreeItem getCurrentNotice() {
 		return currentTreeItem;
 	}
