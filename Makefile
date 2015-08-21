@@ -18,27 +18,13 @@ MANIFEST=manifest.mf
 OUTPUT=NoticEditor.jar
 MAIN_CLASS=com/temporaryteam/noticeditor/Main.java
 
-all: init clean compile pack
+all: build
 
-init:
-	mkdir -p $(BUILD)
-	mkdir -p $(DIST)
+build:
+	gradle dist
 
-clean:
-	$(RM) $(BUILD)/*
-	$(RM) $(DIST)/$(OUTPUT)
-
-compile:
-	$(JC) $(JCOPTS)
-
-pack:
-	mkdir -p $(BUILD)/{fxml,resources}
-	cp -rf $(XMLIN)/* $(XMLOUT)
-	cp -rf $(RESIN)/* $(RESOUT)
-	for j in $(LIBS)/*.jar ; do \
-		unzip $$j -x META-INF/* -d $(BUILD) > /dev/null ; \
-	done
-	$(PACKCMD)
+tests:
+	gradle test
 
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
