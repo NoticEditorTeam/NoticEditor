@@ -27,6 +27,9 @@ public class NoticeTreeViewController implements Initializable {
 	private SplitMenuButton addItem;
 
 	@FXML
+	private Menu addChild, addNeighbour;
+
+	@FXML
 	private MenuItem addChildBranch, addChildNotice, addNeighbourBranch, addNeighbourNotice, addWrapperBranch;
 
 	@FXML
@@ -152,7 +155,8 @@ public class NoticeTreeViewController implements Initializable {
 	 * Open current item in UI. If current item == null or isBranch, interface will be cleared from last data.
 	 */
 	public void open() {
-		if (currentTreeItem == null || currentTreeItem.isBranch()) {
+		boolean isCurrentBranch = currentTreeItem == null || currentTreeItem.isBranch();
+		if (isCurrentBranch) {
 			NoticeController.getNoticeViewController().getEditor().setDisable(true);
 			NoticeController.getNoticeViewController().getEditor().setText("");
 			statusSelectButton.setText(null);
@@ -164,6 +168,8 @@ public class NoticeTreeViewController implements Initializable {
 			statusSelectButton.setDisable(false);
 		}
 		manageItemBar.setDisable(currentTreeItem == null);
+		addChild.setDisable(!isCurrentBranch);
+		addNeighbour.setDisable(currentTreeItem == null);
 	}
 
 	@FXML
