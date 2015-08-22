@@ -43,29 +43,9 @@
         </MenuBar>
       <StackPane VBox.vgrow="ALWAYS">
          <children>
-              <SplitPane dividerPositions="0.25" prefWidth="200.0" prefHeight="160.0" VBox.vgrow="ALWAYS">
+              <SplitPane dividerPositions="0.3" prefWidth="200.0" prefHeight="160.0" VBox.vgrow="ALWAYS">
                   <items>
-                      <SplitPane SplitPane.resizableWithParent="false" dividerPositions="0.1, 0.8" orientation="VERTICAL">
-                          <items>
-                              <TextField fx:id="searchField" promptText="%search" focusTraversable="false" >
-                                  <padding>
-                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                                  </padding>
-                              </TextField>
-                              <TreeView fx:id="noticeTreeView" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false">
-                                  <contextMenu>
-                                      <ContextMenu>
-                                          <items>
-                                              <MenuItem fx:id="addBranchItem" onAction="#handleContextMenu" text="Add branch" />
-                                              <MenuItem fx:id="addNoticeItem" onAction="#handleContextMenu" text="Add notice" />
-                                              <MenuItem fx:id="deleteItem" onAction="#handleContextMenu" text="Delete" />
-                                          </items>
-                                      </ContextMenu>
-                                  </contextMenu>
-                              </TreeView>
-                              <fx:include fx:id="noticeSettings" source="NoticeSettings.fxml" />
-                          </items>
-                      </SplitPane>
+                      <fx:include fx:id="noticeTreeView" source="NoticeTreeView.fxml" />
                       <fx:include fx:id="noticeView" source="NoticeView.fxml" />
                   </items>
               </SplitPane>
