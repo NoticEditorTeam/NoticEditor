@@ -27,6 +27,7 @@ public class EditNoticeTreeCell extends TreeCell<NoticeItem> {
 		}
 		setText(null);
 		setGraphic(noticeNameField);
+		noticeNameField.requestFocus();
 		noticeNameField.selectAll();
 	}
 

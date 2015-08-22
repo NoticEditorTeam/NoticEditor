@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox SplitPane.resizableWithParent="false" minWidth="0.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeTreeViewController">
+    <ToolBar>
+        <SplitMenuButton fx:id="addItem" onAction="#handleAddItem">
+            <items>
+                <Menu fx:id="addNeighbour" text="%add_neighbour">
+                    <MenuItem fx:id="addNeighbourNotice" text="%notice" onAction="#handleAddItem"/>
+                    <MenuItem fx:id="addNeighbourBranch" text="%branch" onAction="#handleAddItem"/>
+                </Menu>
+                <Menu fx:id="addChild" text="%add_child">
+                    <MenuItem fx:id="addChildNotice" text="%notice" onAction="#handleAddItem"/>
+                    <MenuItem fx:id="addChildBranch" text="%branch" onAction="#handleAddItem"/>
+                </Menu>
+                <MenuItem fx:id="addWrapperBranch" text="%wrap" onAction="#handleAddItem" />
+            </items>
+        </SplitMenuButton>
+        <TextField fx:id="searchField" promptText="%filter" prefWidth="120.0" />
+        <Button fx:id="searchButton" onAction="#handleSearch" focusTraversable="false" />
+    </ToolBar>
+    <TreeView fx:id="noticeTreeView" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS">
+        <contextMenu>
+            <ContextMenu>
+                <items>
+                    <MenuItem fx:id="addBranchItem" onAction="#handleContextMenu" text="Add branch" />
+                    <MenuItem fx:id="addNoticeItem" onAction="#handleContextMenu" text="Add notice" />
+                    <MenuItem fx:id="deleteItem" onAction="#handleContextMenu" text="Delete" />
+                </items>
+            </ContextMenu>
+        </contextMenu>
+    </TreeView>
+    <ToolBar fx:id="manageItemBar">
+        <MenuButton fx:id="statusSelectButton" prefWidth="140" />
+        <Button fx:id="renameButton" onAction="#handleRename" />
+        <Button fx:id="deleteButton" onAction="#handleDelete" />
+    </ToolBar>
+</VBox>

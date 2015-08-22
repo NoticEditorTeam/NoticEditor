@@ -1,6 +1,5 @@
 package com.temporaryteam.noticeditor.controller;
 
-import com.temporaryteam.noticeditor.Main;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.value.ChangeListener;
@@ -42,8 +41,8 @@ public class NoticeViewController implements Initializable {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				engine.loadContent(processor.markdownToHtml(newValue));
-				if (NoticeController.getController().getCurrentNotice() != null) {
-					NoticeController.getController().getCurrentNotice().changeContent(newValue);
+				if (NoticeController.getNoticeTreeViewController().getCurrentNotice() != null) {
+					NoticeController.getNoticeTreeViewController().getCurrentNotice().changeContent(newValue);
 				}
 			}
 		});
