@@ -4,6 +4,7 @@
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox SplitPane.resizableWithParent="false" minWidth="0.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeTreeViewController">
@@ -20,9 +21,30 @@
                 </Menu>
                 <MenuItem fx:id="addWrapperBranch" text="%wrap" onAction="#handleAddItem" />
             </items>
+            <graphic>
+                <ImageView>
+                    <image>
+                        <Image url="/resources/images/add.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+            <tooltip>
+                <Tooltip text="%add_smart" />
+            </tooltip>
         </SplitMenuButton>
         <TextField fx:id="searchField" promptText="%filter" prefWidth="120.0" />
-        <Button fx:id="searchButton" onAction="#handleSearch" focusTraversable="false" />
+        <Button fx:id="searchButton" onAction="#handleSearch" focusTraversable="false">
+            <graphic>
+                <ImageView>
+                    <image>
+                        <Image url="/resources/images/search.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+            <tooltip>
+                <Tooltip text="%search" />
+            </tooltip>
+        </Button>
     </ToolBar>
     <TreeView fx:id="noticeTreeView" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" VBox.vgrow="ALWAYS">
         <contextMenu>
@@ -37,7 +59,29 @@
     </TreeView>
     <ToolBar fx:id="manageItemBar">
         <MenuButton fx:id="statusSelectButton" prefWidth="140" />
-        <Button fx:id="renameButton" onAction="#handleRename" />
-        <Button fx:id="deleteButton" onAction="#handleDelete" />
+        <Button fx:id="renameButton" onAction="#handleRename">
+            <graphic>
+                <ImageView>
+                    <image>
+                        <Image url="/resources/images/rename.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+            <tooltip>
+                <Tooltip text="%rename" />
+            </tooltip>
+        </Button>
+        <Button fx:id="deleteButton" onAction="#handleDelete">
+            <graphic>
+                <ImageView>
+                    <image>
+                        <Image url="/resources/images/delete.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+            <tooltip>
+                <Tooltip text="%delete" />
+            </tooltip>
+        </Button>
     </ToolBar>
 </VBox>

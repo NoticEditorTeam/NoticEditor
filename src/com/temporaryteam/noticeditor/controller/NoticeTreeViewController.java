@@ -52,15 +52,6 @@ public class NoticeTreeViewController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resources) {
-		addItem.setGraphic(new ImageView("/resources/images/add.png"));
-		addItem.setTooltip(new Tooltip(resources.getString("add_smart")));
-		renameButton.setGraphic(new ImageView("/resources/images/rename.png"));
-		renameButton.setTooltip(new Tooltip(resources.getString("rename")));
-		deleteButton.setGraphic(new ImageView("/resources/images/delete.png"));
-		deleteButton.setTooltip(new Tooltip(resources.getString("delete")));
-		searchButton.setGraphic(new ImageView("/resources/images/search.png"));
-		searchButton.setTooltip(new Tooltip(resources.getString("search")));
-
 		final EventHandler onStatusChangeAction = new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
