@@ -11,7 +11,7 @@ public final class IOUtil {
 	private static final String NEW_LINE = System.lineSeparator();
 
 	public static String readContent(File file) throws IOException {
-		return IOUtil.stringFromStream(new FileInputStream(file));
+		return stringFromStream(new FileInputStream(file));
 	}
 	
 	public static void writeContent(File file, String content) throws IOException {
@@ -81,5 +81,14 @@ public final class IOUtil {
 			}
 		}
 		return result.toString();
+	}
+	
+	public static void copy(InputStream is, OutputStream os) throws IOException {
+		final int bufferSize = 4096;
+		final byte[] buffer = new byte[bufferSize];
+		int readed = 0;
+		while ((readed = is.read(buffer, 0, bufferSize)) != -1) {
+			os.write(buffer, 0, readed);
+		}
 	}
 }
