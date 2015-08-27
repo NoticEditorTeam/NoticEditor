@@ -28,19 +28,22 @@ public class NoticeViewController implements Initializable {
 	private WebView viewer;
 
 	protected final PegDownProcessor processor;
+	protected final SyntaxHighlighter highlighter;
 	private WebEngine engine;
 
 	public NoticeViewController() {
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
+		highlighter = new SyntaxHighlighter();
 	}
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+		highlighter.unpackHighlightJs();
 		engine = viewer.getEngine();
 		editor.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				engine.loadContent(processor.markdownToHtml(newValue));
+				engine.loadContent( highlighter.highlight(processor.markdownToHtml(newValue)) );
 				if (NoticeController.getNoticeTreeViewController().getCurrentNotice() != null) {
 					NoticeController.getNoticeTreeViewController().getCurrentNotice().changeContent(newValue);
 				}
