@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -46,7 +45,7 @@ public class NoticeController {
 	private CheckMenuItem wordWrapItem;
 
 	@FXML
-	private Menu previewStyleMenu;
+	private Menu recentFilesMenu, previewStyleMenu;
 	
 	@FXML
 	private SplitPane noticeView;
@@ -98,7 +97,8 @@ public class NoticeController {
 		if (initialDirectory.isDirectory() && initialDirectory.exists()) {
 			Chooser.setInitialDirectory(initialDirectory);
 		}
-
+		rebuildRecentFilesMenu();
+				
 		// Set preview styles menu items
 		ToggleGroup previewStyleGroup = new ToggleGroup();
 		for (PreviewStyles style : PreviewStyles.values()) {
@@ -116,6 +116,21 @@ public class NoticeController {
 		noticeViewController.getEditor().wrapTextProperty().bind(wordWrapItem.selectedProperty());
 		noticeTreeViewController.rebuildTree(resources.getString("help"));
 	}
+	
+	private void rebuildRecentFilesMenu() {
+		recentFilesMenu.getItems().clear();
+		Prefs.getRecentFiles().stream()
+				.distinct()
+				.map(File::new)
+				.filter(File::exists)
+				.filter(File::isFile)
+				.forEach(file -> {
+					MenuItem item = new MenuItem(file.getAbsolutePath());
+					item.setOnAction(e -> openDocument(file));
+					recentFilesMenu.getItems().add(item);
+				});
+		recentFilesMenu.setDisable(recentFilesMenu.getItems().isEmpty());
+	}
 
 	@FXML
 	private void handleNew(ActionEvent event) {
@@ -126,16 +141,20 @@ public class NoticeController {
 
 	@FXML
 	private void handleOpen(ActionEvent event) {
+		fileSaved = Chooser.file().open()
+				.filter(Chooser.SUPPORTED, Chooser.ALL)
+				.title("Open notice")
+				.show(main.getPrimaryStage());
+		if (fileSaved != null) {
+			openDocument(fileSaved);
+			Prefs.addToRecentFiles(fileSaved.getAbsolutePath());
+			rebuildRecentFilesMenu();
+		}
+	}
+	
+	private void openDocument(File file) {
 		try {
-			fileSaved = Chooser.file().open()
-					.filter(Chooser.SUPPORTED, Chooser.ALL)
-					.title("Open notice")
-					.show(main.getPrimaryStage());
-			if (fileSaved == null) {
-				return;
-			}
-
-			noticeTreeViewController.rebuildTree(DocumentFormat.open(fileSaved));
+			noticeTreeViewController.rebuildTree(DocumentFormat.open(file));
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
 			Notification.error("Unable to open " + fileSaved.getName());

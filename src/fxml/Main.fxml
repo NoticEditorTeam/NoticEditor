@@ -24,6 +24,7 @@
                                 <MenuItem onAction="#handleImportUrl" text="From url" />
                             </items>
                         </Menu>
+                        <Menu fx:id="recentFilesMenu" text="Recent files" />
                         <MenuItem onAction="#handleExit" text="Exit" />
                     </items>
                 </Menu>
