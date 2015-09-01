@@ -23,11 +23,13 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class NoticeController {
 
@@ -72,6 +74,18 @@ public class NoticeController {
 	public void setApplication(Main main) {
 		this.main = main;
 	}
+	
+	public static NoticeController getController() {
+		return instance;
+	}
+
+	public static NoticeViewController getNoticeViewController() {
+		return instance.noticeViewController;
+	}
+
+	public static NoticeTreeViewController getNoticeTreeViewController() {
+		return instance.noticeTreeViewController;
+	}
 
 	/**
 	 * Initializes the controller class.
@@ -79,6 +93,11 @@ public class NoticeController {
 	@FXML
 	private void initialize() {
 		Notification.init(notificationBox, notificationLabel);
+		// Restore initial directory
+		File initialDirectory = new File(Prefs.getLastDirectory());
+		if (initialDirectory.isDirectory() && initialDirectory.exists()) {
+			Chooser.setInitialDirectory(initialDirectory);
+		}
 
 		// Set preview styles menu items
 		ToggleGroup previewStyleGroup = new ToggleGroup();
@@ -226,16 +245,7 @@ public class NoticeController {
 		}
 	}
 
-	public static NoticeController getController() {
-		return instance;
+	public void onExit(WindowEvent we) {
+		Prefs.setLastDirectory(Chooser.getLastDirectory().getAbsolutePath());
 	}
-
-	public static NoticeViewController getNoticeViewController() {
-		return instance.noticeViewController;
-	}
-
-	public static NoticeTreeViewController getNoticeTreeViewController() {
-		return instance.noticeTreeViewController;
-	}
-
 }
