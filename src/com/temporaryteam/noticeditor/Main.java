@@ -31,6 +31,7 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			NoticeController controller = (NoticeController) loader.getController();
 			controller.setApplication(this);
+			primaryStage.setOnCloseRequest(controller::onExit);
 			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();

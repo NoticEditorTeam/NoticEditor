@@ -42,6 +42,10 @@ public final class Chooser {
 		Chooser.lastDirectory = directory;
 	}
 	
+	public static File getLastDirectory() {
+		return lastDirectory;
+	}
+	
 	public static ExtensionFilter getLastSelectedExtensionFilter() {
 		return lastSelectedExtensionFilter;
 	}
