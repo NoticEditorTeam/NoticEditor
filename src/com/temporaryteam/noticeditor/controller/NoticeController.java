@@ -126,7 +126,10 @@ public class NoticeController {
 				.filter(File::isFile)
 				.forEach(file -> {
 					MenuItem item = new MenuItem(file.getAbsolutePath());
-					item.setOnAction(e -> openDocument(file));
+					item.setOnAction(e -> {
+						fileSaved = file;
+						openDocument(file);
+					});
 					recentFilesMenu.getItems().add(item);
 				});
 		recentFilesMenu.setDisable(recentFilesMenu.getItems().isEmpty());
