@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.io;
 
+import gcardone.junidecode.Junidecode;
 import java.io.*;
 import java.net.URLEncoder;
 import org.json.JSONException;
@@ -45,8 +46,10 @@ public final class IOUtil {
 	public static String sanitizeFilename(String name) {
 		if (name == null || name.isEmpty()) return "empty";
 		
-		// Convert non-ascii chars to char code
 		String newName = name;
+		// Quick transliteration
+		newName = Junidecode.unidecode(newName);
+		// Convert non-ascii chars to char code
 		try {
 			newName = URLEncoder.encode(newName, "UTF-8");
 		} catch (UnsupportedEncodingException ex) { }
