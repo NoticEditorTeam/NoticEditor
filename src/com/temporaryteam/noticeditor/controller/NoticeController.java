@@ -2,21 +2,14 @@ package com.temporaryteam.noticeditor.controller;
 
 import org.json.JSONException;
 
-import org.pegdown.PegDownProcessor;
-import static org.pegdown.Extensions.*;
-
 import java.io.File;
 import java.io.IOException;
 
-import javafx.util.Callback;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
-import javafx.scene.web.WebView;
-import javafx.scene.web.WebEngine;
 
 import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.io.DocumentFormat;
@@ -25,53 +18,41 @@ import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
 import com.temporaryteam.noticeditor.model.*;
 import com.temporaryteam.noticeditor.view.Chooser;
-import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 import com.temporaryteam.noticeditor.view.Notification;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.binding.Bindings;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class NoticeController {
 
 	private static final Logger logger = Logger.getLogger(NoticeController.class.getName());
 
 	@FXML
-	private SplitPane editorPanel;
+	private VBox noticeTreeView;
 
 	@FXML
-	private TextArea noticeArea;
+	private NoticeTreeViewController noticeTreeViewController;
 
-	@FXML
-	private WebView viewer;
-
-	@FXML
-	private MenuItem addBranchItem, addNoticeItem, deleteItem;
 
 	@FXML
 	private CheckMenuItem wordWrapItem;
 
 	@FXML
-	private Menu previewStyleMenu;
+	private Menu recentFilesMenu, previewStyleMenu;
 	
 	@FXML
-	private TextField searchField;
+	private SplitPane noticeView;
 
 	@FXML
-	private TreeView<NoticeItem> noticeTreeView;
+	private NoticeViewController noticeViewController;
 
-	@FXML
-	private NoticeSettingsController noticeSettingsController;
-	
 	@FXML
 	private VBox notificationBox;
 	
@@ -81,19 +62,28 @@ public class NoticeController {
 	@FXML
 	private ResourceBundle resources;
 
-	private final PegDownProcessor processor;
+	private static NoticeController instance;
 	private Main main;
-	private WebEngine engine;
-	private NoticeTree noticeTree;
-	private NoticeTreeItem currentTreeItem;
 	private File fileSaved;
-	
+
 	public NoticeController() {
-		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
+		instance = this;
 	}
-	
+
 	public void setApplication(Main main) {
 		this.main = main;
+	}
+	
+	public static NoticeController getController() {
+		return instance;
+	}
+
+	public static NoticeViewController getNoticeViewController() {
+		return instance.noticeViewController;
+	}
+
+	public static NoticeTreeViewController getNoticeTreeViewController() {
+		return instance.noticeTreeViewController;
 	}
 
 	/**
@@ -102,159 +92,72 @@ public class NoticeController {
 	@FXML
 	private void initialize() {
 		Notification.init(notificationBox, notificationLabel);
-		engine = viewer.getEngine();
-
+		// Restore initial directory
+		File initialDirectory = new File(Prefs.getLastDirectory());
+		if (initialDirectory.isDirectory() && initialDirectory.exists()) {
+			Chooser.setInitialDirectory(initialDirectory);
+		}
+		rebuildRecentFilesMenu();
+				
 		// Set preview styles menu items
 		ToggleGroup previewStyleGroup = new ToggleGroup();
 		for (PreviewStyles style : PreviewStyles.values()) {
 			final String cssPath = style.getCssPath();
 			RadioMenuItem item = new RadioMenuItem(style.getName());
+			item.setUserData(cssPath);
 			item.setToggleGroup(previewStyleGroup);
 			if (cssPath == null) {
 				item.setSelected(true);
 			}
-			item.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent e) {
-					String path = cssPath;
-					if (path != null) {
-						path = getClass().getResource(path).toExternalForm();
-					}
-					engine.setUserStyleSheetLocation(path);
-				}
-			});
+			item.setOnAction(noticeViewController.onPreviewStyleChange);
 			previewStyleMenu.getItems().add(item);
 		}
 
-		noticeTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<NoticeItem>>() {
-			@Override
-			public void changed(ObservableValue<? extends TreeItem<NoticeItem>> observable, TreeItem<NoticeItem> oldValue, TreeItem<NoticeItem> newValue) {
-				currentTreeItem = (NoticeTreeItem) newValue;
-				open();
-			}
-		});
-		noticeTreeView.setCellFactory(new Callback<TreeView<NoticeItem>, TreeCell<NoticeItem>>() {
-			@Override
-			public TreeCell<NoticeItem> call(TreeView<NoticeItem> p) {
-				return new EditNoticeTreeCell();
-			}
-		});
-		
-		noticeSettingsController.setNoticeController(this);
-
-		noticeArea.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				engine.loadContent(processor.markdownToHtml(newValue));
-				if (currentTreeItem != null) {
-					currentTreeItem.changeContent(newValue);
-				}
-			}
-		});
-		noticeArea.wrapTextProperty().bind(wordWrapItem.selectedProperty());
-		rebuildTree(resources.getString("help"));
-	}
-
-	/**
-	 * Rebuild tree
-	 */
-	public void rebuildTree(String defaultNoticeContent) {
-		final NoticeTreeItem root = new NoticeTreeItem("Root");
-		noticeTree = new NoticeTree(root);
-		currentTreeItem = new NoticeTreeItem("Default notice", defaultNoticeContent, NoticeItem.STATUS_NORMAL);
-		noticeTree.addItem(currentTreeItem, root);
-		noticeTreeView.setRoot(root);
-		createSearchBinding(root);
-		open();
-	}
-
-	private void createSearchBinding(final NoticeTreeItem root) {
-		searchField.clear();
-		root.predicateProperty().bind(
-				Bindings.createObjectBinding(this::searchTreeItemPredicate, searchField.textProperty()));
+		noticeViewController.getEditor().wrapTextProperty().bind(wordWrapItem.selectedProperty());
+		noticeTreeViewController.rebuildTree(resources.getString("help"));
 	}
 	
-	private NoticeTreeItem.Predicate<NoticeItem> searchTreeItemPredicate() {
-		if ( (searchField.getText() == null) || (searchField.getText().isEmpty()) ) {
-			return null;
-		}
-		return this::noticeSearch;
-	}
-	
-	/**
-	 * Search by title and content
-	 * @return 
-	 */
-	private boolean noticeSearch(TreeItem<NoticeItem> parent, NoticeItem note) {
-		final String searchString = searchField.getText().toLowerCase();
-
-		final String title = note.getTitle().toLowerCase();
-		if (title.contains(searchString)) return true;
-
-		final String content = note.getContent();
-		if (content == null || content.isEmpty()) return false;
-
-		return content.toLowerCase().contains(searchString);
-	}
-
-	/**
-	 * Open current item in UI. If current item == null or isBranch, interface will be cleared from last data.
-	 */
-	public void open() {
-		if (currentTreeItem == null || currentTreeItem.isBranch()) {
-			noticeArea.setEditable(false);
-			noticeArea.setText("");
-		} else {
-			noticeArea.setEditable(true);
-			noticeArea.setText(currentTreeItem.getContent());
-		}
-		noticeSettingsController.open(currentTreeItem);
-	}
-
-	/**
-	 * Handler
-	 */
-	@FXML
-	private void handleContextMenu(ActionEvent event) {
-		Object source = event.getSource();
-		if (source == addBranchItem) {
-			noticeTree.addItem(new NoticeTreeItem("New branch"), currentTreeItem);
-		} else if (source == addNoticeItem) {
-			noticeTree.addItem(new NoticeTreeItem("New notice", "", NoticeItem.STATUS_NORMAL), currentTreeItem);
-		} else if (source == deleteItem) {
-			noticeTree.removeItem(currentTreeItem);
-			if (currentTreeItem != null && currentTreeItem.getParent() == null) {
-				currentTreeItem = null;
-				noticeSettingsController.open(null);
-			}
-		}
+	private void rebuildRecentFilesMenu() {
+		recentFilesMenu.getItems().clear();
+		Prefs.getRecentFiles().stream()
+				.distinct()
+				.map(File::new)
+				.filter(File::exists)
+				.filter(File::isFile)
+				.forEach(file -> {
+					MenuItem item = new MenuItem(file.getAbsolutePath());
+					item.setOnAction(e -> {
+						fileSaved = file;
+						openDocument(file);
+					});
+					recentFilesMenu.getItems().add(item);
+				});
+		recentFilesMenu.setDisable(recentFilesMenu.getItems().isEmpty());
 	}
 
 	@FXML
 	private void handleNew(ActionEvent event) {
-		rebuildTree(resources.getString("help"));
+		noticeTreeViewController.rebuildTree(resources.getString("help"));
 		fileSaved = null;
 		NoticeStatusList.restore();
 	}
 
 	@FXML
 	private void handleOpen(ActionEvent event) {
+		fileSaved = Chooser.file().open()
+				.filter(Chooser.SUPPORTED, Chooser.ALL)
+				.title("Open notice")
+				.show(main.getPrimaryStage());
+		if (fileSaved != null) {
+			openDocument(fileSaved);
+			Prefs.addToRecentFiles(fileSaved.getAbsolutePath());
+			rebuildRecentFilesMenu();
+		}
+	}
+	
+	private void openDocument(File file) {
 		try {
-			fileSaved = Chooser.file().open()
-					.filter(Chooser.SUPPORTED, Chooser.ALL)
-					.title("Open notice")
-					.show(main.getPrimaryStage());
-			if (fileSaved == null) {
-				return;
-			}
-
-			noticeTree = DocumentFormat.open(fileSaved);
-			noticeTreeView.setRoot(noticeTree.getRoot());
-			createSearchBinding(noticeTree.getRoot());
-			currentTreeItem = null;
-			open();
-			noticeSettingsController.updateStatuses();
+			noticeTreeViewController.rebuildTree(DocumentFormat.open(file));
 		} catch (IOException | JSONException e) {
 			logger.log(Level.SEVERE, null, e);
 			Notification.error("Unable to open " + fileSaved.getName());
@@ -292,7 +195,7 @@ public class NoticeController {
 			strategy = ExportStrategyHolder.ZIP;
 		}
 		try {
-			DocumentFormat.save(file, noticeTree, strategy);
+			DocumentFormat.save(file, noticeTreeViewController.getNoticeTree(), strategy);
 			Notification.success("Successfully saved!");
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);
@@ -311,8 +214,8 @@ public class NoticeController {
 		}
 
 		try {
-			ExportStrategyHolder.HTML.setProcessor(processor);
-			ExportStrategyHolder.HTML.export(destDir, noticeTree);
+			ExportStrategyHolder.HTML.setProcessor(noticeViewController.processor);
+			ExportStrategyHolder.HTML.export(destDir, noticeTreeViewController.getNoticeTree());
 			Notification.success("Export success!");
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);
@@ -327,7 +230,7 @@ public class NoticeController {
 
 	@FXML
 	private void handleSwitchOrientation(ActionEvent event) {
-		editorPanel.setOrientation(editorPanel.getOrientation() == Orientation.HORIZONTAL
+		noticeView.setOrientation(noticeView.getOrientation() == Orientation.HORIZONTAL
 				? Orientation.VERTICAL : Orientation.HORIZONTAL);
 	}
 
@@ -354,7 +257,7 @@ public class NoticeController {
 				if (ex != null) {
 					Notification.error(ex.toString());
 				} else if (html != null) {
-					noticeArea.setText(html);
+					noticeViewController.getEditor().setText(html);
 				}
 				stage.close();
 			});
@@ -363,9 +266,8 @@ public class NoticeController {
 			e.printStackTrace();
 		}
 	}
-	
-	public NoticeTreeItem getCurrentNotice() {
-		return currentTreeItem;
-	}
 
+	public void onExit(WindowEvent we) {
+		Prefs.setLastDirectory(Chooser.getLastDirectory().getAbsolutePath());
+	}
 }
