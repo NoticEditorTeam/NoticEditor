@@ -8,6 +8,23 @@ import java.io.IOException;
 
 public final class FileImporter {
 
+	private static Tree treeImporter;
+	private static Content contentImporter;
+
+	public static Tree tree() {
+		if (treeImporter == null) {
+			treeImporter = new Tree();
+		}
+		return treeImporter;
+	}
+
+	public static Content content() {
+		if (contentImporter == null) {
+			contentImporter = new Content();
+		}
+		return contentImporter;
+	}
+
 	public static class Tree implements Importer<File, Void, NoticeTree> {
 
 		@Override
