@@ -158,7 +158,7 @@ public class NoticeController {
 	private void openDocument(File file) {
 		try {
 			noticeTreeViewController.rebuildTree(DocumentFormat.open(file));
-		} catch (IOException | JSONException e) {
+		} catch (IOException e) {
 			logger.log(Level.SEVERE, null, e);
 			Notification.error("Unable to open " + fileSaved.getName());
 		}
