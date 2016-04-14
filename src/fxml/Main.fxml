@@ -22,6 +22,7 @@
                         <Menu mnemonicParsing="false" text="Import">
                             <items>
                                 <MenuItem onAction="#handleImportUrl" text="From url" />
+                                <MenuItem onAction="#handleImportFile" text="From file" />
                             </items>
                         </Menu>
                         <Menu fx:id="recentFilesMenu" text="Recent files" />

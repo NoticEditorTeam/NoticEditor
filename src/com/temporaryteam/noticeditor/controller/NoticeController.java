@@ -16,6 +16,7 @@ import com.temporaryteam.noticeditor.io.DocumentFormat;
 import com.temporaryteam.noticeditor.io.ExportException;
 import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
+import com.temporaryteam.noticeditor.io.importers.FileImporter;
 import com.temporaryteam.noticeditor.model.*;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.Notification;
@@ -158,7 +159,7 @@ public class NoticeController {
 	private void openDocument(File file) {
 		try {
 			noticeTreeViewController.rebuildTree(DocumentFormat.open(file));
-		} catch (IOException | JSONException e) {
+		} catch (IOException e) {
 			logger.log(Level.SEVERE, null, e);
 			Notification.error("Unable to open " + fileSaved.getName());
 		}
@@ -263,8 +264,25 @@ public class NoticeController {
 			});
 			stage.show();
 		} catch(Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, null, e);
 		}
+	}
+
+	@FXML
+	private void handleImportFile(ActionEvent event) {
+		File file = Chooser.file().open()
+				.filter(Chooser.SUPPORTED, Chooser.ALL)
+				.title("Import file")
+				.show(main.getPrimaryStage());
+		if (file == null) return;
+
+		FileImporter.content().importFrom(file, null, (text, ex) -> {
+			if (ex != null) {
+				Notification.error(ex.toString());
+			} else if (text != null) {
+				noticeViewController.getEditor().setText(text);
+			}
+		});
 	}
 
 	public void onExit(WindowEvent we) {
