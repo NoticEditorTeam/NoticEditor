@@ -1,13 +1,13 @@
 package com.temporaryteam.noticeditor;
 
 import com.temporaryteam.noticeditor.controller.NoticeController;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class Main extends Application {
 
@@ -29,8 +29,9 @@ public class Main extends Application {
 					ResourceBundle.getBundle("resources.i18n.Language", Locale.getDefault()));
 			Scene scene = new Scene(loader.load());
 			primaryStage.setScene(scene);
-			NoticeController controller = (NoticeController) loader.getController();
+			NoticeController controller = loader.getController();
 			controller.setApplication(this);
+			NoticeController.getNoticeTreeViewController().setMain(this);
 			primaryStage.setOnCloseRequest(controller::onExit);
 			primaryStage.show();
 		} catch(Exception e) {

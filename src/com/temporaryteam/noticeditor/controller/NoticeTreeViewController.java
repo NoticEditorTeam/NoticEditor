@@ -1,10 +1,10 @@
 package com.temporaryteam.noticeditor.controller;
 
+import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.model.*;
+import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.EditNoticeTreeCell;
 import com.temporaryteam.noticeditor.view.Notification;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -13,10 +13,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class NoticeTreeViewController implements Initializable {
 
@@ -36,7 +39,7 @@ public class NoticeTreeViewController implements Initializable {
 	private TextField searchField;
 
 	@FXML
-	private Button searchButton, renameButton, deleteButton;
+	private Button searchButton, renameButton, addFileButton, deleteButton;
 
 	@FXML
 	private MenuButton statusSelectButton;
@@ -49,6 +52,8 @@ public class NoticeTreeViewController implements Initializable {
 
 	private NoticeTree noticeTree;
 	private NoticeTreeItem currentTreeItem;
+
+	private Main main;
 
 	@Override
 	public void initialize(URL url, ResourceBundle resources) {
@@ -126,7 +131,7 @@ public class NoticeTreeViewController implements Initializable {
 	/**
 	 * Search by title and content
 	 *
-	 * @return
+	 * @return true if found
 	 */
 	private boolean noticeSearch(TreeItem<NoticeItem> parent, NoticeItem note) {
 		final String searchString = searchField.getText().toLowerCase();
@@ -214,6 +219,25 @@ public class NoticeTreeViewController implements Initializable {
 	}
 
 	@FXML
+	private void handleAddFile(ActionEvent event) {
+		boolean isCurrentBranch = (currentTreeItem == null) || (currentTreeItem.isBranch());
+		if (isCurrentBranch) Notification.error("Can't add file to branch");
+		else {
+			File fileInjected = Chooser.file().open()
+					.filter(Chooser.SUPPORTED, Chooser.ALL)
+					.title("Open image")
+					.show(main.getPrimaryStage());
+			if (fileInjected != null) {
+				try {
+					currentTreeItem.addImage(fileInjected);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	@FXML
 	private void handleDelete(ActionEvent event) {
 		noticeTree.removeItem(currentTreeItem);
 		if (currentTreeItem != null && currentTreeItem.getParent() == null) {
@@ -228,5 +252,9 @@ public class NoticeTreeViewController implements Initializable {
 
 	public NoticeTree getNoticeTree() {
 		return noticeTree;
+	}
+
+	public void setMain(Main main) {
+		this.main = main;
 	}
 }
