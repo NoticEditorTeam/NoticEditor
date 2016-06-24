@@ -1,4 +1,5 @@
 /build/
+/classes/
 /dist/
 .vimrc
 *.swp
