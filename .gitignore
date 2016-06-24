@@ -1,6 +1,8 @@
-/build
-/dist
+/build/
+/classes/
+/dist/
 .vimrc
 *.swp
+/.idea/
 /nbproject/private/
 .gradle/
