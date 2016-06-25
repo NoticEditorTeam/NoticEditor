@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
@@ -245,6 +246,20 @@ public class NoticeTreeViewController implements Initializable {
 			open();
 		}
 	}
+
+    @FXML
+    private void handleKey(KeyEvent event) {
+        if (event.isControlDown()) {
+            switch (event.getCode()) {
+                case N:
+                    noticeTree.addItem(new NoticeTreeItem("New notice", "", NoticeItem.STATUS_NORMAL), currentTreeItem);
+                    break;
+                case B:
+                    noticeTree.addItem(new NoticeTreeItem("New branch"), currentTreeItem);
+                    break;
+            }
+        }
+    }
 
 	public NoticeTreeItem getCurrentNotice() {
 		return currentTreeItem;
