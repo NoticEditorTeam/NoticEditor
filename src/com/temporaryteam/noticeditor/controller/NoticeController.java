@@ -1,5 +1,6 @@
 package com.temporaryteam.noticeditor.controller;
 
+import javafx.scene.input.KeyEvent;
 import org.json.JSONException;
 
 import java.io.File;
@@ -155,6 +156,24 @@ public class NoticeController {
 			rebuildRecentFilesMenu();
 		}
 	}
+
+    @FXML
+    private void handleKey(KeyEvent event) {
+        if(event.isControlDown()) {
+            switch(event.getCode()) {
+                case O:
+                    handleOpen(null);
+                case S:
+                    if(event.isShiftDown())
+                        handleSaveAs(null);
+                    else
+                        handleSave(null);
+                case N:
+                    if(event.isShiftDown())
+                        handleNew(null);
+            }
+        }
+    }
 	
 	private void openDocument(File file) {
 		try {
