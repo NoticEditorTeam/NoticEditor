@@ -32,7 +32,8 @@ public class Main extends Application {
 			NoticeController controller = loader.getController();
 			controller.setApplication(this);
 			NoticeController.getNoticeTreeViewController().setMain(this);
-			primaryStage.setOnCloseRequest(controller::onExit);
+            NoticeController.getNoticeViewController().setMain(this);
+            primaryStage.setOnCloseRequest(controller::onExit);
 			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();

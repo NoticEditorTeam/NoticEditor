@@ -1,36 +1,36 @@
 package com.temporaryteam.noticeditor.controller;
 
-import javafx.scene.input.KeyEvent;
-import org.json.JSONException;
-
-import java.io.File;
-import java.io.IOException;
-
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.geometry.Orientation;
-import javafx.scene.control.*;
-
 import com.temporaryteam.noticeditor.Main;
 import com.temporaryteam.noticeditor.io.DocumentFormat;
 import com.temporaryteam.noticeditor.io.ExportException;
 import com.temporaryteam.noticeditor.io.ExportStrategy;
 import com.temporaryteam.noticeditor.io.ExportStrategyHolder;
 import com.temporaryteam.noticeditor.io.importers.FileImporter;
-import com.temporaryteam.noticeditor.model.*;
+import com.temporaryteam.noticeditor.model.NoticeStatusList;
+import com.temporaryteam.noticeditor.model.Prefs;
+import com.temporaryteam.noticeditor.model.PreviewStyles;
+import com.temporaryteam.noticeditor.model.Themes;
 import com.temporaryteam.noticeditor.view.Chooser;
 import com.temporaryteam.noticeditor.view.Notification;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NoticeController {
 
@@ -47,9 +47,9 @@ public class NoticeController {
 	private CheckMenuItem wordWrapItem;
 
 	@FXML
-	private Menu recentFilesMenu, previewStyleMenu;
-	
-	@FXML
+    private Menu recentFilesMenu, previewStyleMenu, themesMenu;
+
+    @FXML
 	private SplitPane noticeView;
 
 	@FXML
@@ -114,8 +114,19 @@ public class NoticeController {
 			item.setOnAction(noticeViewController.onPreviewStyleChange);
 			previewStyleMenu.getItems().add(item);
 		}
-
-		noticeViewController.getEditor().wrapTextProperty().bind(wordWrapItem.selectedProperty());
+        ToggleGroup themesGroup = new ToggleGroup();
+        for (Themes style : Themes.values()) {
+            final String cssPath = style.getCssPath();
+            RadioMenuItem item = new RadioMenuItem(style.getName());
+            item.setUserData(cssPath);
+            item.setToggleGroup(themesGroup);
+            if (cssPath == null) {
+                item.setSelected(true);
+            }
+            item.setOnAction(noticeViewController.onThemeChange);
+            themesMenu.getItems().add(item);
+        }
+        noticeViewController.getEditor().wrapTextProperty().bind(wordWrapItem.selectedProperty());
 		noticeTreeViewController.rebuildTree(resources.getString("help"));
 	}
 	

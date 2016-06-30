@@ -29,6 +29,7 @@
                         <MenuItem onAction="#handleSwitchOrientation" text="Switch orientation" />
                         <CheckMenuItem fx:id="wordWrapItem" text="Word wrap" />
                         <Menu fx:id="previewStyleMenu" text="Preview style" />
+                        <Menu fx:id="themesMenu" mnemonicParsing="false" text="Theme"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">

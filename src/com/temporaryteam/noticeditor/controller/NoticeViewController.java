@@ -1,7 +1,6 @@
 package com.temporaryteam.noticeditor.controller;
 
-import java.net.URL;
-import java.util.ResourceBundle;
+import com.temporaryteam.noticeditor.Main;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -12,8 +11,12 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import static org.pegdown.Extensions.*;
 import org.pegdown.PegDownProcessor;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import static org.pegdown.Extensions.*;
 
 /**
  *
@@ -30,6 +33,7 @@ public class NoticeViewController implements Initializable {
 	protected final PegDownProcessor processor;
 	protected final SyntaxHighlighter highlighter;
 	private WebEngine engine;
+    private Main main;
 
 	public NoticeViewController() {
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
@@ -66,4 +70,22 @@ public class NoticeViewController implements Initializable {
 			engine.setUserStyleSheetLocation(path);
 		}
 	};
+
+    public final EventHandler<ActionEvent> onThemeChange = new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent e) {
+            // CSS path
+            String path = (String) ((RadioMenuItem) e.getSource()).getUserData();
+            if (path != null) {
+                path = getClass().getResource(path).toExternalForm();
+                main.getPrimaryStage().getScene().getStylesheets().add(path);
+            } else {
+                main.getPrimaryStage().getScene().getStylesheets().clear();
+            }
+        }
+    };
+
+    public void setMain(Main main) {
+        this.main = main;
+    }
 }
