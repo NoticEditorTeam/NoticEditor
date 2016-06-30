@@ -1,6 +1,7 @@
 package com.noticeditorteam.noticeditor.controller;
 
 import com.noticeditorteam.noticeditor.Main;
+import com.noticeditorteam.noticeditor.model.PreviewStyles;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -34,6 +35,8 @@ public class NoticeViewController implements Initializable {
     private WebEngine engine;
     private Main main;
 
+	private String codeCssName;
+
     public NoticeViewController() {
         processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
         highlighter = new SyntaxHighlighter();
@@ -46,10 +49,7 @@ public class NoticeViewController implements Initializable {
         editor.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                engine.loadContent(highlighter.highlight(processor.markdownToHtml(newValue)));
-                if (NoticeController.getNoticeTreeViewController().getCurrentNotice() != null) {
-                    NoticeController.getNoticeTreeViewController().getCurrentNotice().changeContent(newValue);
-                }
+                changeContent(newValue);
             }
         });
     }
@@ -58,15 +58,26 @@ public class NoticeViewController implements Initializable {
         return editor;
     }
 
+	private void changeContent(String newValue) {
+		engine.loadContent(highlighter.highlight(processor.markdownToHtml(newValue), codeCssName));
+		if (NoticeController.getNoticeTreeViewController().getCurrentNotice() != null) {
+			NoticeController.getNoticeTreeViewController().getCurrentNotice().changeContent(newValue);
+		}
+	}
+
     public final EventHandler<ActionEvent> onPreviewStyleChange = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent e) {
             // CSS path
-            String path = (String) ((RadioMenuItem) e.getSource()).getUserData();
+            final int ordinal = (int) ((RadioMenuItem) e.getSource()).getUserData();
+			PreviewStyles style = PreviewStyles.values()[ordinal];
+            String path = style.getCssPath();
             if (path != null) {
                 path = getClass().getResource(path).toExternalForm();
             }
+			codeCssName = style.getCodeCssName();
             engine.setUserStyleSheetLocation(path);
+			changeContent(editor.textProperty().getValue());
         }
     };
 

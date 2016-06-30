@@ -106,7 +106,7 @@ public class NoticeController {
         for (PreviewStyles style : PreviewStyles.values()) {
             final String cssPath = style.getCssPath();
             RadioMenuItem item = new RadioMenuItem(style.getName());
-            item.setUserData(cssPath);
+            item.setUserData(style.ordinal());
             item.setToggleGroup(previewStyleGroup);
             if (cssPath == null) {
                 item.setSelected(true);

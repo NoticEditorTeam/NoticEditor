@@ -26,23 +26,31 @@ public class SyntaxHighlighter {
         new Thread(unpackHighlightJs).start();
     }
 
+	public String highlight(String content) {
+		return highlight(content, null);
+	}
+
     /**
      * Adds html header with css and highlight.js library.
      *
-     * @param content the html content
+     * @param content  the html content
+	 * @param codeCssName  css style name for code highlight
      * @return full html page
      */
-    public String highlight(String content) {
+    public String highlight(String content, String codeCssName) {
         final Set<String> languages = getUsedLanguages(content);
         if (languages == null || languages.isEmpty()) return content;
 
         final String path = "file://" + DIRECTORY.toURI().getPath();
         final String lang = path + "languages/";
+		if (codeCssName == null) {
+			codeCssName = "vs.css";
+		}
 
         final StringBuilder sb = new StringBuilder();
         sb.append("<html>\n<head>\n");
-        // TODO: coloring style preferences
-        sb.append("<link type=\"text/css\" href=\"").append(path).append("styles/vs.css\" rel=\"stylesheet\" />\n");
+        sb.append("<link type=\"text/css\" href=\"").append(path)
+				.append("styles/").append(codeCssName).append("\" rel=\"stylesheet\" />\n");
         sb.append("<script src=\"").append(path).append("highlight.js\"></script>\n");
         for (String language : languages) {
             sb.append("<script src=\"").append(lang).append(language).append(".js\"></script>\n");
