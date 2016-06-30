@@ -3,6 +3,9 @@ package com.temporaryteam.noticeditor.model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.File;
+import java.util.ArrayList;
+
 /**
  * Model representation of notice. Contains notice data or branch data
  *
@@ -17,6 +20,7 @@ public class NoticeItem {
 	private ObservableList<NoticeItem> children;
 	private String content;
 	private int status;
+	private ArrayList<File> images;
 
 	/**
 	 * Create branch node on tree.
@@ -47,6 +51,7 @@ public class NoticeItem {
 		this.title = title;
 		this.content = content;
 		this.status = status;
+		images = new ArrayList<>();
 		children = FXCollections.observableArrayList();
 	}
 
@@ -102,5 +107,9 @@ public class NoticeItem {
 	@Override
 	public String toString() {
 		return title + "\n\n" + content;
+	}
+
+	public ArrayList<File> getImages() {
+		return images;
 	}
 }

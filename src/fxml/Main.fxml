@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.scene.control.CheckMenuItem?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-
-<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.60"
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.92"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeController">
    <children>
         <MenuBar>
@@ -62,7 +54,4 @@
          </children>
       </StackPane>
    </children>
-   <stylesheets>
-        <URL value="@/resources/styles/main.css" />
-    </stylesheets>
 </VBox>

@@ -102,7 +102,8 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
             String encodedContent = Base64.getEncoder().encodeToString(content);
             String newcontent = oldcontent + "\n<img src=\"data:image/png;base64, " + encodedContent + "\"/>";
             changeContent(newcontent);
-        } catch (Exception e) {
+			getValue().getImages().add(image);
+		} catch (Exception e) {
             e.printStackTrace();
         }
     }

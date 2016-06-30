@@ -15,19 +15,21 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox minWidth="0.0" SplitPane.resizableWithParent="false" xmlns="http://javafx.com/javafx/8.0.92" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeTreeViewController">
+<VBox minWidth="0.0" onKeyPressed="#handleKey" SplitPane.resizableWithParent="false"
+      xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.temporaryteam.noticeditor.controller.NoticeTreeViewController">
     <ToolBar>
         <SplitMenuButton fx:id="addItem" onAction="#handleAddItem">
             <items>
                 <Menu fx:id="addNeighbour" text="%add_neighbour">
-                    <MenuItem fx:id="addNeighbourNotice" onAction="#handleAddItem" text="%notice" />
-                    <MenuItem fx:id="addNeighbourBranch" onAction="#handleAddItem" text="%branch" />
+                    <MenuItem fx:id="addNeighbourNotice" onAction="#handleAddItem" text="%notice"/>
+                    <MenuItem fx:id="addNeighbourBranch" onAction="#handleAddItem" text="%branch"/>
                 </Menu>
                 <Menu fx:id="addChild" text="%add_child">
-                    <MenuItem fx:id="addChildNotice" onAction="#handleAddItem" text="%notice" />
-                    <MenuItem fx:id="addChildBranch" onAction="#handleAddItem" text="%branch" />
+                    <MenuItem fx:id="addChildNotice" onAction="#handleAddItem" text="%notice"/>
+                    <MenuItem fx:id="addChildBranch" onAction="#handleAddItem" text="%branch"/>
                 </Menu>
-                <MenuItem fx:id="addWrapperBranch" onAction="#handleAddItem" text="%wrap" />
+                <MenuItem fx:id="addWrapperBranch" onAction="#handleAddItem" text="%wrap"/>
             </items>
             <graphic>
                 <ImageView>
@@ -40,7 +42,7 @@
                 <Tooltip text="%add_smart" />
             </tooltip>
         </SplitMenuButton>
-        <TextField fx:id="searchField" prefWidth="120.0" promptText="%filter" />
+        <TextField fx:id="searchField" prefWidth="120.0" promptText="%filter"/>
         <Button fx:id="searchButton" focusTraversable="false" onAction="#handleSearch">
             <graphic>
                 <ImageView>
@@ -79,14 +81,14 @@
                 <Tooltip text="%rename" />
             </tooltip>
         </Button>
-      <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#handleAddFile" text="Button">
-         <graphic>
-            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-         </graphic>
-         <tooltip>
-            <Tooltip text="\%add" />
-         </tooltip>
-      </Button>
+        <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#handleAddFile" text="Button">
+            <graphic>
+                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+            </graphic>
+            <tooltip>
+                <Tooltip text="\%add"/>
+            </tooltip>
+        </Button>
         <Button fx:id="deleteButton" onAction="#handleDelete">
             <graphic>
                 <ImageView>
