@@ -1,15 +1,18 @@
 package com.temporaryteam.noticeditor.io;
 
 import static com.temporaryteam.noticeditor.io.JsonFields.*;
+
 import com.temporaryteam.noticeditor.model.NoticeItem;
 import com.temporaryteam.noticeditor.model.NoticeTree;
 import com.temporaryteam.noticeditor.model.NoticeTreeItem;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
 import javafx.scene.control.TreeItem;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -22,57 +25,58 @@ import org.json.JSONObject;
 
 /**
  * Document format that stores to zip archive with index.json.
+ *
  * @author aNNiMON
  */
 public class ZipWithIndexFormat {
-	
+
 	private static final String INDEX_JSON = "index.json";
 
 	private static final String BRANCH_PREFIX = "branch_";
 	private static final String NOTE_PREFIX = "note_";
-	
+
 	public static ZipWithIndexFormat with(File file) throws ZipException {
 		return new ZipWithIndexFormat(file);
 	}
-	
+
 	private final Set<String> paths;
 	private final ZipFile zip;
 	private final ZipParameters parameters;
-	
+
 	private ZipWithIndexFormat(File file) throws ZipException {
 		paths = new HashSet<>();
 		zip = new ZipFile(file);
 		parameters = new ZipParameters();
 	}
-	
+
 	public NoticeTree importDocument() throws IOException, JSONException, ZipException {
 		String indexContent = readFile(INDEX_JSON);
-		if (indexContent == null || indexContent.isEmpty()) {
+		if (indexContent.isEmpty()) {
 			throw new IOException("Invalid file format");
 		}
-		
+
 		JSONObject index = new JSONObject(indexContent);
 		return new NoticeTree(readNotices("", index));
 	}
-	
+
 	private String readFile(String path) throws IOException, ZipException {
 		FileHeader header = zip.getFileHeader(path);
 		if (header == null) return "";
 		return IOUtil.stringFromStream(zip.getInputStream(header));
 	}
-	
+
 	private NoticeTreeItem readNotices(String dir, JSONObject index) throws IOException, JSONException, ZipException {
 		final String title = index.getString(KEY_TITLE);
 		final String filename = index.getString(KEY_FILENAME);
 		final int status = index.optInt(KEY_STATUS, NoticeItem.STATUS_NORMAL);
 		final String dirPrefix = index.has(KEY_CHILDREN) ? BRANCH_PREFIX : NOTE_PREFIX;
-		
+
 		final String newDir = dir + dirPrefix + filename + "/";
 		if (index.has(KEY_CHILDREN)) {
 			JSONArray children = index.getJSONArray(KEY_CHILDREN);
 			NoticeTreeItem branch = new NoticeTreeItem(title);
 			for (int i = 0; i < children.length(); i++) {
-				branch.addChild( readNotices(newDir, children.getJSONObject(i)) );
+				branch.addChild(readNotices(newDir, children.getJSONObject(i)));
 			}
 			return branch;
 		} else {
@@ -95,7 +99,7 @@ public class ZipWithIndexFormat {
 	public void export(NoticeTree tree) throws IOException, JSONException, ZipException {
 		export(tree.getRoot());
 	}
-	
+
 	private void storeFile(String path, String content) throws IOException, ZipException {
 		parameters.setFileNameInZip(path);
 		try (InputStream stream = IOUtil.toStream(content)) {
@@ -107,7 +111,7 @@ public class ZipWithIndexFormat {
 		final String title = item.getTitle();
 		final String dirPrefix = item.isBranch() ? BRANCH_PREFIX : NOTE_PREFIX;
 		String filename = IOUtil.sanitizeFilename(title);
-		
+
 		String newDir = dir + dirPrefix + filename;
 		if (paths.contains(newDir)) {
 			// solve collision
@@ -120,16 +124,16 @@ public class ZipWithIndexFormat {
 			filename = newFileName;
 		}
 		paths.add(newDir);
-		
+
 		index.put(KEY_TITLE, title);
 		index.put(KEY_FILENAME, filename);
-		
+
 		if (item.isBranch()) {
 			// ../branch_filename
 			ArrayList list = new ArrayList();
 			for (TreeItem<NoticeItem> object : item.getInternalChildren()) {
 				NoticeTreeItem child = (NoticeTreeItem) object;
-				
+
 				JSONObject indexEntry = new JSONObject();
 				writeNoticesAndFillIndex(newDir + "/", child, indexEntry);
 				list.add(indexEntry);

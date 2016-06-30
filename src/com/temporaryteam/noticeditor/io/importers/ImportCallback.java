@@ -1,13 +1,12 @@
 package com.temporaryteam.noticeditor.io.importers;
 
 /**
- *
- * @author aNNiMON
  * @param <R> result
  * @param <O> optional
+ * @author aNNiMON
  */
 @FunctionalInterface
 public interface ImportCallback<R, O> {
 
-	public void call(R result, O optional);
+    public void call(R result, O optional);
 }
