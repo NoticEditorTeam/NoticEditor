@@ -17,7 +17,7 @@
 
 <VBox minWidth="0.0" onKeyPressed="#handleKey" SplitPane.resizableWithParent="false"
       xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.temporaryteam.noticeditor.controller.NoticeTreeViewController">
+      fx:controller="com.noticeditorteam.noticeditor.controller.NoticeTreeViewController">
     <ToolBar>
         <SplitMenuButton fx:id="addItem" onAction="#handleAddItem">
             <items>

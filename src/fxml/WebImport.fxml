@@ -7,7 +7,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane prefHeight="320.0" prefWidth="480.0" hgap="5.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.WebImportController">
+<GridPane prefHeight="320.0" prefWidth="480.0" hgap="5.0" vgap="10.0" xmlns="http://javafx.com/javafx/8"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.noticeditorteam.noticeditor.controller.WebImportController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" percentWidth="25.0" />
     <ColumnConstraints hgrow="SOMETIMES" />

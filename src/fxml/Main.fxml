@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.92"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeController">
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.noticeditorteam.noticeditor.controller.NoticeController">
    <children>
         <MenuBar>
             <menus>

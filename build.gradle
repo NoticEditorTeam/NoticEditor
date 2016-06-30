@@ -2,7 +2,7 @@ apply plugin: "java"
 
 sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-project.ext.mainClassName = "com.temporaryteam.noticeditor.Main"
+project.ext.mainClassName = "com.noticeditorteam.noticeditor.Main"
 
 sourceSets {
     main {
