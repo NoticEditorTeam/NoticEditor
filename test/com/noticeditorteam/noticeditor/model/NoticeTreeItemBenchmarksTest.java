@@ -1,8 +1,8 @@
-package com.temporaryteam.noticeditor.model;
+package com.noticeditorteam.noticeditor.model;
 
 import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
-import com.temporaryteam.noticeditor.io.JsonFormat;
+import com.noticeditorteam.noticeditor.io.JsonFormat;
 import org.json.JSONException;
 import org.junit.*;
 import org.junit.rules.TestRule;

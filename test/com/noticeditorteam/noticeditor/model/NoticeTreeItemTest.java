@@ -1,4 +1,4 @@
-package com.temporaryteam.noticeditor.model;
+package com.noticeditorteam.noticeditor.model;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
