@@ -225,7 +225,7 @@ public class NoticeTreeViewController implements Initializable {
         if (isCurrentBranch) Notification.error("Can't add file to branch");
         else {
             File fileInjected = Chooser.file().open()
-                    .filter(Chooser.SUPPORTED, Chooser.ALL)
+                    .filter(Chooser.ALL)
                     .title("Open image")
                     .show(main.getPrimaryStage());
             if (fileInjected != null) {

@@ -68,7 +68,7 @@
         </contextMenu>
     </TreeView>
     <ToolBar fx:id="manageItemBar">
-        <MenuButton fx:id="statusSelectButton" prefWidth="140" />
+        <MenuButton fx:id="statusSelectButton" prefWidth="100" />
         <Button fx:id="renameButton" onAction="#handleRename">
             <graphic>
                 <ImageView>
@@ -81,9 +81,13 @@
                 <Tooltip text="%rename" />
             </tooltip>
         </Button>
-        <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#handleAddFile" text="Button">
+        <Button fx:id="addFileButton" onAction="#handleAddFile">
             <graphic>
-                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+                <ImageView>
+                    <image>
+                        <Image url="/resources/images/attachment.png" />
+                    </image>
+                </ImageView>
             </graphic>
             <tooltip>
                 <Tooltip text="\%add"/>
