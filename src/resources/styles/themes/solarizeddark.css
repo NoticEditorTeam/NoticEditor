@@ -1,0 +1,22 @@
+.root {
+    -fx-base: #003642;
+    -fx-selection-bar: #0B4F60;
+    -fx-selection-bar-non-focused: #002b36;
+    -fx-faint-focus-color: #002E37;
+}
+
+.menu-item {
+    -fx-background-color: #002b36;
+}
+.menu-item:focused {
+    -fx-background-color: #0B4F60;
+}
+
+ .text-input {
+    -fx-highlight-fill: #0B4F60;
+}
+
+.tree-view, .text-input {
+    -fx-text-fill: #839496;
+    -fx-control-inner-background: #002b36;
+}

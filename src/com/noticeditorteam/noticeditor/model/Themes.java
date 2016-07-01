@@ -2,7 +2,8 @@ package com.noticeditorteam.noticeditor.model;
 
 public enum Themes {
     DEFAULT("Default"),
-    DARK("Dark", "dark.css");
+    DARK("Dark", "dark.css"),
+    SOLARIZED_DARK("Solarized Dark", "solarizeddark.css");
 
     public static final String PATH = "/resources/styles/themes/";
 
