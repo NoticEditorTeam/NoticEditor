@@ -1,0 +1,25 @@
+.root {
+    -fx-base: #1d1d1d;
+    -fx-selection-bar: #272754;
+    -fx-selection-bar-non-focused: #2b2b2b;
+    -fx-faint-focus-color: #12121d;
+}
+
+.menu-item {
+    -fx-background-color: #2b2b2b;
+}
+
+.menu-item:focused {
+    -fx-background-color: #272754;
+}
+
+.text-input {
+    -fx-text-fill: #d7d7d7;
+    -fx-highlight-fill: #4c4c9f;
+    -fx-control-inner-background: #2b2b2b;
+}
+
+.tree-view {
+    -fx-text-fill: #d7d7d7;
+    -fx-control-inner-background: #2b2b2b;
+}

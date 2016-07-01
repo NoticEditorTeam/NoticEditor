@@ -58,7 +58,7 @@
              <property name="store.jar.name" value="MyJarName"/>
         -->
         <property name="store.jar.name" value="NoticEditorPacked"/>
-        <property name="jfx.main.class" value="com.temporaryteam.noticeditor.Main"/>
+        <property name="jfx.main.class" value="Main"/>
 
         <!-- don't edit below this line -->
 
