@@ -115,10 +115,10 @@ public class NoticeController {
             previewStyleMenu.getItems().add(item);
         }
         ToggleGroup themesGroup = new ToggleGroup();
-        for (Themes style : Themes.values()) {
-            final String cssPath = style.getCssPath();
-            RadioMenuItem item = new RadioMenuItem(style.getName());
-            item.setUserData(cssPath);
+        for (Themes theme : Themes.values()) {
+            final String cssPath = theme.getCssPath();
+            RadioMenuItem item = new RadioMenuItem(theme.getName());
+            item.setUserData(theme.ordinal());
             item.setToggleGroup(themesGroup);
             if (cssPath == null) {
                 item.setSelected(true);

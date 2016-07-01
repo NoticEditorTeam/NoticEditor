@@ -2,6 +2,7 @@ package com.noticeditorteam.noticeditor.controller;
 
 import com.noticeditorteam.noticeditor.Main;
 import com.noticeditorteam.noticeditor.model.PreviewStyles;
+import com.noticeditorteam.noticeditor.model.Themes;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -68,9 +69,9 @@ public class NoticeViewController implements Initializable {
     public final EventHandler<ActionEvent> onPreviewStyleChange = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent e) {
-            // CSS path
             final int ordinal = (int) ((RadioMenuItem) e.getSource()).getUserData();
 			PreviewStyles style = PreviewStyles.values()[ordinal];
+            // CSS path
             String path = style.getCssPath();
             if (path != null) {
                 path = getClass().getResource(path).toExternalForm();
@@ -84,13 +85,21 @@ public class NoticeViewController implements Initializable {
     public final EventHandler<ActionEvent> onThemeChange = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent e) {
-            // CSS path
-            String path = (String) ((RadioMenuItem) e.getSource()).getUserData();
+			// Remove all previous themes if exists
+			for (Themes value : Themes.values()) {
+				if (value.getCssPath() != null) {
+					String path = getClass().getResource(value.getCssPath()).toExternalForm();
+					main.getPrimaryStage().getScene().getStylesheets().remove(path);
+				}
+			}
+			
+			// Add new theme
+			final int ordinal = (int) ((RadioMenuItem) e.getSource()).getUserData();
+			Themes theme = Themes.values()[ordinal];
+            String path = theme.getCssPath();
             if (path != null) {
                 path = getClass().getResource(path).toExternalForm();
                 main.getPrimaryStage().getScene().getStylesheets().add(path);
-            } else {
-                main.getPrimaryStage().getScene().getStylesheets().clear();
             }
         }
     };
