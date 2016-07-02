@@ -1,12 +1,7 @@
 package com.noticeditorteam.noticeditor.io;
 
-import com.noticeditorteam.noticeditor.model.NoticeItem;
-import com.noticeditorteam.noticeditor.model.NoticeTree;
-import com.noticeditorteam.noticeditor.model.NoticeTreeItem;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import com.noticeditorteam.noticeditor.model.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -63,6 +58,15 @@ public class ZipWithIndexFormat {
 		return IOUtil.stringFromStream(zip.getInputStream(header));
 	}
 
+    private byte[] readBytes(String path) throws IOException, ZipException {
+		FileHeader header = zip.getFileHeader(path);
+		if (header == null) return new byte[0];
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        IOUtil.copy(zip.getInputStream(header), baos);
+        baos.flush();
+		return baos.toByteArray();
+	}
+
 	private NoticeTreeItem readNotices(String dir, JSONObject index) throws IOException, JSONException, ZipException {
 		final String title = index.getString(JsonFields.KEY_TITLE);
 		final String filename = index.getString(JsonFields.KEY_FILENAME);
@@ -80,9 +84,24 @@ public class ZipWithIndexFormat {
 		} else {
 			// ../note_filename/filename.md
 			final String mdPath = newDir + filename + ".md";
-			return new NoticeTreeItem(title, readFile(mdPath), status);
+            final NoticeTreeItem item = new NoticeTreeItem(title, readFile(mdPath), status);
+            Attachments attachments = readAttachments(newDir, index.getJSONArray(JsonFields.KEY_ATTACHMENTS));
+            item.setAttachments(attachments);
+			return item;
 		}
 	}
+
+    private Attachments readAttachments(String newDir, JSONArray jsonAttachments) throws IOException, JSONException, ZipException {
+        Attachments attachments = new Attachments();
+        final int length = jsonAttachments.length();
+        for (int i = 0; i < length; i++) {
+            JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
+            final String name = jsonAttachment.getString(JsonFields.KEY_ATTACHMENT_NAME);
+            Attachment attachment = new Attachment(name, readBytes(newDir + name));
+            attachments.add(attachment);
+        }
+        return attachments;
+    }
 
 	public void export(NoticeTreeItem notice) throws IOException, JSONException, ZipException {
 		parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
@@ -101,6 +120,13 @@ public class ZipWithIndexFormat {
 	private void storeFile(String path, String content) throws IOException, ZipException {
 		parameters.setFileNameInZip(path);
 		try (InputStream stream = IOUtil.toStream(content)) {
+			zip.addStream(stream, parameters);
+		}
+	}
+
+    private void storeFile(String path, byte[] data) throws IOException, ZipException {
+		parameters.setFileNameInZip(path);
+		try (InputStream stream = new ByteArrayInputStream(data)) {
 			zip.addStream(stream, parameters);
 		}
 	}
@@ -141,6 +167,19 @@ public class ZipWithIndexFormat {
 			// ../note_filename/filename.md
 			index.put(JsonFields.KEY_STATUS, item.getStatus());
 			storeFile(newDir + "/" + filename + ".md", item.getContent());
+            writeAttachments(newDir, item.getAttachments(), index);
 		}
 	}
+
+    private void writeAttachments(String newDir, Attachments attachments, JSONObject index) throws JSONException, IOException, ZipException {
+        // Store filenames in index.json and content in file.
+        final JSONArray jsonAttachments = new JSONArray();
+        for (Attachment attachment : attachments) {
+            final JSONObject jsonAttachment = new JSONObject();
+            jsonAttachment.put(JsonFields.KEY_ATTACHMENT_NAME, attachment.getName());
+            jsonAttachments.put(jsonAttachment);
+            storeFile(newDir + "/" + attachment.getName(), attachment.getData());
+        }
+        index.put(JsonFields.KEY_ATTACHMENTS, jsonAttachments);
+    }
 }
