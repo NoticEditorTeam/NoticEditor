@@ -224,14 +224,15 @@ public class NoticeTreeViewController implements Initializable {
         boolean isCurrentBranch = (currentTreeItem == null) || (currentTreeItem.isBranch());
         if (isCurrentBranch) Notification.error("Can't add file to branch");
         else {
-            File fileInjected = Chooser.file().open()
+            File attachmentFile = Chooser.file().open()
                     .filter(Chooser.ALL)
-                    .title("Open image")
+                    .title("Add attachment") // TODO i18n
                     .show(main.getPrimaryStage());
-            if (fileInjected != null) {
+            if (attachmentFile != null) {
                 try {
-                    currentTreeItem.addImage(fileInjected);
+                    currentTreeItem.addAttachement(attachmentFile);
                 } catch (Exception e) {
+                    // TODO logger
                     e.printStackTrace();
                 }
             }

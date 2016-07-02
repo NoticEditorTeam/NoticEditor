@@ -96,16 +96,28 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
         fireChangeItem();
     }
 
-    public void addImage(File image) {
+    public void addAttachement(File file) {
         try {
-            byte[] content = Files.readAllBytes(image.toPath());
-            String oldcontent = getContent();
-            String encodedContent = Base64.getEncoder().encodeToString(content);
-            String newcontent = oldcontent + "\n<img src=\"data:image/png;base64, " + encodedContent + "\"/>";
-            changeContent(newcontent);
-            getValue().getImages().add(image);
+            final byte[] content = Files.readAllBytes(file.toPath());
+            final Attachment attachment = new Attachment(file.getName(), content);
+            if (attachment.isImage()) {
+                String encodedContent = Base64.getEncoder().encodeToString(content);
+                String newcontent = getContent() + "\n<img src=\"data:image/png;base64, " + encodedContent + "\"/>";
+                changeContent(newcontent);
+            }
+            getValue().getAttachments().add(attachment);
         } catch (Exception e) {
+            // TODO logger
             e.printStackTrace();
         }
+    }
+
+    public Attachments getAttachments() {
+        return getValue().getAttachments();
+    }
+
+    public void setAttachments(Attachments attachments) {
+        getValue().setAttachments(attachments);
+        fireChangeItem();
     }
 }

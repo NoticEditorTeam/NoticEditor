@@ -3,9 +3,6 @@ package com.noticeditorteam.noticeditor.model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.File;
-import java.util.ArrayList;
-
 /**
  * Model representation of notice. Contains notice data or branch data
  *
@@ -20,7 +17,7 @@ public class NoticeItem {
     private ObservableList<NoticeItem> children;
     private String content;
     private int status;
-    private ArrayList<File> images;
+    private Attachments attachments;
 
     /**
      * Create branch node on tree.
@@ -52,7 +49,7 @@ public class NoticeItem {
         this.title = title;
         this.content = content;
         this.status = status;
-        images = new ArrayList<>();
+        attachments = new Attachments();
         children = FXCollections.observableArrayList();
     }
 
@@ -105,12 +102,16 @@ public class NoticeItem {
         return status;
     }
 
+    public Attachments getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Attachments attachments) {
+        this.attachments = attachments;
+    }
+
     @Override
     public String toString() {
         return title + "\n\n" + content;
-    }
-
-    public ArrayList<File> getImages() {
-        return images;
     }
 }
