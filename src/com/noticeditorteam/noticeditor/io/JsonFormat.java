@@ -1,19 +1,14 @@
 package com.noticeditorteam.noticeditor.io;
 
-import com.noticeditorteam.noticeditor.model.NoticeItem;
-import com.noticeditorteam.noticeditor.model.NoticeStatusList;
-import com.noticeditorteam.noticeditor.model.NoticeTree;
-import com.noticeditorteam.noticeditor.model.NoticeTreeItem;
-
+import static com.noticeditorteam.noticeditor.io.JsonFields.*;
+import com.noticeditorteam.noticeditor.model.*;
 import java.io.File;
 import java.io.IOException;
-
+import java.util.Base64;
 import javafx.scene.control.TreeItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static com.noticeditorteam.noticeditor.io.JsonFields.*;
 
 /**
  * @author Naik
@@ -38,6 +33,7 @@ public class JsonFormat {
             if (statusList.length() > 0) {
                 NoticeStatusList.clear();
             }
+            // TODO refactor length const
             for (int i = 0; i < statusList.length(); i++) {
                 JSONObject obj = (JSONObject) statusList.get(i);
                 String name = obj.getString("name");
@@ -53,11 +49,28 @@ public class JsonFormat {
     private NoticeTreeItem jsonToTree(JSONObject json) throws JSONException {
         NoticeTreeItem item = new NoticeTreeItem(json.getString(KEY_TITLE), json.optString(KEY_CONTENT, null),
                 json.optInt(KEY_STATUS, NoticeItem.STATUS_NORMAL));
+        if (json.has(KEY_ATTACHMENTS)) {
+            Attachments attachments = readAttachments(json.getJSONArray(KEY_ATTACHMENTS));
+            item.setAttachments(attachments);
+        }
         JSONArray arr = json.getJSONArray(KEY_CHILDREN);
         for (int i = 0; i < arr.length(); i++) {
             item.addChild(jsonToTree(arr.getJSONObject(i)));
         }
         return item;
+    }
+
+    private Attachments readAttachments(JSONArray jsonAttachments) throws JSONException {
+        Attachments attachments = new Attachments();
+        final int length = jsonAttachments.length();
+        for (int i = 0; i < length; i++) {
+            JSONObject jsonAttachment = jsonAttachments.getJSONObject(i);
+            Attachment attachment = new Attachment(
+                    jsonAttachment.getString(KEY_ATTACHMENT_NAME),
+                    Base64.getDecoder().decode(jsonAttachment.getString(KEY_ATTACHMENT_DATA)));
+            attachments.add(attachment);
+        }
+        return attachments;
     }
 
     public void export(NoticeTree tree) throws JSONException, IOException {
@@ -89,8 +102,21 @@ public class JsonFormat {
         } else {
             json.put(KEY_STATUS, item.getStatus());
             json.put(KEY_CONTENT, item.getContent());
+            JSONArray jsonAttachments = writeAttachments(item.getAttachments());
+            json.put(KEY_ATTACHMENTS, jsonAttachments);
         }
         json.put(KEY_CHILDREN, childs);
+    }
+
+    private JSONArray writeAttachments(Attachments attachments) throws JSONException {
+        final JSONArray jsonAttachments = new JSONArray();
+        for (Attachment attachment : attachments) {
+            final JSONObject jsonAttachment = new JSONObject();
+            jsonAttachment.put(KEY_ATTACHMENT_NAME, attachment.getName());
+            jsonAttachment.put(KEY_ATTACHMENT_DATA, attachment.getDataAsBase64());
+            jsonAttachments.put(jsonAttachment);
+        }
+        return jsonAttachments;
     }
 
 }
