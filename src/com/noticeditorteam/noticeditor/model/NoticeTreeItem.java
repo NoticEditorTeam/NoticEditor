@@ -1,8 +1,8 @@
 package com.noticeditorteam.noticeditor.model;
 
+import com.noticeditorteam.noticeditor.io.IOUtil;
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Base64;
 
 /**
  * Model representation of notice. Contains notice data or branch data
@@ -76,6 +76,7 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
      */
     public void changeContent(String content) {
         getValue().changeContent(content);
+        fireChangeItem();
     }
 
     public String getTitle() {
@@ -99,10 +100,12 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
     public void addAttachement(File file) {
         try {
             final byte[] content = Files.readAllBytes(file.toPath());
-            final Attachment attachment = new Attachment(file.getName(), content);
+            final String name = IOUtil.sanitizeFilename(file.getName());
+            final Attachment attachment = new Attachment(name, content);
             if (attachment.isImage()) {
-                String encodedContent = Base64.getEncoder().encodeToString(content);
-                String newcontent = getContent() + "\n<img src=\"data:image/png;base64, " + encodedContent + "\"/>";
+                // TODO place attach code at the cursor place
+                // and replace newline chars with space
+                String newcontent = getContent() + "\n@att:" + name + "\n";
                 changeContent(newcontent);
             }
             getValue().getAttachments().add(attachment);

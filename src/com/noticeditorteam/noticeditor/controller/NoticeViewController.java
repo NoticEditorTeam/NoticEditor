@@ -1,8 +1,7 @@
 package com.noticeditorteam.noticeditor.controller;
 
 import com.noticeditorteam.noticeditor.Main;
-import com.noticeditorteam.noticeditor.model.PreviewStyles;
-import com.noticeditorteam.noticeditor.model.Themes;
+import com.noticeditorteam.noticeditor.model.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -17,6 +16,8 @@ import org.pegdown.PegDownProcessor;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.pegdown.Extensions.*;
 
@@ -24,6 +25,9 @@ import static org.pegdown.Extensions.*;
  * @author Edward Minasyan <mrEDitor@mail.ru>
  */
 public class NoticeViewController implements Initializable {
+
+    // @att:filename.png
+    private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
 
     @FXML
     private TextArea editor;
@@ -59,12 +63,31 @@ public class NoticeViewController implements Initializable {
         return editor;
     }
 
-	private void changeContent(String newValue) {
-		engine.loadContent(highlighter.highlight(processor.markdownToHtml(newValue), codeCssName));
-		if (NoticeController.getNoticeTreeViewController().getCurrentNotice() != null) {
-			NoticeController.getNoticeTreeViewController().getCurrentNotice().changeContent(newValue);
-		}
+	private void changeContent(String newContent) {
+        final NoticeTreeItem current = NoticeController.getNoticeTreeViewController().getCurrentNotice();
+        final String parsed;
+        if (current != null) {
+			current.changeContent(newContent);
+            parsed = parseAttachments(newContent, current.getAttachments());
+		} else {
+            parsed = "";
+        }
+		engine.loadContent(highlighter.highlight(processor.markdownToHtml(parsed), codeCssName));
 	}
+
+    private String parseAttachments(String text, Attachments attachments) {
+        final Matcher m = ATTACHMENT_PATTERN.matcher(text);
+        final StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            final String name = m.group(1);
+            Attachment att = attachments.get(name);
+            if (att != null) {
+                m.appendReplacement(sb, "<img src=\"data:image/png;base64, " + att.getDataAsBase64() + "\"/>");
+            }
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
 
     public final EventHandler<ActionEvent> onPreviewStyleChange = new EventHandler<ActionEvent>() {
         @Override

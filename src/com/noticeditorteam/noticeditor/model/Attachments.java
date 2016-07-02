@@ -1,15 +1,15 @@
 package com.noticeditorteam.noticeditor.model;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 
 public final class Attachments implements Iterable<Attachment> {
 
-    private final List<Attachment> attachments;
+    private final Map<String, Attachment> attachments;
 
     public Attachments() {
-        attachments = new ArrayList<>();
+        attachments = new HashMap<>();
     }
 
     public int size() {
@@ -20,28 +20,28 @@ public final class Attachments implements Iterable<Attachment> {
         return attachments.isEmpty();
     }
 
-    public boolean add(Attachment e) {
-        return attachments.add(e);
+    public void add(Attachment e) {
+        attachments.put(e.getName(), e);
     }
 
-    public boolean remove(Attachment o) {
-        return attachments.remove(o);
+    public void remove(Attachment att) {
+        attachments.remove(att.getName());
     }
 
     public void clear() {
         attachments.clear();
     }
 
-    public Attachment get(int index) {
-        return attachments.get(index);
+    public Attachment get(String name) {
+        return attachments.get(name);
     }
 
-    public Attachment remove(int index) {
-        return attachments.remove(index);
+    public Attachment getOrEmpty(String name) {
+        return attachments.getOrDefault(name, Attachment.EMPTY);
     }
 
     @Override
     public Iterator<Attachment> iterator() {
-        return attachments.iterator();
+        return attachments.values().iterator();
     }
 }
