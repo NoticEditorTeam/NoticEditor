@@ -9,34 +9,34 @@
    <children>
         <MenuBar>
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="%menu.file">
                     <items>
-                        <MenuItem onAction="#handleNew" text="New (Ctrl+Shift+N)"/>
-                        <MenuItem onAction="#handleOpen" text="Open (Ctrl+O)"/>
-                        <MenuItem onAction="#handleSave" text="Save (Ctrl+S)"/>
-                        <MenuItem onAction="#handleSaveAs" text="Save As" />
-                        <MenuItem onAction="#handleExportHtml" text="Export to HTML" />
-                        <Menu mnemonicParsing="false" text="Import">
+                        <MenuItem onAction="#handleNew" text="%menu.file.new" />
+                        <MenuItem onAction="#handleOpen" text="%menu.file.open" />
+                        <MenuItem onAction="#handleSave" text="%menu.file.save" />
+                        <MenuItem onAction="#handleSaveAs" text="%menu.file.saveas" />
+                        <MenuItem onAction="#handleExportHtml" text="%menu.file.exporthtml" />
+                        <Menu mnemonicParsing="false" text="%menu.file.import">
                             <items>
-                                <MenuItem onAction="#handleImportUrl" text="From url" />
-                                <MenuItem onAction="#handleImportFile" text="From file" />
+                                <MenuItem onAction="#handleImportUrl" text="%menu.file.import.url" />
+                                <MenuItem onAction="#handleImportFile" text="%menu.file.import.file" />
                             </items>
                         </Menu>
-                        <Menu fx:id="recentFilesMenu" text="Recent files" />
-                        <MenuItem onAction="#handleExit" text="Exit" />
+                        <Menu fx:id="recentFilesMenu" text="%menu.file.recent" />
+                        <MenuItem onAction="#handleExit" text="%menu.file.exit" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="View">
+                <Menu mnemonicParsing="false" text="%menu.view">
                     <items>
-                        <MenuItem onAction="#handleSwitchOrientation" text="Switch orientation" />
-                        <CheckMenuItem fx:id="wordWrapItem" text="Word wrap" />
-                        <Menu fx:id="previewStyleMenu" text="Preview style" />
-                        <Menu fx:id="themesMenu" mnemonicParsing="false" text="Theme"/>
+                        <MenuItem onAction="#handleSwitchOrientation" text="%menu.view.orientation" />
+                        <CheckMenuItem fx:id="wordWrapItem" text="%menu.view.wordwrap" />
+                        <Menu fx:id="previewStyleMenu" text="%menu.view.preview" />
+                        <Menu fx:id="themesMenu" mnemonicParsing="false" text="%menu.view.theme"/>
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" text="%menu.help">
                     <items>
-                        <MenuItem onAction="#handleAbout" text="About" />
+                        <MenuItem onAction="#handleAbout" text="%menu.help.about" />
                     </items>
                 </Menu>
             </menus>
