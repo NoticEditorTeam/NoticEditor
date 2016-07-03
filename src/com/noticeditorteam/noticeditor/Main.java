@@ -11,44 +11,44 @@ import java.util.ResourceBundle;
 
 public class Main extends Application {
 
-    private Stage primaryStage;
+	private Stage primaryStage;
 
-    @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("NoticEditor");
-        initRootLayout();
-    }
+	@Override
+	public void start(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("NoticEditor");
+		initRootLayout();
+	}
 
-    /**
-     * Initializes root layout
-     */
-    public void initRootLayout() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"),
-                    ResourceBundle.getBundle("resources.i18n.Language", Locale.getDefault()));
-            Scene scene = new Scene(loader.load());
-            primaryStage.setScene(scene);
-            NoticeController controller = loader.getController();
-            controller.setApplication(this);
-            NoticeController.getNoticeTreeViewController().setMain(this);
-            NoticeController.getNoticeViewController().setMain(this);
-            primaryStage.setOnCloseRequest(controller::onExit);
-            primaryStage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	/**
+	 * Initializes root layout
+	 */
+	public void initRootLayout() {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"),
+					ResourceBundle.getBundle("resources.i18n.Language", Locale.getDefault()));
+			Scene scene = new Scene(loader.load());
+			primaryStage.setScene(scene);
+			NoticeController controller = loader.getController();
+			controller.setApplication(this);
+			NoticeController.getNoticeTreeViewController().setMain(this);
+			NoticeController.getNoticeViewController().setMain(this);
+			primaryStage.setOnCloseRequest(controller::onExit);
+			primaryStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    /**
-     * Returns primary stage
-     */
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
+	/**
+	 * Returns primary stage
+	 */
+	public Stage getPrimaryStage() {
+		return primaryStage;
+	}
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
 
 }

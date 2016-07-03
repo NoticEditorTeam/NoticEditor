@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" stylesheets="@../resources/styles/dark.css" xmlns="http://javafx.com/javafx/8.0.92" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeController">
-   <children>
+    <children>
         <MenuBar>
             <menus>
                 <Menu mnemonicParsing="false" text="File">
@@ -44,20 +44,20 @@
                 </Menu>
             </menus>
         </MenuBar>
-      <StackPane VBox.vgrow="ALWAYS">
-         <children>
-             <SplitPane dividerPositions="0.3" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                  <items>
-                      <fx:include fx:id="noticeTreeView" source="NoticeTreeView.fxml" />
-                      <fx:include fx:id="noticeView" source="NoticeView.fxml" />
-                  </items>
-              </SplitPane>
-            <VBox fx:id="notificationBox" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="notificationBox" visible="false" StackPane.alignment="BOTTOM_CENTER">
-               <children>
-                  <Label fx:id="notificationLabel" styleClass="notificationLabel" textAlignment="CENTER" />
-               </children>
-            </VBox>
-         </children>
-      </StackPane>
-   </children>
+        <StackPane VBox.vgrow="ALWAYS">
+            <children>
+                <SplitPane dividerPositions="0.3" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <items>
+                        <fx:include fx:id="noticeTreeView" source="NoticeTreeView.fxml" />
+                        <fx:include fx:id="noticeView" source="NoticeView.fxml" />
+                    </items>
+                </SplitPane>
+                <VBox fx:id="notificationBox" maxHeight="-Infinity" maxWidth="-Infinity" styleClass="notificationBox" visible="false" StackPane.alignment="BOTTOM_CENTER">
+                    <children>
+                        <Label fx:id="notificationLabel" styleClass="notificationLabel" textAlignment="CENTER" />
+                    </children>
+                </VBox>
+            </children>
+        </StackPane>
+    </children>
 </VBox>

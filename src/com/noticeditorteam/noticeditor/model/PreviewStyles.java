@@ -6,7 +6,7 @@ public enum PreviewStyles {
 	MARKDOWN("Markdown", "markdown.css"),
 	DARK("Dark", "dark.css", "darkula.css"),
 	SOLARIZED_DARK("Solarized", "solarizeddark.css", "solarized_dark.css");
-	
+
 	public static final String PATH = "/resources/styles/markdown/";
 
 	private final String name;
@@ -14,8 +14,8 @@ public enum PreviewStyles {
 	private final String codeCssName;
 
 	PreviewStyles(String name) {
-        this.name = name;
-        this.cssPath = null;
+		this.name = name;
+		this.cssPath = null;
 		this.codeCssName = null;
 	}
 

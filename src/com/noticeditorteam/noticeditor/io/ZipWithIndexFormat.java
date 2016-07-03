@@ -59,7 +59,8 @@ public class ZipWithIndexFormat {
 
 	private String readFile(String path) throws IOException, ZipException {
 		FileHeader header = zip.getFileHeader(path);
-		if (header == null) return "";
+		if (header == null)
+			return "";
 		return IOUtil.stringFromStream(zip.getInputStream(header));
 	}
 
