@@ -22,7 +22,7 @@ public class NoticeTree {
 	}
 
 	/**
-	 * @param item   to add
+	 * @param item to add
 	 * @param parent if null, item will be added to root item.
 	 */
 	public void addItem(NoticeTreeItem item, NoticeTreeItem parent) {
@@ -36,9 +36,11 @@ public class NoticeTree {
 	}
 
 	public void removeItem(NoticeTreeItem item) {
-		if (item == null) return;
+		if (item == null)
+			return;
 		NoticeTreeItem parent = (NoticeTreeItem) item.getParent();
-		if (parent == null) return;
+		if (parent == null)
+			return;
 		parent.getInternalChildren().remove(item);
 	}
 }

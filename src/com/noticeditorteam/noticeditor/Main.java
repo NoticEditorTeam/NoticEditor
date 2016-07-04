@@ -12,14 +12,14 @@ import java.util.ResourceBundle;
 
 public class Main extends Application {
 
-    private Stage primaryStage;
+	private Stage primaryStage;
 
-    @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("NoticEditor");
-        initRootLayout();
-    }
+	@Override
+	public void start(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("NoticEditor");
+		initRootLayout();
+	}
 
     /**
      * Initializes root layout
@@ -41,15 +41,15 @@ public class Main extends Application {
         }
     }
 
-    /**
-     * Returns primary stage
-     */
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
+	/**
+	 * Returns primary stage
+	 */
+	public Stage getPrimaryStage() {
+		return primaryStage;
+	}
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
 
 }

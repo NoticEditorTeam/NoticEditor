@@ -16,19 +16,19 @@ import org.json.JSONException;
  */
 public final class DocumentFormat {
 
-    public static NoticeTree open(File file) throws IOException {
-        try {
-            final String filename = file.getName().toLowerCase();
-            if (filename.endsWith(".zip")) {
-                return ZipWithIndexFormat.with(file).importDocument();
-            }
-            return JsonFormat.with(file).importDocument();
-        } catch (ZipException | IOException | JSONException e) {
-            return FileImporter.Tree.importFrom(file);
-        }
-    }
+	public static NoticeTree open(File file) throws IOException {
+		try {
+			final String filename = file.getName().toLowerCase();
+			if (filename.endsWith(".zip")) {
+				return ZipWithIndexFormat.with(file).importDocument();
+			}
+			return JsonFormat.with(file).importDocument();
+		} catch (ZipException | IOException | JSONException e) {
+			return FileImporter.Tree.importFrom(file);
+		}
+	}
 
-    public static void save(File file, NoticeTree tree, ExportStrategy strategy) {
-        strategy.export(file, tree);
-    }
+	public static void save(File file, NoticeTree tree, ExportStrategy strategy) {
+		strategy.export(file, tree);
+	}
 }
