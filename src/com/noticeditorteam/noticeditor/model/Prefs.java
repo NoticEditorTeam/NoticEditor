@@ -13,19 +13,14 @@ import java.util.prefs.Preferences;
 public final class Prefs {
 
     private static final Preferences user = Preferences.userRoot();
-	private static final Locale[] locales = { new Locale("en"), new Locale("ru"), new Locale("uk") };
 
 	public static Locale getLocale() {
-		return locales[user.getInt("locale", 0)];
+		Locale defLocale = Locale.getDefault();
+		return new Locale (user.get("locale", defLocale.getLanguage()));
 	}
 	
 	public static void setLocale(Locale newLocale) {
-		for(int i = 0; i<locales.length; ++i) {
-			if(locales[i].equals(newLocale)) {
-				user.putInt("locale", i);
-				return;
-			}
-		}
+		user.put("locale", newLocale.getLanguage());
 	}
 	
 	public static String getLastDirectory() {

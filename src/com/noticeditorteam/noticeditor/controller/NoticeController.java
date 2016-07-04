@@ -46,7 +46,7 @@ public class NoticeController {
 	private CheckMenuItem wordWrapItem;
 
 	@FXML
-	private Menu recentFilesMenu, previewStyleMenu, themesMenu;
+	private Menu recentFilesMenu, previewStyleMenu, themesMenu, localesMenu;
 
 	@FXML
 	private SplitPane noticeView;
@@ -113,6 +113,8 @@ public class NoticeController {
 			item.setOnAction(noticeViewController.onPreviewStyleChange);
 			previewStyleMenu.getItems().add(item);
 		}
+		
+		// Set themes menu items
 		ToggleGroup themesGroup = new ToggleGroup();
 		for (Themes theme : Themes.values()) {
 			final String cssPath = theme.getCssPath();
@@ -124,6 +126,18 @@ public class NoticeController {
 			}
 			item.setOnAction(noticeViewController.onThemeChange);
 			themesMenu.getItems().add(item);
+		}
+		
+		// Set locales menu items
+		ToggleGroup localeGroup = new ToggleGroup();
+		for(String lang : new String[] {"en", "ru", "uk"}) {
+			final Locale locale = new Locale(lang);
+			RadioMenuItem item = new RadioMenuItem(beautify(locale.getDisplayLanguage(locale)));
+			item.setToggleGroup(localeGroup);
+			item.setOnAction(a -> {
+				Prefs.setLocale(locale);
+			});
+			localesMenu.getItems().add(item);
 		}
 		noticeViewController.getEditor().wrapTextProperty().bind(wordWrapItem.selectedProperty());
 		noticeTreeViewController.rebuildTree(resources.getString("help"));
@@ -314,23 +328,17 @@ public class NoticeController {
 			}
 		});
     }
-	
-	@FXML
-	private void setEnglish(ActionEvent event) {
-		Prefs.setLocale(new Locale("en"));
-	}
-	
-	@FXML
-	private void setRussian(ActionEvent event) {
-		Prefs.setLocale(new Locale("ru"));
-	}
-	
-	@FXML
-	private void setUkrainian(ActionEvent event) {
-		Prefs.setLocale(new Locale("uk"));
-	}
 
     public void onExit(WindowEvent we) {
         Prefs.setLastDirectory(Chooser.getLastDirectory().getAbsolutePath());
     }
+	
+	private String beautify(String source) {
+		StringBuilder builder = new StringBuilder();
+		char[] word;
+		word = source.toCharArray();
+		word[0] = Character.toUpperCase(word[0]);
+		builder.append(word);
+		return builder.toString();
+	}
 }

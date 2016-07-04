@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.92"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.noticeditorteam.noticeditor.controller.NoticeController">
+<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.noticeditorteam.noticeditor.controller.NoticeController">
     <children>
         <MenuBar>
             <menus>
@@ -38,13 +37,7 @@
                         <CheckMenuItem fx:id="wordWrapItem" text="%menu.view.wordwrap" />
                         <Menu fx:id="previewStyleMenu" text="%menu.view.preview" />
                         <Menu fx:id="themesMenu" mnemonicParsing="false" text="%menu.view.theme" />
-                  <Menu mnemonicParsing="false" text="%menu.view.language">
-                    <items>
-                      <MenuItem mnemonicParsing="false" onAction="#setEnglish" text="%menu.view.language.english" />
-                      <MenuItem mnemonicParsing="false" onAction="#setRussian" text="%menu.view.language.russian" />
-                      <MenuItem mnemonicParsing="false" onAction="#setUkrainian" text="%menu.view.language.ukrainian" />
-                    </items>
-                  </Menu>
+                  <Menu fx:id="localesMenu" mnemonicParsing="false" text="%menu.view.language" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="%menu.help">

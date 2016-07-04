@@ -26,8 +26,9 @@ public class Main extends Application {
      */
     public void initRootLayout() {
         try {
+			Locale.setDefault(Prefs.getLocale());
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"),
-                    ResourceBundle.getBundle("resources.i18n.Language", Prefs.getLocale()));
+                    ResourceBundle.getBundle("resources.i18n.Language", Locale.getDefault()));
             Scene scene = new Scene(loader.load());
             primaryStage.setScene(scene);
             NoticeController controller = loader.getController();
