@@ -11,10 +11,10 @@ public class NoticeTreeItemBenchmarksTest {
 
 	@Rule
 	public TestRule benchmarkRun = new BenchmarkRule();
-	
+
 	private static final int NESTING_LEVEL = 6000;
 	private static NoticeTreeItem root;
-	
+
 	@BeforeClass
 	public static void beforeClass() {
 		root = new NoticeTreeItem("root");
@@ -25,7 +25,7 @@ public class NoticeTreeItemBenchmarksTest {
 			branch = node;
 		}
 	}
-	
+
 	@BenchmarkOptions(benchmarkRounds = 1, warmupRounds = 1)
 	@Ignore
 	@Test

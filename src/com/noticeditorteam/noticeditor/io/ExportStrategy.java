@@ -11,5 +11,5 @@ import java.io.File;
  */
 public interface ExportStrategy {
 
-    void export(File file, NoticeTree tree) throws ExportException;
+	void export(File file, NoticeTree tree) throws ExportException;
 }
