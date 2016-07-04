@@ -1,6 +1,7 @@
 package com.noticeditorteam.noticeditor;
 
 import com.noticeditorteam.noticeditor.controller.NoticeController;
+import com.noticeditorteam.noticeditor.model.Prefs;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -26,7 +27,7 @@ public class Main extends Application {
     public void initRootLayout() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"),
-                    ResourceBundle.getBundle("resources.i18n.Language", Locale.getDefault()));
+                    ResourceBundle.getBundle("resources.i18n.Language", Prefs.getLocale()));
             Scene scene = new Scene(loader.load());
             primaryStage.setScene(scene);
             NoticeController controller = loader.getController();

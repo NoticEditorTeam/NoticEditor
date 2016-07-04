@@ -2,6 +2,7 @@ package com.noticeditorteam.noticeditor.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
 /**
@@ -12,8 +13,22 @@ import java.util.prefs.Preferences;
 public final class Prefs {
 
     private static final Preferences user = Preferences.userRoot();
+	private static final Locale[] locales = { new Locale("en"), new Locale("ru"), new Locale("uk") };
 
-    public static String getLastDirectory() {
+	public static Locale getLocale() {
+		return locales[user.getInt("locale", 0)];
+	}
+	
+	public static void setLocale(Locale newLocale) {
+		for(int i = 0; i<locales.length; ++i) {
+			if(locales[i].equals(newLocale)) {
+				user.putInt("locale", i);
+				return;
+			}
+		}
+	}
+	
+	public static String getLastDirectory() {
         return user.get("last_directory", System.getProperty("user.home"));
     }
 

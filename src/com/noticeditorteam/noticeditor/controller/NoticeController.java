@@ -314,6 +314,21 @@ public class NoticeController {
             }
         });
     }
+	
+	@FXML
+	private void setEnglish(ActionEvent event) {
+		Prefs.setLocale(new Locale("en"));
+	}
+	
+	@FXML
+	private void setRussian(ActionEvent event) {
+		Prefs.setLocale(new Locale("ru"));
+	}
+	
+	@FXML
+	private void setUkrainian(ActionEvent event) {
+		Prefs.setLocale(new Locale("uk"));
+	}
 
     public void onExit(WindowEvent we) {
         Prefs.setLastDirectory(Chooser.getLastDirectory().getAbsolutePath());

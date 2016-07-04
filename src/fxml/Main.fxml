@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import java.net.*?>
+<?import java.net.URL?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.92"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.noticeditorteam.noticeditor.controller.NoticeController">
+<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.92" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.noticeditorteam.noticeditor.controller.NoticeController">
    <children>
         <MenuBar>
             <menus>
@@ -31,7 +36,14 @@
                         <MenuItem onAction="#handleSwitchOrientation" text="%menu.view.orientation" />
                         <CheckMenuItem fx:id="wordWrapItem" text="%menu.view.wordwrap" />
                         <Menu fx:id="previewStyleMenu" text="%menu.view.preview" />
-                        <Menu fx:id="themesMenu" mnemonicParsing="false" text="%menu.view.theme"/>
+                        <Menu fx:id="themesMenu" mnemonicParsing="false" text="%menu.view.theme" />
+                  <Menu mnemonicParsing="false" text="%menu.view.language">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#setEnglish" text="%menu.view.language.english" />
+                      <MenuItem mnemonicParsing="false" onAction="#setRussian" text="%menu.view.language.russian" />
+                      <MenuItem mnemonicParsing="false" onAction="#setUkrainian" text="%menu.view.language.ukrainian" />
+                    </items>
+                  </Menu>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="%menu.help">
