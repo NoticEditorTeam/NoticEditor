@@ -8,8 +8,6 @@ import com.noticeditorteam.noticeditor.view.Notification;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -75,18 +73,10 @@ public class NoticeViewController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		highlighter.unpackHighlightJs();
 		engine = viewer.getEngine();
-		editor.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				changeContent(newValue);
-			}
-		});
+        editor.textProperty().addListener((o, oldValue, newValue) -> changeContent(newValue));
         attachsView.getSelectionModel().setSelectionMode(SINGLE);
-        attachsView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Attachment>() {
-            @Override
-            public void changed(ObservableValue<? extends Attachment> observable, Attachment oldValue, Attachment newValue) {
-                currentAttachmentProperty.setValue((Attachment) newValue);
-            }
+        attachsView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
+            currentAttachmentProperty.setValue((Attachment) newValue);
         });
         exportAttachItem.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
         deleteAttachItem.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
@@ -198,7 +188,7 @@ public class NoticeViewController implements Initializable {
     private void onAttachsFocused(Event event) {
         final NoticeTreeItem current = NoticeController.getNoticeTreeViewController().getCurrentNotice();
         attachsView.getItems().clear();
-        if (current.isLeaf()) {
+        if (current != null && current.isLeaf()) {
             for (Attachment attachment : current.getAttachments()) {
                 attachsView.getItems().add(attachment);
             }

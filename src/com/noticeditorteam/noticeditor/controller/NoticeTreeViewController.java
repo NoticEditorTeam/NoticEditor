@@ -6,8 +6,6 @@ import com.noticeditorteam.noticeditor.view.Chooser;
 import com.noticeditorteam.noticeditor.view.EditNoticeTreeCell;
 import com.noticeditorteam.noticeditor.view.Notification;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,7 +14,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.util.Callback;
 
 import java.io.File;
 import java.net.URL;
@@ -64,7 +61,7 @@ public class NoticeTreeViewController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resources) {
-		final EventHandler onStatusChangeAction = (EventHandler<ActionEvent>) (ActionEvent event) -> {
+		final EventHandler<ActionEvent> onStatusChangeAction = event -> {
             final MenuItem newStatus = (MenuItem) event.getSource();
             statusSelectButton.setText(newStatus.getText());
             NoticeTreeItem currentNotice = getCurrentNotice();
@@ -85,12 +82,11 @@ public class NoticeTreeViewController implements Initializable {
 		statusSelectButton.setTooltip(new Tooltip(resources.getString("status")));
 
 		noticeTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(
-                (ObservableValue<? extends TreeItem<NoticeItem>> observable, TreeItem<NoticeItem> oldValue, TreeItem<NoticeItem> newValue) -> {
+		noticeTreeView.getSelectionModel().selectedItemProperty().addListener( (o, oldValue, newValue) -> {
             currentTreeItem = (NoticeTreeItem) newValue;
             open();
         });
-		noticeTreeView.setCellFactory((TreeView<NoticeItem> p) -> new EditNoticeTreeCell());
+		noticeTreeView.setCellFactory(p -> new EditNoticeTreeCell());
 		newnotice = resources.getString("newnotice");
 		newbranch = resources.getString("newbranch");
 		openfile = resources.getString("openfile");
