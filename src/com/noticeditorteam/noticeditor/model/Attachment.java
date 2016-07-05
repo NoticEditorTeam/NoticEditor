@@ -45,6 +45,6 @@ public class Attachment {
 
     @Override
     public String toString() {
-        return "Attachment: " + name;
+        return name;
     }
 }

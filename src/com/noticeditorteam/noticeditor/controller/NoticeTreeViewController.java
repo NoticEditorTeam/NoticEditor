@@ -181,7 +181,7 @@ public class NoticeTreeViewController implements Initializable {
 
 	@FXML
 	private void handleContextMenu(ActionEvent event) {
-		Object source = event.getSource();
+		final Object source = event.getSource();
 		if (source == addBranchItem) {
 			noticeTree.addItem(new NoticeTreeItem(newbranch), currentTreeItem);
 		} else if (source == addNoticeItem) {
@@ -247,27 +247,9 @@ public class NoticeTreeViewController implements Initializable {
 					e.printStackTrace();
 				}
 			}
+			NoticeController.getNoticeViewController().rebuildAttachsView();
 		}
 	}
-    @FXML
-    private void handleAddFile(ActionEvent event) {
-        boolean isCurrentBranch = (currentTreeItem == null) || (currentTreeItem.isBranch());
-        if (isCurrentBranch) Notification.error("Can't add file to branch");
-        else {
-            File attachmentFile = Chooser.file().open()
-                    .filter(Chooser.ALL)
-                    .title("Add attachment") // TODO i18n
-                    .show(main.getPrimaryStage());
-            if (attachmentFile != null) {
-                try {
-                    currentTreeItem.addAttachement(attachmentFile);
-                } catch (Exception e) {
-                    // TODO logger
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
 	@FXML
 	private void handleDelete(ActionEvent event) {
