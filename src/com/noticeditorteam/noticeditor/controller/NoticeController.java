@@ -260,10 +260,10 @@ public class NoticeController {
 		try {
 			ExportStrategyHolder.HTML.setProcessor(noticeViewController.processor);
 			ExportStrategyHolder.HTML.export(destDir, noticeTreeViewController.getNoticeTree());
-			Notification.success("Export success!");
+			Notification.success(resources.getString("exporthtml.success"));
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);
-			Notification.error("Export failed!");
+			Notification.error(resources.getString("exporthtml.fail"));
 		}
 	}
 
