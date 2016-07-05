@@ -2,31 +2,30 @@ package com.noticeditorteam.noticeditor;
 
 import com.noticeditorteam.noticeditor.controller.NoticeController;
 import com.noticeditorteam.noticeditor.model.Prefs;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 public class Main extends Application {
 
-	private Stage primaryStage;
+    private Stage primaryStage;
 
-	@Override
-	public void start(Stage primaryStage) {
-		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("NoticEditor");
-		initRootLayout();
-	}
+    @Override
+    public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("NoticEditor");
+        initRootLayout();
+    }
 
     /**
      * Initializes root layout
      */
     public void initRootLayout() {
         try {
-			Locale.setDefault(Prefs.getLocale());
+            Locale.setDefault(Prefs.getLocale());
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Main.fxml"),
                     ResourceBundle.getBundle("resources.i18n.Language", Locale.getDefault()));
             Scene scene = new Scene(loader.load());
@@ -42,15 +41,15 @@ public class Main extends Application {
         }
     }
 
-	/**
-	 * Returns primary stage
-	 */
-	public Stage getPrimaryStage() {
-		return primaryStage;
-	}
+    /**
+     * Returns primary stage
+     */
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    public static void main(String[] args) {
+        launch(args);
+    }
 
 }

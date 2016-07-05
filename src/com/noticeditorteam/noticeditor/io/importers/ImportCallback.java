@@ -8,5 +8,5 @@ package com.noticeditorteam.noticeditor.io.importers;
 @FunctionalInterface
 public interface ImportCallback<R, O> {
 
-	public void call(R result, O optional);
+    public void call(R result, O optional);
 }

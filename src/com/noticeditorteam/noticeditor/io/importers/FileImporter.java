@@ -3,57 +3,56 @@ package com.noticeditorteam.noticeditor.io.importers;
 import com.noticeditorteam.noticeditor.io.IOUtil;
 import com.noticeditorteam.noticeditor.model.NoticeTree;
 import com.noticeditorteam.noticeditor.model.NoticeTreeItem;
-
 import java.io.File;
 import java.io.IOException;
 
 public final class FileImporter {
 
-	private static Tree treeImporter;
-	private static Content contentImporter;
+    private static Tree treeImporter;
+    private static Content contentImporter;
 
-	public static Tree tree() {
-		if (treeImporter == null) {
-			treeImporter = new Tree();
-		}
-		return treeImporter;
-	}
+    public static Tree tree() {
+        if (treeImporter == null) {
+            treeImporter = new Tree();
+        }
+        return treeImporter;
+    }
 
-	public static Content content() {
-		if (contentImporter == null) {
-			contentImporter = new Content();
-		}
-		return contentImporter;
-	}
+    public static Content content() {
+        if (contentImporter == null) {
+            contentImporter = new Content();
+        }
+        return contentImporter;
+    }
 
-	public static class Tree implements Importer<File, Void, NoticeTree> {
+    public static class Tree implements Importer<File, Void, NoticeTree> {
 
-		@Override
-		public void importFrom(File file, Void options, ImportCallback<NoticeTree, Exception> callback) {
-			try {
-				callback.call(importFrom(file), null);
-			} catch (IOException ex) {
-				callback.call(null, ex);
-			}
-		}
+        @Override
+        public void importFrom(File file, Void options, ImportCallback<NoticeTree, Exception> callback) {
+            try {
+                callback.call(importFrom(file), null);
+            } catch (IOException ex) {
+                callback.call(null, ex);
+            }
+        }
 
-		public static NoticeTree importFrom(File file) throws IOException {
-			final NoticeTreeItem root = new NoticeTreeItem("Root");
-			final NoticeTree tree = new NoticeTree(root);
-			tree.addItem(new NoticeTreeItem(file.getName(), IOUtil.readContent(file)), root);
-			return tree;
-		}
-	}
+        public static NoticeTree importFrom(File file) throws IOException {
+            final NoticeTreeItem root = new NoticeTreeItem("Root");
+            final NoticeTree tree = new NoticeTree(root);
+            tree.addItem(new NoticeTreeItem(file.getName(), IOUtil.readContent(file)), root);
+            return tree;
+        }
+    }
 
-	public static class Content implements Importer<File, Void, String> {
+    public static class Content implements Importer<File, Void, String> {
 
-		@Override
-		public void importFrom(File file, Void options, ImportCallback<String, Exception> callback) {
-			try {
-				callback.call(IOUtil.readContent(file), null);
-			} catch (IOException ex) {
-				callback.call(null, ex);
-			}
-		}
-	}
+        @Override
+        public void importFrom(File file, Void options, ImportCallback<String, Exception> callback) {
+            try {
+                callback.call(IOUtil.readContent(file), null);
+            } catch (IOException ex) {
+                callback.call(null, ex);
+            }
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package com.noticeditorteam.noticeditor.io;
 
 import com.noticeditorteam.noticeditor.model.NoticeTree;
-
 import java.io.File;
 
 /**
@@ -11,5 +10,5 @@ import java.io.File;
  */
 public interface ExportStrategy {
 
-	void export(File file, NoticeTree tree) throws ExportException;
+    void export(File file, NoticeTree tree) throws ExportException;
 }

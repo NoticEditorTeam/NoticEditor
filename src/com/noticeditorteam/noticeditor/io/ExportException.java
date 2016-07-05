@@ -5,7 +5,7 @@ package com.noticeditorteam.noticeditor.io;
  */
 public class ExportException extends RuntimeException {
 
-	public ExportException(Throwable cause) {
-		super(cause);
-	}
+    public ExportException(Throwable cause) {
+        super(cause);
+    }
 }

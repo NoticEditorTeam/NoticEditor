@@ -14,63 +14,63 @@ import java.util.logging.Level;
  */
 public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
 
-	/**
-	 * Create branch node on tree.
-	 *
-	 * @param title a title of notice
-	 */
-	public NoticeTreeItem(String title) {
-		this(title, null, 0);
-	}
+    /**
+     * Create branch node on tree.
+     *
+     * @param title a title of notice
+     */
+    public NoticeTreeItem(String title) {
+        this(title, null, 0);
+    }
 
-	/**
-	 * Create leaf node on tree.
-	 *
-	 * @param title a title of notice
-	 * @param content a content of notice
-	 */
-	public NoticeTreeItem(String title, String content) {
-		this(title, content, NoticeItem.STATUS_NORMAL);
-	}
+    /**
+     * Create leaf node on tree.
+     *
+     * @param title a title of notice
+     * @param content a content of notice
+     */
+    public NoticeTreeItem(String title, String content) {
+        this(title, content, NoticeItem.STATUS_NORMAL);
+    }
 
-	/**
-	 * Create leaf node on tree.
-	 *
-	 * @param title a title of notice
-	 * @param content a content of notice
-	 * @param status a status of notice
-	 */
-	public NoticeTreeItem(String title, String content, int status) {
-		super(new NoticeItem(title, content, status));
-	}
+    /**
+     * Create leaf node on tree.
+     *
+     * @param title a title of notice
+     * @param content a content of notice
+     * @param status a status of notice
+     */
+    public NoticeTreeItem(String title, String content, int status) {
+        super(new NoticeItem(title, content, status));
+    }
 
-	public void addChild(NoticeTreeItem item) {
-		getInternalChildren().add(item);
-		if (item != null) {
-			getValue().addChild(item.getValue());
-		} else {
-			getValue().addChild(null);
-		}
-	}
+    public void addChild(NoticeTreeItem item) {
+        getInternalChildren().add(item);
+        if (item != null) {
+            getValue().addChild(item.getValue());
+        } else {
+            getValue().addChild(null);
+        }
+    }
 
-	@Override
-	public boolean isLeaf() {
-		return getValue().isLeaf();
-	}
+    @Override
+    public boolean isLeaf() {
+        return getValue().isLeaf();
+    }
 
-	/**
-	 * @return true if content == null
-	 */
-	public boolean isBranch() {
-		return getValue().isBranch();
-	}
+    /**
+     * @return true if content == null
+     */
+    public boolean isBranch() {
+        return getValue().isBranch();
+    }
 
-	/**
-	 * @return notice content or null if its a branch
-	 */
-	public String getContent() {
-		return getValue().getContent();
-	}
+    /**
+     * @return notice content or null if its a branch
+     */
+    public String getContent() {
+        return getValue().getContent();
+    }
 
     /**
      * Content will be changed only when is a leaf node.
@@ -82,23 +82,23 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
         fireChangeItem();
     }
 
-	public String getTitle() {
-		return getValue().getTitle();
-	}
+    public String getTitle() {
+        return getValue().getTitle();
+    }
 
-	public void setTitle(String title) {
-		getValue().setTitle(title);
-		fireChangeItem();
-	}
+    public void setTitle(String title) {
+        getValue().setTitle(title);
+        fireChangeItem();
+    }
 
-	public int getStatus() {
-		return getValue().getStatus();
-	}
+    public int getStatus() {
+        return getValue().getStatus();
+    }
 
-	public void setStatus(int status) {
-		getValue().setStatus(status);
-		fireChangeItem();
-	}
+    public void setStatus(int status) {
+        getValue().setStatus(status);
+        fireChangeItem();
+    }
 
     public void addAttachement(File file) {
         try {

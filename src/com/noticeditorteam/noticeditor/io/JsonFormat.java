@@ -2,13 +2,10 @@ package com.noticeditorteam.noticeditor.io;
 
 import static com.noticeditorteam.noticeditor.io.JsonFields.*;
 import com.noticeditorteam.noticeditor.model.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
-
 import javafx.scene.control.TreeItem;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,18 +15,18 @@ import org.json.JSONObject;
  */
 public class JsonFormat {
 
-	public static JsonFormat with(File file) {
-		return new JsonFormat(file);
-	}
+    public static JsonFormat with(File file) {
+        return new JsonFormat(file);
+    }
 
-	private final File file;
+    private final File file;
 
-	private JsonFormat(File file) {
-		this.file = file;
-	}
+    private JsonFormat(File file) {
+        this.file = file;
+    }
 
-	public NoticeTree importDocument() throws IOException, JSONException {
-		JSONObject json = new JSONObject(IOUtil.readContent(file));
+    public NoticeTree importDocument() throws IOException, JSONException {
+        JSONObject json = new JSONObject(IOUtil.readContent(file));
 
         if (json.has(KEY_STATUSINFO)) {
             JSONArray statusList = json.getJSONArray(KEY_STATUSINFO);
@@ -83,14 +80,14 @@ public class JsonFormat {
         IOUtil.writeJson(file, export(tree.getRoot()));
     }
 
-	public JSONObject export(NoticeTreeItem root) throws JSONException {
-		JSONObject json = new JSONObject();
-		treeToJson(root, json);
+    public JSONObject export(NoticeTreeItem root) throws JSONException {
+        JSONObject json = new JSONObject();
+        treeToJson(root, json);
 
-		json.put(KEY_STATUSINFO, NoticeStatusList.asObservable());
+        json.put(KEY_STATUSINFO, NoticeStatusList.asObservable());
 
-		return json;
-	}
+        return json;
+    }
 
     private void treeToJson(NoticeTreeItem item, JSONObject json) throws JSONException {
         json.put(KEY_TITLE, item.getTitle());
