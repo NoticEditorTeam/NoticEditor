@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.web.*?>
-
-<SplitPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.noticeditorteam.noticeditor.controller.NoticeViewController" dividerPositions="0.5">
+<?import javafx.scene.web.WebView?>
+<SplitPane dividerPositions="0.5" xmlns="http://javafx.com/javafx/8.0.92" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.noticeditorteam.noticeditor.controller.NoticeViewController">
     <items>
         <TabPane fx:id="tabPane">
             <Tab closable="false" text="%editor"> 
                 <TextArea fx:id="editor" />
+            </Tab>
+            <Tab closable="false" onSelectionChanged="#onAttachsFocused" text="%attachments">
+                <content>
+                    <ListView fx:id="attachsView" prefHeight="200.0" prefWidth="200.0">
+                        <contextMenu>
+                            <ContextMenu>
+                                <items>
+                                    <MenuItem fx:id="exportAttachItem" mnemonicParsing="false"
+                                              onAction="#handleContextMenu" text="%contextmenu.attachments.export"/>
+                                    <MenuItem fx:id="deleteAttachItem" mnemonicParsing="false"
+                                              onAction="#handleContextMenu" text="%contextmenu.attachments.delete"/>
+                                </items>
+                            </ContextMenu>
+                        </contextMenu>
+                    </ListView>
+                </content>
             </Tab>
         </TabPane>
         <WebView fx:id="viewer" />

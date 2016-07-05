@@ -1,17 +1,17 @@
 package com.noticeditorteam.noticeditor.controller;
 
 import com.noticeditorteam.noticeditor.Main;
-import com.noticeditorteam.noticeditor.io.importers.FileImporter;
-import com.noticeditorteam.noticeditor.model.Prefs;
-import com.noticeditorteam.noticeditor.model.PreviewStyles;
-import com.noticeditorteam.noticeditor.view.Notification;
 import com.noticeditorteam.noticeditor.io.DocumentFormat;
 import com.noticeditorteam.noticeditor.io.ExportException;
 import com.noticeditorteam.noticeditor.io.ExportStrategy;
 import com.noticeditorteam.noticeditor.io.ExportStrategyHolder;
+import com.noticeditorteam.noticeditor.io.importers.FileImporter;
 import com.noticeditorteam.noticeditor.model.NoticeStatusList;
+import com.noticeditorteam.noticeditor.model.Prefs;
+import com.noticeditorteam.noticeditor.model.PreviewStyles;
 import com.noticeditorteam.noticeditor.model.Themes;
 import com.noticeditorteam.noticeditor.view.Chooser;
+import com.noticeditorteam.noticeditor.view.Notification;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -260,10 +260,10 @@ public class NoticeController {
 		try {
 			ExportStrategyHolder.HTML.setProcessor(noticeViewController.processor);
 			ExportStrategyHolder.HTML.export(destDir, noticeTreeViewController.getNoticeTree());
-			Notification.success("Export success!");
+			Notification.success(resources.getString("exporthtml.success"));
 		} catch (ExportException e) {
 			logger.log(Level.SEVERE, null, e);
-			Notification.error("Export failed!");
+			Notification.error(resources.getString("exporthtml.fail"));
 		}
 	}
 
@@ -340,5 +340,9 @@ public class NoticeController {
 		word[0] = Character.toUpperCase(word[0]);
 		builder.append(word);
 		return builder.toString();
+	}
+
+	public static Logger getLogger() {
+		return logger;
 	}
 }

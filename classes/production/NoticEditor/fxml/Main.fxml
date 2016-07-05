@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -9,37 +10,39 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" stylesheets="@../resources/styles/dark.css" xmlns="http://javafx.com/javafx/8.0.92" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.temporaryteam.noticeditor.controller.NoticeController">
+<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.noticeditorteam.noticeditor.controller.NoticeController">
     <children>
         <MenuBar>
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="%menu.file">
                     <items>
-                        <MenuItem onAction="#handleNew" text="New (Ctrl+Shift+N)" />
-                        <MenuItem onAction="#handleOpen" text="Open (Ctrl+O)" />
-                        <MenuItem onAction="#handleSave" text="Save (Ctrl+S)" />
-                        <MenuItem onAction="#handleSaveAs" text="Save As" />
-                        <MenuItem onAction="#handleExportHtml" text="Export to HTML" />
-                        <Menu mnemonicParsing="false" text="Import">
+                        <MenuItem onAction="#handleNew" text="%menu.file.new" />
+                        <MenuItem onAction="#handleOpen" text="%menu.file.open" />
+                        <MenuItem onAction="#handleSave" text="%menu.file.save" />
+                        <MenuItem onAction="#handleSaveAs" text="%menu.file.saveas" />
+                        <MenuItem onAction="#handleExportHtml" text="%menu.file.exporthtml" />
+                        <Menu mnemonicParsing="false" text="%menu.file.import">
                             <items>
-                                <MenuItem onAction="#handleImportUrl" text="From url" />
-                                <MenuItem onAction="#handleImportFile" text="From file" />
+                                <MenuItem onAction="#handleImportUrl" text="%menu.file.import.url" />
+                                <MenuItem onAction="#handleImportFile" text="%menu.file.import.file" />
                             </items>
                         </Menu>
-                        <Menu fx:id="recentFilesMenu" text="Recent files" />
-                        <MenuItem onAction="#handleExit" text="Exit" />
+                        <Menu fx:id="recentFilesMenu" text="%menu.file.recent" />
+                        <MenuItem onAction="#handleExit" text="%menu.file.exit" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="View">
+                <Menu mnemonicParsing="false" text="%menu.view">
                     <items>
-                        <MenuItem onAction="#handleSwitchOrientation" text="Switch orientation" />
-                        <CheckMenuItem fx:id="wordWrapItem" text="Word wrap" />
-                        <Menu fx:id="previewStyleMenu" text="Preview style" />
+                        <MenuItem onAction="#handleSwitchOrientation" text="%menu.view.orientation" />
+                        <CheckMenuItem fx:id="wordWrapItem" text="%menu.view.wordwrap" />
+                        <Menu fx:id="previewStyleMenu" text="%menu.view.preview" />
+                        <Menu fx:id="themesMenu" mnemonicParsing="false" text="%menu.view.theme" />
+                  <Menu fx:id="localesMenu" mnemonicParsing="false" text="%menu.view.language" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" text="%menu.help">
                     <items>
-                        <MenuItem onAction="#handleAbout" text="About" />
+                        <MenuItem onAction="#handleAbout" text="%menu.help.about" />
                     </items>
                 </Menu>
             </menus>
@@ -60,4 +63,7 @@
             </children>
         </StackPane>
     </children>
+    <stylesheets>
+        <URL value="@/resources/styles/main.css" />
+    </stylesheets>
 </VBox>

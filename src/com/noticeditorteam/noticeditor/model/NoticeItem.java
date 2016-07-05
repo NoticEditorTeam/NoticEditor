@@ -3,9 +3,6 @@ package com.noticeditorteam.noticeditor.model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.File;
-import java.util.ArrayList;
-
 /**
  * Model representation of notice. Contains notice data or branch data
  *
@@ -16,11 +13,11 @@ public class NoticeItem {
 	public static final int STATUS_NORMAL = 0;
 	public static final int STATUS_IMPORTANT = 1;
 
-	private String title;
-	private ObservableList<NoticeItem> children;
-	private String content;
-	private int status;
-	private ArrayList<File> images;
+    private String title;
+    private ObservableList<NoticeItem> children;
+    private String content;
+    private int status;
+    private Attachments attachments;
 
 	/**
 	 * Create branch node on tree.
@@ -41,20 +38,20 @@ public class NoticeItem {
 		this(title, content, STATUS_NORMAL);
 	}
 
-	/**
-	 * Create leaf node on tree.
-	 *
-	 * @param title notice title
-	 * @param content notice content
-	 * @param status is notice important
-	 */
-	public NoticeItem(String title, String content, int status) {
-		this.title = title;
-		this.content = content;
-		this.status = status;
-		images = new ArrayList<>();
-		children = FXCollections.observableArrayList();
-	}
+    /**
+     * Create leaf node on tree.
+     *
+     * @param title   notice title
+     * @param content notice content
+     * @param status  is notice important
+     */
+    public NoticeItem(String title, String content, int status) {
+        this.title = title;
+        this.content = content;
+        this.status = status;
+        attachments = new Attachments();
+        children = FXCollections.observableArrayList();
+    }
 
 	public void addChild(NoticeItem item) {
 		children.add(item);
@@ -105,12 +102,16 @@ public class NoticeItem {
 		return status;
 	}
 
-	@Override
-	public String toString() {
-		return title + "\n\n" + content;
-	}
+    public Attachments getAttachments() {
+        return attachments;
+    }
 
-	public ArrayList<File> getImages() {
-		return images;
-	}
+    public void setAttachments(Attachments attachments) {
+        this.attachments = attachments;
+    }
+
+    @Override
+    public String toString() {
+        return title + "\n\n" + content;
+    }
 }

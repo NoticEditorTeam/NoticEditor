@@ -6,8 +6,6 @@ import com.noticeditorteam.noticeditor.view.Chooser;
 import com.noticeditorteam.noticeditor.view.EditNoticeTreeCell;
 import com.noticeditorteam.noticeditor.view.Notification;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,11 +14,11 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.util.Callback;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 public class NoticeTreeViewController implements Initializable {
 
@@ -63,17 +61,14 @@ public class NoticeTreeViewController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resources) {
-		final EventHandler onStatusChangeAction = new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				final MenuItem newStatus = (MenuItem) event.getSource();
-				statusSelectButton.setText(newStatus.getText());
-				NoticeTreeItem currentNotice = getCurrentNotice();
-				if (currentNotice != null && newStatus.getUserData() != null && currentNotice.isLeaf()) {
-					currentNotice.setStatus(((NoticeStatus) newStatus.getUserData()).getCode());
-				}
-			}
-		};
+		final EventHandler<ActionEvent> onStatusChangeAction = event -> {
+            final MenuItem newStatus = (MenuItem) event.getSource();
+            statusSelectButton.setText(newStatus.getText());
+            NoticeTreeItem currentNotice = getCurrentNotice();
+            if (currentNotice != null && newStatus.getUserData() != null && currentNotice.isLeaf()) {
+                currentNotice.setStatus(((NoticeStatus) newStatus.getUserData()).getCode());
+            }
+        };
 		NoticeStatusList.add(resources.getString("normal"));
 		NoticeStatusList.add(resources.getString("important"));
 		NoticeStatusList.save();
@@ -87,19 +82,11 @@ public class NoticeTreeViewController implements Initializable {
 		statusSelectButton.setTooltip(new Tooltip(resources.getString("status")));
 
 		noticeTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<NoticeItem>>() {
-			@Override
-			public void changed(ObservableValue<? extends TreeItem<NoticeItem>> observable, TreeItem<NoticeItem> oldValue, TreeItem<NoticeItem> newValue) {
-				currentTreeItem = (NoticeTreeItem) newValue;
-				open();
-			}
-		});
-		noticeTreeView.setCellFactory(new Callback<TreeView<NoticeItem>, TreeCell<NoticeItem>>() {
-			@Override
-			public TreeCell<NoticeItem> call(TreeView<NoticeItem> p) {
-				return new EditNoticeTreeCell();
-			}
-		});
+		noticeTreeView.getSelectionModel().selectedItemProperty().addListener( (o, oldValue, newValue) -> {
+            currentTreeItem = (NoticeTreeItem) newValue;
+            open();
+        });
+		noticeTreeView.setCellFactory(p -> new EditNoticeTreeCell());
 		newnotice = resources.getString("newnotice");
 		newbranch = resources.getString("newbranch");
 		openfile = resources.getString("openfile");
@@ -177,11 +164,12 @@ public class NoticeTreeViewController implements Initializable {
 		manageItemBar.setDisable(currentTreeItem == null);
 		addChild.setDisable(!isCurrentBranch);
 		addNeighbour.setDisable(currentTreeItem == null);
+        NoticeController.getNoticeViewController().rebuildAttachsView();
 	}
 
 	@FXML
 	private void handleContextMenu(ActionEvent event) {
-		Object source = event.getSource();
+		final Object source = event.getSource();
 		if (source == addBranchItem) {
 			noticeTree.addItem(new NoticeTreeItem(newbranch), currentTreeItem);
 		} else if (source == addNoticeItem) {
@@ -241,11 +229,12 @@ public class NoticeTreeViewController implements Initializable {
 					.show(main.getPrimaryStage());
 			if (fileInjected != null) {
 				try {
-					currentTreeItem.addImage(fileInjected);
+					currentTreeItem.addAttachement(fileInjected);
 				} catch (Exception e) {
-					e.printStackTrace();
+					NoticeController.getLogger().log(Level.SEVERE, "addFile", e);
 				}
 			}
+			NoticeController.getNoticeViewController().rebuildAttachsView();
 		}
 	}
 

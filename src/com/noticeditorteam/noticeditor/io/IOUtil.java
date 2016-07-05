@@ -1,12 +1,11 @@
 package com.noticeditorteam.noticeditor.io;
 
 import gcardone.junidecode.Junidecode;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URLEncoder;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public final class IOUtil {
 
@@ -21,6 +20,12 @@ public final class IOUtil {
 		try (OutputStream os = new FileOutputStream(file);
 			 Writer writer = new OutputStreamWriter(os, "UTF-8")) {
 			writer.write(content);
+		}
+	}
+
+	public static void writeContent(File file, byte[] content) throws IOException {
+		try (OutputStream os = new FileOutputStream(file)) {
+			os.write(content);
 		}
 	}
 
