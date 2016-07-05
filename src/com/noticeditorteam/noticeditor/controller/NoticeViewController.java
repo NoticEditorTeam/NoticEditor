@@ -92,17 +92,17 @@ public class NoticeViewController implements Initializable {
 
 	private void changeContent(String newContent) {
         final NoticeTreeItem current = NoticeController.getNoticeTreeViewController().getCurrentNotice();
-        final String parsed;
+        String parsed = processor.markdownToHtml(newContent);
         if (current != null) {
 			current.changeContent(newContent);
-            parsed = parseAttachments(newContent, current.getAttachments());
-		} else {
-            parsed = "";
-        }
-		engine.loadContent(highlighter.highlight(processor.markdownToHtml(parsed), codeCssName));
+            parsed = parseAttachments(parsed, current.getAttachments());
+		}
+		engine.loadContent(highlighter.highlight(parsed, codeCssName));
 	}
 
     private String parseAttachments(String text, Attachments attachments) {
+        if (attachments.isEmpty()) return text;
+        
         final Matcher m = ATTACHMENT_PATTERN.matcher(text);
         final StringBuffer sb = new StringBuffer();
         while (m.find()) {
