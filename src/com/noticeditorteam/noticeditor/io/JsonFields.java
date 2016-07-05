@@ -13,5 +13,5 @@ public class JsonFields {
     static final String KEY_CHILDREN = "children";
     static final String KEY_CONTENT = "content";
 
-    static final String KEY_STATUSINFO = "statusInfo";
+	static final String KEY_STATUSINFO = "statusInfo";
 }

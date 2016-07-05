@@ -14,13 +14,13 @@ import org.json.JSONException;
  */
 public class JsonExportStrategy implements ExportStrategy {
 
-    @Override
-    public void export(File file, NoticeTree tree) {
-        try {
-            JsonFormat.with(file).export(tree);
-        } catch (IOException | JSONException e) {
-            throw new ExportException(e);
-        }
-    }
+	@Override
+	public void export(File file, NoticeTree tree) {
+		try {
+			JsonFormat.with(file).export(tree);
+		} catch (IOException | JSONException e) {
+			throw new ExportException(e);
+		}
+	}
 
 }

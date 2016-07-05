@@ -14,92 +14,93 @@ import javafx.scene.control.TreeItem;
 
 public class FilterableTreeItem<T> extends TreeItem<T> {
 
-    @FunctionalInterface
-    public interface Predicate<T> {
-        boolean test(TreeItem<T> parent, T value);
-    }
+	@FunctionalInterface
+	public interface Predicate<T> {
 
-    private final ObservableList<TreeItem<T>> sourceList;
-    private final FilteredList<TreeItem<T>> filteredList;
+		boolean test(TreeItem<T> parent, T value);
+	}
 
-    private ObjectProperty<Predicate<T>> predicate = new SimpleObjectProperty<Predicate<T>>() {
-        @Override
-        protected void invalidated() {
-            fireChangeItem();
-        }
-    };
+	private final ObservableList<TreeItem<T>> sourceList;
+	private final FilteredList<TreeItem<T>> filteredList;
 
-    public FilterableTreeItem(T value) {
-        super(value);
-        sourceList = FXCollections.observableArrayList();
-        filteredList = new FilteredList<>(sourceList);
-        filteredList.predicateProperty().bind(Bindings.createObjectBinding(() -> {
-            return child -> {
-                // Set the predicate of child items to force filtering
-                if (child instanceof FilterableTreeItem) {
-                    FilterableTreeItem<T> filterableChild = (FilterableTreeItem<T>) child;
-                    filterableChild.setPredicate(predicate.get());
-                }
-                // If there is no predicate, keep this tree item
-                if (predicate.get() == null)
-                    return true;
-                // If there are children, keep this tree item
-                if (child.getChildren().size() > 0)
-                    return true;
-                // Otherwise ask the TreeItemPredicate
-                return predicate.get().test(this, child.getValue());
-            };
-        }, predicate));
-        setHiddenFieldChildren(filteredList);
-    }
+	private ObjectProperty<Predicate<T>> predicate = new SimpleObjectProperty<Predicate<T>>() {
+		@Override
+		protected void invalidated() {
+			fireChangeItem();
+		}
+	};
 
-    private void setHiddenFieldChildren(ObservableList<TreeItem<T>> list) {
-        try {
-            Field childrenField = TreeItem.class.getDeclaredField("children"); //$NON-NLS-1$
-            childrenField.setAccessible(true);
-            childrenField.set(this, list);
+	public FilterableTreeItem(T value) {
+		super(value);
+		sourceList = FXCollections.observableArrayList();
+		filteredList = new FilteredList<>(sourceList);
+		filteredList.predicateProperty().bind(Bindings.createObjectBinding(() -> {
+			return child -> {
+				// Set the predicate of child items to force filtering
+				if (child instanceof FilterableTreeItem) {
+					FilterableTreeItem<T> filterableChild = (FilterableTreeItem<T>) child;
+					filterableChild.setPredicate(predicate.get());
+				}
+				// If there is no predicate, keep this tree item
+				if (predicate.get() == null)
+					return true;
+				// If there are children, keep this tree item
+				if (child.getChildren().size() > 0)
+					return true;
+				// Otherwise ask the TreeItemPredicate
+				return predicate.get().test(this, child.getValue());
+			};
+		}, predicate));
+		setHiddenFieldChildren(filteredList);
+	}
 
-            Field declaredField = TreeItem.class.getDeclaredField("childrenListener"); //$NON-NLS-1$
-            declaredField.setAccessible(true);
-            list.addListener((ListChangeListener<? super TreeItem<T>>) declaredField.get(this));
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            throw new RuntimeException("Could not set TreeItem.children", e); //$NON-NLS-1$
-        }
-    }
+	private void setHiddenFieldChildren(ObservableList<TreeItem<T>> list) {
+		try {
+			Field childrenField = TreeItem.class.getDeclaredField("children"); //$NON-NLS-1$
+			childrenField.setAccessible(true);
+			childrenField.set(this, list);
 
-    /**
-     * Returns the list of children that is backing the filtered list.
-     *
-     * @return underlying list of children
-     */
-    public ObservableList<TreeItem<T>> getInternalChildren() {
-        return sourceList;
-    }
+			Field declaredField = TreeItem.class.getDeclaredField("childrenListener"); //$NON-NLS-1$
+			declaredField.setAccessible(true);
+			list.addListener((ListChangeListener<? super TreeItem<T>>) declaredField.get(this));
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			throw new RuntimeException("Could not set TreeItem.children", e); //$NON-NLS-1$
+		}
+	}
 
-    /**
-     * @return the predicate property
-     */
-    public final ObjectProperty<Predicate<T>> predicateProperty() {
-        return predicate;
-    }
+	/**
+	 * Returns the list of children that is backing the filtered list.
+	 *
+	 * @return underlying list of children
+	 */
+	public ObservableList<TreeItem<T>> getInternalChildren() {
+		return sourceList;
+	}
 
-    /**
-     * @return the predicate
-     */
-    public final Predicate<T> getPredicate() {
-        return predicate.get();
-    }
+	/**
+	 * @return the predicate property
+	 */
+	public final ObjectProperty<Predicate<T>> predicateProperty() {
+		return predicate;
+	}
 
-    /**
-     * Set the predicate
-     *
-     * @param predicate the predicate
-     */
-    public final void setPredicate(Predicate<T> predicate) {
-        this.predicate.set(predicate);
-    }
+	/**
+	 * @return the predicate
+	 */
+	public final Predicate<T> getPredicate() {
+		return predicate.get();
+	}
 
-    protected void fireChangeItem() {
-        Event.fireEvent(this, new TreeModificationEvent(childrenModificationEvent(), this));
-    }
+	/**
+	 * Set the predicate
+	 *
+	 * @param predicate the predicate
+	 */
+	public final void setPredicate(Predicate<T> predicate) {
+		this.predicate.set(predicate);
+	}
+
+	protected void fireChangeItem() {
+		Event.fireEvent(this, new TreeModificationEvent(childrenModificationEvent(), this));
+	}
 }
