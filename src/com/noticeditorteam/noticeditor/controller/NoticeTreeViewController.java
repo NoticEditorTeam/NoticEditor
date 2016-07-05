@@ -63,17 +63,14 @@ public class NoticeTreeViewController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle resources) {
-		final EventHandler onStatusChangeAction = new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				final MenuItem newStatus = (MenuItem) event.getSource();
-				statusSelectButton.setText(newStatus.getText());
-				NoticeTreeItem currentNotice = getCurrentNotice();
-				if (currentNotice != null && newStatus.getUserData() != null && currentNotice.isLeaf()) {
-					currentNotice.setStatus(((NoticeStatus) newStatus.getUserData()).getCode());
-				}
-			}
-		};
+		final EventHandler onStatusChangeAction = (EventHandler<ActionEvent>) (ActionEvent event) -> {
+            final MenuItem newStatus = (MenuItem) event.getSource();
+            statusSelectButton.setText(newStatus.getText());
+            NoticeTreeItem currentNotice = getCurrentNotice();
+            if (currentNotice != null && newStatus.getUserData() != null && currentNotice.isLeaf()) {
+                currentNotice.setStatus(((NoticeStatus) newStatus.getUserData()).getCode());
+            }
+        };
 		NoticeStatusList.add(resources.getString("normal"));
 		NoticeStatusList.add(resources.getString("important"));
 		NoticeStatusList.save();
@@ -87,19 +84,12 @@ public class NoticeTreeViewController implements Initializable {
 		statusSelectButton.setTooltip(new Tooltip(resources.getString("status")));
 
 		noticeTreeView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<NoticeItem>>() {
-			@Override
-			public void changed(ObservableValue<? extends TreeItem<NoticeItem>> observable, TreeItem<NoticeItem> oldValue, TreeItem<NoticeItem> newValue) {
-				currentTreeItem = (NoticeTreeItem) newValue;
-				open();
-			}
-		});
-		noticeTreeView.setCellFactory(new Callback<TreeView<NoticeItem>, TreeCell<NoticeItem>>() {
-			@Override
-			public TreeCell<NoticeItem> call(TreeView<NoticeItem> p) {
-				return new EditNoticeTreeCell();
-			}
-		});
+		noticeTreeView.getSelectionModel().selectedItemProperty().addListener(
+                (ObservableValue<? extends TreeItem<NoticeItem>> observable, TreeItem<NoticeItem> oldValue, TreeItem<NoticeItem> newValue) -> {
+            currentTreeItem = (NoticeTreeItem) newValue;
+            open();
+        });
+		noticeTreeView.setCellFactory((TreeView<NoticeItem> p) -> new EditNoticeTreeCell());
 		newnotice = resources.getString("newnotice");
 		newbranch = resources.getString("newbranch");
 		openfile = resources.getString("openfile");
