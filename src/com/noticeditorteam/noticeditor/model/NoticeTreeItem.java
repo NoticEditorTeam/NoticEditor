@@ -3,8 +3,8 @@ package com.noticeditorteam.noticeditor.model;
 import com.noticeditorteam.noticeditor.controller.NoticeController;
 import com.noticeditorteam.noticeditor.io.IOUtil;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.logging.Level;
 
 /**
@@ -103,21 +103,54 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
     public void addAttachement(File file) {
         try {
             final byte[] content = Files.readAllBytes(file.toPath());
-            final String name = IOUtil.sanitizeFilename(file.getName());
+            String name = IOUtil.sanitizeFilename(file.getName());
+            final Attachments atts = getValue().getAttachments();
+
+            if (atts.contains(name)) {
+                if (Arrays.equals(atts.get(name).getData(), content)) {
+                    // Attachment with same name and content already exists
+                    // Insert code to editor without adding attachment
+                    insertAttachmentCodeToEditor(name);
+                    return;
+                } else {
+                    // Attachment with same name exists, but content is different
+                    // Change attachment name
+                    final int lastDot = name.lastIndexOf('.');
+                    final String nameWithoutExtension, ext;
+                    if (lastDot > 0) {
+                        nameWithoutExtension = name.substring(0, lastDot);
+                        ext = name.substring(lastDot + 1);
+                    } else {
+                        nameWithoutExtension = name;
+                        ext = "";
+                    }
+
+                    int counter = 1;
+                    String newFileName = name;
+                    while (atts.contains(newFileName)) {
+                        newFileName = String.format("%s_(%d).%s", nameWithoutExtension, counter++, ext);
+                    }
+                    name = newFileName;
+                }
+            }
             final Attachment attachment = new Attachment(name, content);
             if (attachment.isImage()) {
-                final int caret = NoticeController.getNoticeViewController()
-                        .getEditor().getCaretPosition();
-                final String allContent = getContent();
-                final String newContent = allContent.substring(0, caret)
-                        + "\n@att:" + name + "\n"
-                        + allContent.substring(caret);
-                changeContent(newContent);
+                insertAttachmentCodeToEditor(name);
             }
-            getValue().getAttachments().add(attachment);
+            atts.add(attachment);
         } catch (Exception e) {
             NoticeController.getLogger().log(Level.SEVERE, "addAttachment", e);
         }
+    }
+
+    private void insertAttachmentCodeToEditor(String name) {
+        final int caret = NoticeController.getNoticeViewController()
+                .getEditor().getCaretPosition();
+        final String allContent = getContent();
+        final String newContent = allContent.substring(0, caret)
+                + "\n@att:" + name + "\n"
+                + allContent.substring(caret);
+        changeContent(newContent);
     }
 
     public Attachments getAttachments() {

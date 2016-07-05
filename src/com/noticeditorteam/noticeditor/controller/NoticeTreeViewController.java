@@ -21,6 +21,7 @@ import javafx.util.Callback;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 public class NoticeTreeViewController implements Initializable {
 
@@ -243,8 +244,7 @@ public class NoticeTreeViewController implements Initializable {
 				try {
 					currentTreeItem.addAttachement(fileInjected);
 				} catch (Exception e) {
-					// TODO logger
-					e.printStackTrace();
+					NoticeController.getLogger().log(Level.SEVERE, "addFile", e);
 				}
 			}
 			NoticeController.getNoticeViewController().rebuildAttachsView();

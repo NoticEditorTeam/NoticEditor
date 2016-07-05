@@ -40,6 +40,10 @@ public final class Attachments implements Iterable<Attachment> {
         return attachments.getOrDefault(name, Attachment.EMPTY);
     }
 
+    public boolean contains(String key) {
+        return attachments.containsKey(key);
+    }
+
     @Override
     public Iterator<Attachment> iterator() {
         return attachments.values().iterator();
