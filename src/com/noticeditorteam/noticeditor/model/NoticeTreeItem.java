@@ -1,8 +1,11 @@
 package com.noticeditorteam.noticeditor.model;
 
+import com.noticeditorteam.noticeditor.controller.NoticeController;
 import com.noticeditorteam.noticeditor.io.IOUtil;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.util.logging.Level;
 
 /**
  * Model representation of notice. Contains notice data or branch data
@@ -103,15 +106,17 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
             final String name = IOUtil.sanitizeFilename(file.getName());
             final Attachment attachment = new Attachment(name, content);
             if (attachment.isImage()) {
-                // TODO place attach code at the cursor place
-                // and replace newline chars with space
-                String newcontent = getContent() + "\n@att:" + name + "\n";
-                changeContent(newcontent);
+                final int caret = NoticeController.getNoticeViewController()
+                        .getEditor().getCaretPosition();
+                final String allContent = getContent();
+                final String newContent = allContent.substring(0, caret)
+                        + "\n@att:" + name + "\n"
+                        + allContent.substring(caret);
+                changeContent(newContent);
             }
             getValue().getAttachments().add(attachment);
         } catch (Exception e) {
-            // TODO logger
-            e.printStackTrace();
+            NoticeController.getLogger().log(Level.SEVERE, "addAttachment", e);
         }
     }
 
