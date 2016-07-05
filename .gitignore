@@ -4,5 +4,10 @@
 .vimrc
 *.swp
 /nbproject/private/
+/nbproject/UPDATED.TXT
+/nbproject/jfx-impl.xml
+/nbproject/jfx-impl_backup*.xml
+/nbproject/genfiles.properties
+/nbproject/build-impl.xml
 /.gradle/
 /.idea/
