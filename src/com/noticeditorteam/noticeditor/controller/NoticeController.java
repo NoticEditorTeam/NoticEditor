@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Duration;
 
 public class NoticeController {
 
@@ -129,13 +130,18 @@ public class NoticeController {
 		}
 		
 		// Set locales menu items
+        final Locale currentLocale = Locale.getDefault();
 		ToggleGroup localeGroup = new ToggleGroup();
-		for(String lang : new String[] {"en", "ru", "uk"}) {
+		for (String lang : new String[] {"en", "ru", "uk"}) {
 			final Locale locale = new Locale(lang);
 			RadioMenuItem item = new RadioMenuItem(beautify(locale.getDisplayLanguage(locale)));
 			item.setToggleGroup(localeGroup);
+            if (lang.equals(currentLocale.getLanguage())) {
+                item.setSelected(true);
+            }
 			item.setOnAction(a -> {
 				Prefs.setLocale(locale);
+                Notification.show(resources.getString("messages.restart_is_needed"), Duration.seconds(5));
 			});
 			localesMenu.getItems().add(item);
 		}
