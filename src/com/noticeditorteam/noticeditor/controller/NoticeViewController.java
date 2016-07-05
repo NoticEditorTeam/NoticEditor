@@ -5,6 +5,9 @@ import com.noticeditorteam.noticeditor.io.IOUtil;
 import com.noticeditorteam.noticeditor.model.*;
 import com.noticeditorteam.noticeditor.view.Chooser;
 import com.noticeditorteam.noticeditor.view.Notification;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -53,13 +56,15 @@ public class NoticeViewController implements Initializable {
 	@FXML
 	private WebView viewer;
 
+    private ObjectProperty<Attachment> currentAttachmentProperty = new SimpleObjectProperty<>(null);
+
 	protected final PegDownProcessor processor;
 	protected final SyntaxHighlighter highlighter;
 	private WebEngine engine;
 	private Main main;
 
 	private String codeCssName;
-    private Attachment currentAttach;
+
 
 	public NoticeViewController() {
 		processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
@@ -80,9 +85,11 @@ public class NoticeViewController implements Initializable {
         attachsView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Attachment>() {
             @Override
             public void changed(ObservableValue<? extends Attachment> observable, Attachment oldValue, Attachment newValue) {
-                currentAttach = (Attachment) newValue;
+                currentAttachmentProperty.setValue((Attachment) newValue);
             }
         });
+        exportAttachItem.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
+        deleteAttachItem.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
         resources = rb;
     }
 
@@ -172,15 +179,17 @@ public class NoticeViewController implements Initializable {
     private void handleContextMenu(ActionEvent event) {
         final Object source = event.getSource();
         if (source == exportAttachItem) {
+            if (currentAttachmentProperty.get() == null) return;
             File fileSaved = Chooser.file().save()
                     .filter(Chooser.ALL)
                     .title(resources.getString("exportfile"))
                     .show(main.getPrimaryStage());
             if (fileSaved == null) return;
-            exportAttachment(fileSaved, currentAttach);
+            exportAttachment(fileSaved, currentAttachmentProperty.get());
         } else if (source == deleteAttachItem) {
+            if (currentAttachmentProperty.get() == null) return;
             final NoticeTreeItem current = NoticeController.getNoticeTreeViewController().getCurrentNotice();
-            current.getAttachments().remove(currentAttach);
+            current.getAttachments().remove(currentAttachmentProperty.get());
             rebuildAttachsView();
         }
     }

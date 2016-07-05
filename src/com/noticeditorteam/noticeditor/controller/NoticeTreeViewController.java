@@ -178,6 +178,7 @@ public class NoticeTreeViewController implements Initializable {
 		manageItemBar.setDisable(currentTreeItem == null);
 		addChild.setDisable(!isCurrentBranch);
 		addNeighbour.setDisable(currentTreeItem == null);
+        NoticeController.getNoticeViewController().rebuildAttachsView();
 	}
 
 	@FXML
