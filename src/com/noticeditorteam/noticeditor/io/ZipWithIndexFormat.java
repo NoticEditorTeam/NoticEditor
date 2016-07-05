@@ -86,8 +86,10 @@ public class ZipWithIndexFormat {
 			// ../note_filename/filename.md
 			final String mdPath = newDir + filename + ".md";
             final NoticeTreeItem item = new NoticeTreeItem(title, readFile(mdPath), status);
-            Attachments attachments = readAttachments(newDir, index.getJSONArray(JsonFields.KEY_ATTACHMENTS));
-            item.setAttachments(attachments);
+            if (index.has(JsonFields.KEY_ATTACHMENTS)) {
+                Attachments attachments = readAttachments(newDir, index.getJSONArray(JsonFields.KEY_ATTACHMENTS));
+                item.setAttachments(attachments);
+            }
 			return item;
 		}
 	}
