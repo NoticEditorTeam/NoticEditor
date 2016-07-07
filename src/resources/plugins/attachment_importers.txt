@@ -1,0 +1,1 @@
+com.noticeditorteam.noticeditor.plugin.attachments.FromURLImporter

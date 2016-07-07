@@ -2,6 +2,7 @@ package com.noticeditorteam.noticeditor.io;
 
 import gcardone.junidecode.Junidecode;
 import java.io.*;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
@@ -121,6 +122,14 @@ public final class IOUtil {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset))) {
             return reader.lines().collect(Collectors.toList());
         }
+    }
+
+    public static byte[] download(String url) throws IOException {
+        final ByteArrayOutputStream result = new ByteArrayOutputStream();
+        try (InputStream is = new URL(url).openStream()) {
+            copy(is, result);
+        }
+        return result.toByteArray();
     }
 
     public static void copy(InputStream is, OutputStream os) throws IOException {
