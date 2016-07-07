@@ -228,7 +228,7 @@ public class NoticeTreeViewController implements Initializable {
                     .show(main.getPrimaryStage());
             if (fileInjected != null) {
                 try {
-                    currentTreeItem.addAttachement(fileInjected);
+                    currentTreeItem.addAttachment(fileInjected);
                 } catch (Exception e) {
                     NoticeController.getLogger().log(Level.SEVERE, "addFile", e);
                 }

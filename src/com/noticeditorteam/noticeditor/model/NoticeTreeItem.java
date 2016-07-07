@@ -3,6 +3,7 @@ package com.noticeditorteam.noticeditor.model;
 import com.noticeditorteam.noticeditor.controller.NoticeController;
 import com.noticeditorteam.noticeditor.io.IOUtil;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -100,12 +101,30 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
         fireChangeItem();
     }
 
-    public void addAttachement(File file) {
+    public void addAttachments(Attachments attachments) {
+        for (Attachment attachment : attachments) {
+            addAttachment(attachment);
+        }
+    }
+
+    public void addAttachment(Attachment attachment) {
+        addAttachment(attachment.getName(), attachment.getData());
+    }
+
+    public void addAttachment(File file) {
         try {
             final byte[] content = Files.readAllBytes(file.toPath());
-            String name = IOUtil.sanitizeFilename(file.getName());
-            final Attachments atts = getValue().getAttachments();
+            final String name = file.getName();
+            addAttachment(name, content);
+        } catch (IOException e) {
+            NoticeController.getLogger().log(Level.SEVERE, "addAttachment", e);
+        }
+    }
 
+    public void addAttachment(String attachmentName, byte[] content) {
+        try {
+            String name = IOUtil.sanitizeFilename(attachmentName);
+            final Attachments atts = getValue().getAttachments();
             if (atts.contains(name)) {
                 if (Arrays.equals(atts.get(name).getData(), content)) {
                     // Attachment with same name and content already exists
