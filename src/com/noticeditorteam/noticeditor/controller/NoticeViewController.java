@@ -8,6 +8,7 @@ import com.noticeditorteam.noticeditor.view.Notification;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -19,7 +20,9 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -27,6 +30,8 @@ import static javafx.scene.control.SelectionMode.SINGLE;
 import javafx.scene.control.TextArea;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import static org.pegdown.Extensions.*;
 import org.pegdown.PegDownProcessor;
 
@@ -39,7 +44,7 @@ public class NoticeViewController implements Initializable {
     private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
 
     @FXML
-    private MenuItem exportAttachItem, deleteAttachItem;
+    private MenuItem importAttachFromUrlItem, exportAttachItem, deleteAttachItem;
 
     @FXML
     private ListView<Attachment> attachsView;
@@ -52,7 +57,7 @@ public class NoticeViewController implements Initializable {
     @FXML
     private WebView viewer;
 
-    private ObjectProperty<Attachment> currentAttachmentProperty = new SimpleObjectProperty<>(null);
+    private final ObjectProperty<Attachment> currentAttachmentProperty = new SimpleObjectProperty<>(null);
 
     protected final PegDownProcessor processor;
     protected final SyntaxHighlighter highlighter;
@@ -86,7 +91,7 @@ public class NoticeViewController implements Initializable {
     }
 
     private void changeContent(String newContent) {
-        final NoticeTreeItem current = NoticeController.getNoticeTreeViewController().getCurrentNotice();
+        final NoticeTreeItem current = getCurrentNotice();
         String parsed = processor.markdownToHtml(newContent);
         if (current != null) {
             current.changeContent(newContent);
@@ -166,6 +171,28 @@ public class NoticeViewController implements Initializable {
     @FXML
     private void handleContextMenu(ActionEvent event) {
         final Object source = event.getSource();
+
+        if (source == importAttachFromUrlItem) {
+            if (getCurrentNotice() == null) return;
+            try {
+                final ResourceBundle resource = ResourceBundle.getBundle(
+                        "resources.i18n.AttachmentImport", Locale.getDefault());
+
+                final Stage stage = new Stage();
+                stage.setTitle(resource.getString("title"));
+                stage.initOwner(main.getPrimaryStage());
+                stage.initModality(Modality.WINDOW_MODAL);
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AttachmentImport.fxml"), resource);
+                Scene scene = new Scene(loader.load());
+                stage.setScene(scene);
+                stage.show();
+            } catch (Exception ex) {
+                NoticeController.getLogger().log(Level.SEVERE, "importAttachmentContextMenu", ex);
+            }
+            return;
+        }
+
         if (source == exportAttachItem) {
             if (currentAttachmentProperty.get() == null) return;
             File fileSaved = Chooser.file().save()
@@ -174,9 +201,12 @@ public class NoticeViewController implements Initializable {
                     .show(main.getPrimaryStage());
             if (fileSaved == null) return;
             exportAttachment(fileSaved, currentAttachmentProperty.get());
-        } else if (source == deleteAttachItem) {
+            return;
+        }
+
+        if (source == deleteAttachItem) {
             if (currentAttachmentProperty.get() == null) return;
-            final NoticeTreeItem current = NoticeController.getNoticeTreeViewController().getCurrentNotice();
+            final NoticeTreeItem current = getCurrentNotice();
             current.getAttachments().remove(currentAttachmentProperty.get());
             rebuildAttachsView();
         }
@@ -184,7 +214,7 @@ public class NoticeViewController implements Initializable {
 
     @FXML
     private void onAttachsFocused(Event event) {
-        final NoticeTreeItem current = NoticeController.getNoticeTreeViewController().getCurrentNotice();
+        final NoticeTreeItem current = getCurrentNotice();
         attachsView.getItems().clear();
         if (current != null && current.isLeaf()) {
             for (Attachment attachment : current.getAttachments()) {
@@ -195,5 +225,9 @@ public class NoticeViewController implements Initializable {
 
     public void setMain(Main main) {
         this.main = main;
+    }
+
+    private NoticeTreeItem getCurrentNotice() {
+        return NoticeController.getNoticeTreeViewController().getCurrentNotice();
     }
 }

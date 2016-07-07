@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.web.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="238.0" prefWidth="396.0" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.noticeditorteam.noticeditor.controller.AttachmentImportController">
+    <children>
+        <HBox VBox.vgrow="NEVER">
+            <children>
+                <ComboBox fx:id="importersBox" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+                <Button fx:id="importButton" onAction="#handleImport" mnemonicParsing="false" text="%import" HBox.hgrow="NEVER" />
+            </children>
+        </HBox>
+        <TextArea fx:id="importDataArea" promptText="%prompt" VBox.vgrow="ALWAYS" />
+        <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0.0" VBox.vgrow="NEVER" />
+    </children>
+</VBox>
