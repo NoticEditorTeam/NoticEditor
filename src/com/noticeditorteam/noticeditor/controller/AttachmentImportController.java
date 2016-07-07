@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javafx.beans.binding.Bindings;
+import javafx.concurrent.Service;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -91,30 +92,30 @@ public class AttachmentImportController implements Initializable {
 
     @FXML
     private void handleImport(ActionEvent event) {
-        final AttachmentImporter importer = importersBox.getValue();
-        if (importer == null) return;
-
-        if (importer.isRunning()) {
-            importer.cancel();
+        final Service<Attachments> service = importersBox.getValue();
+        if (service.isRunning()) {
+            service.cancel();
             return;
         }
+        service.reset();
 
-        progressBar.visibleProperty().bind(importer.runningProperty());
-        progressBar.progressProperty().bind(importer.progressProperty());
-        importer.runningProperty().addListener(e -> {
-            final String key = importer.isRunning() ? "cancel" : "import";
+        importersBox.disableProperty().bind(service.runningProperty());
+        progressBar.visibleProperty().bind(service.runningProperty());
+        progressBar.progressProperty().bind(service.progressProperty());
+        service.runningProperty().addListener(e -> {
+            final String key = service.isRunning() ? "cancel" : "import";
             importButton.setText(resources.getString(key));
         });
-        importer.setOnFailed(e -> Notification.error(resources.getString("notification.failed")));
-        importer.setOnSucceeded(e -> {
+        service.setOnFailed(e -> Notification.error(resources.getString("notification.failed")));
+        service.setOnSucceeded(e -> {
             Notification.success(resources.getString("notification.completed"));
 
-            final Attachments attachments = importer.getValue();
+            final Attachments attachments = service.getValue();
             if (attachments == null) return;
 
             NoticeController.getNoticeTreeViewController().getCurrentNotice().addAttachments(attachments);
             NoticeController.getNoticeViewController().rebuildAttachsView();
         });
-        new Thread(importer).start();
+        service.start();
     }
 }

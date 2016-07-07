@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import javafx.concurrent.Task;
 
 public final class FromURLImporter extends AttachmentImporter {
 
@@ -29,48 +30,53 @@ public final class FromURLImporter extends AttachmentImporter {
     }
 
     @Override
-    protected Attachments call() throws Exception {
-        final String[] lines = getTextData().split("\n");
+    protected Task<Attachments> createTask() {
+        return new Task<Attachments>() {
+            @Override
+            protected Attachments call() throws Exception {
+                final String[] lines = getTextData().split("\n");
 
-        // Split urls into groups
-        final int numberOfGroups = Runtime.getRuntime().availableProcessors();
-        final int limitItems = (int) Math.ceil(lines.length / (double)numberOfGroups);
-        final List<List<String>> urlsGroup = splitUrlsIntoGroups(lines, limitItems);
-        // Actual number of groups
-        final int groupsSize = urlsGroup.size();
+                // Split urls into groups
+                final int numberOfGroups = Runtime.getRuntime().availableProcessors();
+                final int limitItems = (int) Math.ceil(lines.length / (double)numberOfGroups);
+                final List<List<String>> urlsGroup = splitUrlsIntoGroups(lines, limitItems);
+                // Actual number of groups
+                final int groupsSize = urlsGroup.size();
 
-        // Download in separate threads
-        final Logger logger = NoticeController.getLogger();
-        final Thread[] threads = new Thread[groupsSize];
-        final AtomicLong downloadsCount = new AtomicLong(0L);
-        final List<Attachment> attachments = new CopyOnWriteArrayList<>();
-        for (int i = 0; i < groupsSize; i++) {
-            final List<String> urls = urlsGroup.get(i);
-            threads[i] = new Thread(() -> {
-                final int urlsSize = urls.size();
-                for (String url : urls) {
-                    if (isCancelled()) return;
+                // Download in separate threads
+                final Logger logger = NoticeController.getLogger();
+                final Thread[] threads = new Thread[groupsSize];
+                final AtomicLong downloadsCount = new AtomicLong(0L);
+                final List<Attachment> attachments = new CopyOnWriteArrayList<>();
+                for (int i = 0; i < groupsSize; i++) {
+                    final List<String> urls = urlsGroup.get(i);
+                    threads[i] = new Thread(() -> {
+                        final int urlsSize = urls.size();
+                        for (String url : urls) {
+                            if (isCancelled()) return;
 
-                    try {
-                        final Attachment att = new Attachment(
-                                getFilenameFrom(url),
-                                IOUtil.download(url));
-                        attachments.add(att);
-                    } catch (IOException ioe) {
-                        logger.log(Level.SEVERE, url, ioe);
-                    }
-                    updateProgress(downloadsCount.incrementAndGet(), urlsSize);
+                            try {
+                                final Attachment att = new Attachment(
+                                        getFilenameFrom(url),
+                                        IOUtil.download(url));
+                                attachments.add(att);
+                            } catch (IOException ioe) {
+                                logger.log(Level.SEVERE, url, ioe);
+                            }
+                            updateProgress(downloadsCount.incrementAndGet(), urlsSize);
+                        }
+                    });
+                    threads[i].start();
                 }
-            });
-            threads[i].start();
-        }
 
-        // Wait until complete
-        for (Thread thread : threads) {
-            thread.join();
-        }
+                // Wait until complete
+                for (Thread thread : threads) {
+                    thread.join();
+                }
 
-        return new Attachments(attachments);
+                return new Attachments(attachments);
+            }
+        };
     }
 
     private List<List<String>> splitUrlsIntoGroups(String[] lines, int limitItems) {
@@ -101,5 +107,4 @@ public final class FromURLImporter extends AttachmentImporter {
         }
         return result;
     }
-
 }

@@ -2,7 +2,7 @@ package com.noticeditorteam.noticeditor.plugin.attachments;
 
 import com.noticeditorteam.noticeditor.model.Attachments;
 import java.util.ResourceBundle;
-import javafx.concurrent.Task;
+import javafx.concurrent.Service;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 
@@ -11,7 +11,7 @@ import javafx.scene.control.TextArea;
  *
  * @author aNNiMON
  */
-public abstract class AttachmentImporter extends Task<Attachments> {
+public abstract class AttachmentImporter extends Service<Attachments> {
 
     public static final String PLUGINS_LIST_RESOURCE = "/resources/plugins/attachment_importers.txt";
 
