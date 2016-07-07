@@ -3,13 +3,15 @@ package com.noticeditorteam.noticeditor.io;
 import gcardone.junidecode.Junidecode;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public final class IOUtil {
 
     private static final int FILENAME_LIMIT = 60;
-    private static final String NEW_LINE = System.lineSeparator();
 
     public static String readContent(File file) throws IOException {
         return stringFromStream(new FileInputStream(file));
@@ -84,21 +86,47 @@ public final class IOUtil {
     }
 
     public static String stringFromStream(InputStream stream, String charset) throws IOException {
-        final StringBuilder result = new StringBuilder();
-        try (Reader isr = new InputStreamReader(stream, charset);
-             BufferedReader reader = new BufferedReader(isr)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line).append(NEW_LINE);
-            }
+        final ByteArrayOutputStream result = new ByteArrayOutputStream();
+        copy(stream, result);
+        stream.close();
+        return result.toString("UTF-8");
+    }
+
+    public static boolean isResourceExists(String resource) {
+        try (InputStream is = IOUtil.class.getResourceAsStream(resource)) {
+            return is != null;
+        } catch (IOException ioe) {
+            return false;
         }
-        return result.toString();
+    }
+
+    public static List<String> linesFromResource(String resource) {
+        return linesFromResource(resource, "UTF-8");
+    }
+
+    public static List<String> linesFromResource(String resource, String charset) {
+        try (InputStream is = IOUtil.class.getResourceAsStream(resource)) {
+            return linesFromStream(is, charset);
+        } catch (IOException ioe) {
+            return Collections.emptyList();
+        }
+    }
+
+    public static List<String> linesFromStream(InputStream stream) throws IOException {
+        return linesFromStream(stream, "UTF-8");
+    }
+
+    public static List<String> linesFromStream(InputStream stream, String charset) throws IOException {
+        if (stream == null) return Collections.emptyList();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset))) {
+            return reader.lines().collect(Collectors.toList());
+        }
     }
 
     public static void copy(InputStream is, OutputStream os) throws IOException {
-        final int bufferSize = 4096;
+        final int bufferSize = 8192;
         final byte[] buffer = new byte[bufferSize];
-        int readed = 0;
+        int readed;
         while ((readed = is.read(buffer, 0, bufferSize)) != -1) {
             os.write(buffer, 0, readed);
         }
