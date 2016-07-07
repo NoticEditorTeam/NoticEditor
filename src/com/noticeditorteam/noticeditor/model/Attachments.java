@@ -2,6 +2,7 @@ package com.noticeditorteam.noticeditor.model;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public final class Attachments implements Iterable<Attachment> {
@@ -10,6 +11,21 @@ public final class Attachments implements Iterable<Attachment> {
 
     public Attachments() {
         attachments = new HashMap<>();
+    }
+
+    public Attachments(Map<String, Attachment> map) {
+        attachments = new HashMap<>(map);
+    }
+
+    public Attachments(List<Attachment> list) {
+        attachments = new HashMap<>(list.size());
+        for (Attachment attachment : list) {
+            attachments.put(attachment.getName(), attachment);
+        }
+    }
+
+    public Attachments(Attachments other) {
+        this(other.attachments);
     }
 
     public int size() {
