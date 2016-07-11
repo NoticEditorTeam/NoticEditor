@@ -1,4 +1,4 @@
-package com.noticeditorteam.noticeditor.io;
+package com.noticeditorteam.noticeditor.exceptions;
 
 /**
  * @author aNNiMON

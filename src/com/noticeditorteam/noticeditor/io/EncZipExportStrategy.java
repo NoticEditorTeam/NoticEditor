@@ -1,6 +1,7 @@
 package com.noticeditorteam.noticeditor.io;
 
 import com.noticeditorteam.noticeditor.controller.PasswordManager;
+import com.noticeditorteam.noticeditor.exceptions.ExportException;
 import com.noticeditorteam.noticeditor.model.NoticeTree;
 import java.io.File;
 import java.io.IOException;
