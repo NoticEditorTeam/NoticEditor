@@ -87,6 +87,10 @@ public class NoticeController {
         return instance.noticeTreeViewController;
     }
 
+    public static Logger getLogger() {
+        return logger;
+    }
+
     /**
      * Initializes the controller class.
      */
@@ -352,7 +356,13 @@ public class NoticeController {
         return builder.toString();
     }
 
-    public static Logger getLogger() {
-        return logger;
+    public PasswordDialog newPasswordDialog(String defaultValue) {
+        final PasswordDialog dialog = new PasswordDialog(defaultValue);
+        dialog.setTitle(resources.getString("dialogs.passworddialog.title"));
+        dialog.setHeaderText(resources.getString("dialogs.passworddialog.headertext"));
+        dialog.initOwner(main.getPrimaryStage());
+        dialog.initModality(Modality.WINDOW_MODAL);
+        return dialog;
     }
+
 }
