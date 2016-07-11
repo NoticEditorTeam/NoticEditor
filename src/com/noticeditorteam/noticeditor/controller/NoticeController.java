@@ -179,8 +179,10 @@ public class NoticeController {
                 .filter(Chooser.SUPPORTED, Chooser.ALL)
                 .title(resources.getString("opennotice"))
                 .show(main.getPrimaryStage());
-        if (fileSaved != null) {
-            openDocument(fileSaved);
+        if (fileSaved == null) return;
+
+        final boolean isOpened = openDocument(fileSaved);
+        if (isOpened) {
             Prefs.addToRecentFiles(fileSaved.getAbsolutePath());
             rebuildRecentFilesMenu();
         }
@@ -204,13 +206,15 @@ public class NoticeController {
         }
     }
 
-    private void openDocument(File file) {
+    private boolean openDocument(File file) {
         try {
             noticeTreeViewController.rebuildTree(DocumentFormat.open(file));
+            return true;
         } catch (IOException e) {
             logger.log(Level.SEVERE, null, e);
             Notification.error(resources.getString("errors.cantopen") + " " + fileSaved.getName());
         }
+        return false;
     }
 
     @FXML

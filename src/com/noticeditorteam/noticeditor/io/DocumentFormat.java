@@ -15,13 +15,17 @@ import org.json.JSONException;
 public final class DocumentFormat {
 
     public static NoticeTree open(File file) throws IOException {
+        final boolean isZip = file.getName().toLowerCase().endsWith(".zip");
         try {
-            final String filename = file.getName().toLowerCase();
-            if (filename.endsWith(".zip")) {
+            if (isZip) {
                 return ZipWithIndexFormat.with(file).importDocument();
             }
             return JsonFormat.with(file).importDocument();
         } catch (ZipException | IOException | JSONException e) {
+            if (isZip) {
+                // Prevent to open binary files as text
+                throw new IOException(e);
+            }
             return FileImporter.Tree.importFrom(file);
         }
     }
