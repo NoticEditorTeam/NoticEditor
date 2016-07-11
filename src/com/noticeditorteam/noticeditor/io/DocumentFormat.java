@@ -1,5 +1,6 @@
 package com.noticeditorteam.noticeditor.io;
 
+import com.noticeditorteam.noticeditor.controller.PasswordManager;
 import com.noticeditorteam.noticeditor.io.importers.FileImporter;
 import com.noticeditorteam.noticeditor.model.NoticeTree;
 import java.io.File;
@@ -24,6 +25,7 @@ public final class DocumentFormat {
         } catch (ZipException | IOException | JSONException e) {
             if (isZip) {
                 // Prevent to open binary files as text
+                PasswordManager.resetPassword();
                 throw new IOException(e);
             }
             return FileImporter.Tree.importFrom(file);

@@ -1,17 +1,16 @@
 package com.noticeditorteam.noticeditor.controller;
 
 import com.noticeditorteam.noticeditor.Main;
+import com.noticeditorteam.noticeditor.exceptions.DismissException;
 import com.noticeditorteam.noticeditor.io.DocumentFormat;
 import com.noticeditorteam.noticeditor.io.ExportException;
 import com.noticeditorteam.noticeditor.io.ExportStrategy;
 import com.noticeditorteam.noticeditor.io.ExportStrategyHolder;
 import com.noticeditorteam.noticeditor.io.importers.FileImporter;
-import com.noticeditorteam.noticeditor.model.NoticeStatusList;
-import com.noticeditorteam.noticeditor.model.Prefs;
-import com.noticeditorteam.noticeditor.model.PreviewStyles;
-import com.noticeditorteam.noticeditor.model.Themes;
+import com.noticeditorteam.noticeditor.model.*;
 import com.noticeditorteam.noticeditor.view.Chooser;
 import com.noticeditorteam.noticeditor.view.Notification;
+import com.noticeditorteam.noticeditor.view.PasswordDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
@@ -66,9 +65,11 @@ public class NoticeController {
     private static NoticeController instance;
     private Main main;
     private File fileSaved;
+    private boolean isEncryptedZip;
 
     public NoticeController() {
         instance = this;
+        isEncryptedZip = false;
     }
 
     public void setApplication(Main main) {
@@ -89,6 +90,10 @@ public class NoticeController {
 
     public static Logger getLogger() {
         return logger;
+    }
+
+    public void setIsEncryptedZip(boolean isEncryptedZip) {
+        this.isEncryptedZip = isEncryptedZip;
     }
 
     /**
@@ -217,6 +222,8 @@ public class NoticeController {
         } catch (IOException e) {
             logger.log(Level.SEVERE, null, e);
             Notification.error(resources.getString("errors.cantopen") + " " + fileSaved.getName());
+        } catch (DismissException dismiss) {
+            // no error message
         }
         return false;
     }
@@ -232,8 +239,9 @@ public class NoticeController {
 
     @FXML
     private void handleSaveAs(ActionEvent event) {
+        isEncryptedZip = false;
         fileSaved = Chooser.file().save()
-                .filter(Chooser.ZIP, Chooser.JSON)
+                .filter(Chooser.ZIP, Chooser.ENC_ZIP, Chooser.JSON)
                 .title(resources.getString("savenotice"))
                 .show(main.getPrimaryStage());
         if (fileSaved == null) {
@@ -248,8 +256,12 @@ public class NoticeController {
         if (Chooser.JSON.equals(Chooser.getLastSelectedExtensionFilter())
                 || file.getName().toLowerCase().endsWith(".json")) {
             strategy = ExportStrategyHolder.JSON;
+        } else if (isEncryptedZip
+                || Chooser.ENC_ZIP.equals(Chooser.getLastSelectedExtensionFilter())) {
+            strategy = ExportStrategyHolder.ENC_ZIP;
         } else {
             strategy = ExportStrategyHolder.ZIP;
+            isEncryptedZip = false;
         }
         try {
             if (DocumentFormat.save(file, noticeTreeViewController.getNoticeTree(), strategy)) {
