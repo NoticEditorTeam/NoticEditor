@@ -26,7 +26,7 @@ public final class DocumentFormat {
         }
     }
 
-    public static void save(File file, NoticeTree tree, ExportStrategy strategy) {
-        strategy.export(file, tree);
+    public static boolean save(File file, NoticeTree tree, ExportStrategy strategy) {
+        return strategy.export(file, tree);
     }
 }

@@ -14,11 +14,12 @@ import org.json.JSONException;
 public class ZipExportStrategy implements ExportStrategy {
 
     @Override
-    public void export(File file, NoticeTree notice) {
+    public boolean export(File file, NoticeTree notice) {
         try {
             if (file.exists())
                 file.delete();
             ZipWithIndexFormat.with(file).export(notice);
+            return true;
         } catch (ZipException | IOException | JSONException e) {
             throw new ExportException(e);
         }

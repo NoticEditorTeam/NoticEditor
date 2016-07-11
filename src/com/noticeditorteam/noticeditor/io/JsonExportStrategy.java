@@ -13,9 +13,10 @@ import org.json.JSONException;
 public class JsonExportStrategy implements ExportStrategy {
 
     @Override
-    public void export(File file, NoticeTree tree) {
+    public boolean export(File file, NoticeTree tree) {
         try {
             JsonFormat.with(file).export(tree);
+            return true;
         } catch (IOException | JSONException e) {
             throw new ExportException(e);
         }

@@ -244,8 +244,9 @@ public class NoticeController {
             strategy = ExportStrategyHolder.ZIP;
         }
         try {
-            DocumentFormat.save(file, noticeTreeViewController.getNoticeTree(), strategy);
-            Notification.success(resources.getString("save.success"));
+            if (DocumentFormat.save(file, noticeTreeViewController.getNoticeTree(), strategy)) {
+                Notification.success(resources.getString("save.success"));
+            }
         } catch (ExportException e) {
             logger.log(Level.SEVERE, null, e);
             Notification.error(resources.getString("save.error"));

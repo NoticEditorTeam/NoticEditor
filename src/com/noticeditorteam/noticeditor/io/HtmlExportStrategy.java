@@ -28,10 +28,11 @@ public class HtmlExportStrategy implements ExportStrategy {
     }
 
     @Override
-    public void export(File destDir, NoticeTree notice) {
+    public boolean export(File destDir, NoticeTree notice) {
         filenames = new HashMap<>();
         try {
             exportToHtmlPages(notice, destDir, "index");
+            return true;
         } catch (IOException ioe) {
             throw new ExportException(ioe);
         }
