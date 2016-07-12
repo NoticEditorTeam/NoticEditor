@@ -14,12 +14,6 @@ import com.noticeditorteam.noticeditor.model.Themes;
 import com.noticeditorteam.noticeditor.view.Chooser;
 import com.noticeditorteam.noticeditor.view.Notification;
 import com.noticeditorteam.noticeditor.view.PasswordDialog;
-import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,6 +27,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NoticeController {
 
@@ -309,7 +310,7 @@ public class NoticeController {
 
     @FXML
     private void handleAbout(ActionEvent event) {
-        Notification.show("NoticEditor\n==========\n\nhttps://github.com/TemporaryTeam/NoticEditor");
+        Notification.show("NoticEditor\n==========\n\nhttps://github.com/NoticEditorTeam/NoticEditor");
     }
 
     @FXML
