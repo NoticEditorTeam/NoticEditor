@@ -16,6 +16,7 @@ public final class Chooser {
     public static final ExtensionFilter SUPPORTED = new ExtensionFilter("Supported Files", "*.zip", "*.txt", "*.md", "*.htm", "*.html", "*.json");
     public static final ExtensionFilter JSON = new ExtensionFilter("Json Files", "*.json");
     public static final ExtensionFilter ZIP = new ExtensionFilter("Zip Files", "*.zip");
+    public static final ExtensionFilter ENC_ZIP = new ExtensionFilter("Encrypted Zip Files", "*.zip");
     public static final ExtensionFilter ALL = new ExtensionFilter("All Files", "*.*");
 
     private static FileChooser fileChooser;

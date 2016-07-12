@@ -1,5 +1,6 @@
 package com.noticeditorteam.noticeditor.io;
 
+import com.noticeditorteam.noticeditor.exceptions.ExportException;
 import com.noticeditorteam.noticeditor.model.NoticeItem;
 import com.noticeditorteam.noticeditor.model.NoticeTree;
 import com.noticeditorteam.noticeditor.model.NoticeTreeItem;
@@ -28,10 +29,11 @@ public class HtmlExportStrategy implements ExportStrategy {
     }
 
     @Override
-    public void export(File destDir, NoticeTree notice) {
+    public boolean export(File destDir, NoticeTree notice) {
         filenames = new HashMap<>();
         try {
             exportToHtmlPages(notice, destDir, "index");
+            return true;
         } catch (IOException ioe) {
             throw new ExportException(ioe);
         }

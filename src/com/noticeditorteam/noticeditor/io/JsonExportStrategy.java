@@ -1,5 +1,6 @@
 package com.noticeditorteam.noticeditor.io;
 
+import com.noticeditorteam.noticeditor.exceptions.ExportException;
 import com.noticeditorteam.noticeditor.model.NoticeTree;
 import java.io.File;
 import java.io.IOException;
@@ -13,9 +14,10 @@ import org.json.JSONException;
 public class JsonExportStrategy implements ExportStrategy {
 
     @Override
-    public void export(File file, NoticeTree tree) {
+    public boolean export(File file, NoticeTree tree) {
         try {
             JsonFormat.with(file).export(tree);
+            return true;
         } catch (IOException | JSONException e) {
             throw new ExportException(e);
         }

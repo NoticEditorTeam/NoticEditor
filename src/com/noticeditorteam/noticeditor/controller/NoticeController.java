@@ -1,8 +1,9 @@
 package com.noticeditorteam.noticeditor.controller;
 
 import com.noticeditorteam.noticeditor.Main;
+import com.noticeditorteam.noticeditor.exceptions.DismissException;
+import com.noticeditorteam.noticeditor.exceptions.ExportException;
 import com.noticeditorteam.noticeditor.io.DocumentFormat;
-import com.noticeditorteam.noticeditor.io.ExportException;
 import com.noticeditorteam.noticeditor.io.ExportStrategy;
 import com.noticeditorteam.noticeditor.io.ExportStrategyHolder;
 import com.noticeditorteam.noticeditor.io.importers.FileImporter;
@@ -12,6 +13,7 @@ import com.noticeditorteam.noticeditor.model.PreviewStyles;
 import com.noticeditorteam.noticeditor.model.Themes;
 import com.noticeditorteam.noticeditor.view.Chooser;
 import com.noticeditorteam.noticeditor.view.Notification;
+import com.noticeditorteam.noticeditor.view.PasswordDialog;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
@@ -66,9 +68,11 @@ public class NoticeController {
     private static NoticeController instance;
     private Main main;
     private File fileSaved;
+    private boolean isEncryptedZip;
 
     public NoticeController() {
         instance = this;
+        isEncryptedZip = false;
     }
 
     public void setApplication(Main main) {
@@ -85,6 +89,14 @@ public class NoticeController {
 
     public static NoticeTreeViewController getNoticeTreeViewController() {
         return instance.noticeTreeViewController;
+    }
+
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    public void setIsEncryptedZip(boolean isEncryptedZip) {
+        this.isEncryptedZip = isEncryptedZip;
     }
 
     /**
@@ -179,8 +191,10 @@ public class NoticeController {
                 .filter(Chooser.SUPPORTED, Chooser.ALL)
                 .title(resources.getString("opennotice"))
                 .show(main.getPrimaryStage());
-        if (fileSaved != null) {
-            openDocument(fileSaved);
+        if (fileSaved == null) return;
+
+        final boolean isOpened = openDocument(fileSaved);
+        if (isOpened) {
             Prefs.addToRecentFiles(fileSaved.getAbsolutePath());
             rebuildRecentFilesMenu();
         }
@@ -204,13 +218,17 @@ public class NoticeController {
         }
     }
 
-    private void openDocument(File file) {
+    private boolean openDocument(File file) {
         try {
             noticeTreeViewController.rebuildTree(DocumentFormat.open(file));
+            return true;
         } catch (IOException e) {
             logger.log(Level.SEVERE, null, e);
             Notification.error(resources.getString("errors.cantopen") + " " + fileSaved.getName());
+        } catch (DismissException dismiss) {
+            // no error message
         }
+        return false;
     }
 
     @FXML
@@ -224,8 +242,9 @@ public class NoticeController {
 
     @FXML
     private void handleSaveAs(ActionEvent event) {
+        isEncryptedZip = false;
         fileSaved = Chooser.file().save()
-                .filter(Chooser.ZIP, Chooser.JSON)
+                .filter(Chooser.ZIP, Chooser.ENC_ZIP, Chooser.JSON)
                 .title(resources.getString("savenotice"))
                 .show(main.getPrimaryStage());
         if (fileSaved == null) {
@@ -240,12 +259,17 @@ public class NoticeController {
         if (Chooser.JSON.equals(Chooser.getLastSelectedExtensionFilter())
                 || file.getName().toLowerCase().endsWith(".json")) {
             strategy = ExportStrategyHolder.JSON;
+        } else if (isEncryptedZip
+                || Chooser.ENC_ZIP.equals(Chooser.getLastSelectedExtensionFilter())) {
+            strategy = ExportStrategyHolder.ENC_ZIP;
         } else {
             strategy = ExportStrategyHolder.ZIP;
+            isEncryptedZip = false;
         }
         try {
-            DocumentFormat.save(file, noticeTreeViewController.getNoticeTree(), strategy);
-            Notification.success(resources.getString("save.success"));
+            if (DocumentFormat.save(file, noticeTreeViewController.getNoticeTree(), strategy)) {
+                Notification.success(resources.getString("save.success"));
+            }
         } catch (ExportException e) {
             logger.log(Level.SEVERE, null, e);
             Notification.error(resources.getString("save.error"));
@@ -347,7 +371,13 @@ public class NoticeController {
         return builder.toString();
     }
 
-    public static Logger getLogger() {
-        return logger;
+    public PasswordDialog newPasswordDialog(String defaultValue) {
+        final PasswordDialog dialog = new PasswordDialog(defaultValue);
+        dialog.setTitle(resources.getString("dialogs.passworddialog.title"));
+        dialog.setHeaderText(resources.getString("dialogs.passworddialog.headertext"));
+        dialog.initOwner(main.getPrimaryStage());
+        dialog.initModality(Modality.WINDOW_MODAL);
+        return dialog;
     }
+
 }

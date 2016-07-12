@@ -1,5 +1,8 @@
 package com.noticeditorteam.noticeditor.io;
 
+import com.noticeditorteam.noticeditor.controller.NoticeController;
+import com.noticeditorteam.noticeditor.controller.PasswordManager;
+import com.noticeditorteam.noticeditor.exceptions.DismissException;
 import com.noticeditorteam.noticeditor.model.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ public class ZipWithIndexFormat {
     private final Set<String> paths;
     private final ZipFile zip;
     private final ZipParameters parameters;
+    private String zipPassword;
 
     private ZipWithIndexFormat(File file) throws ZipException {
         paths = new HashSet<>();
@@ -41,7 +45,29 @@ public class ZipWithIndexFormat {
         parameters = new ZipParameters();
     }
 
+    public ZipWithIndexFormat encrypted(String password) {
+        parameters.setEncryptFiles(true);
+        parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
+        parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
+        parameters.setPassword(password);
+        return this;
+    }
+
+    private void checkEncryption() throws ZipException {
+        final boolean isEncrypted = zip.isEncrypted();
+        NoticeController.getController().setIsEncryptedZip(isEncrypted);
+        if (isEncrypted) {
+            if (zipPassword == null) {
+                zipPassword = PasswordManager.askPassword(zip.getFile().getAbsolutePath()).orElse("");
+            }
+            if (zipPassword.isEmpty()) throw new DismissException();
+            zip.setPassword(zipPassword);
+        }
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="Import">
     public NoticeTree importDocument() throws IOException, JSONException, ZipException {
+        checkEncryption();
         String indexContent = readFile(INDEX_JSON);
         if (indexContent.isEmpty()) {
             throw new IOException("Invalid file format");
@@ -104,7 +130,9 @@ public class ZipWithIndexFormat {
         }
         return attachments;
     }
+//</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc="Export">
     public void export(NoticeTreeItem notice) throws IOException, JSONException, ZipException {
         parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
         parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
@@ -184,4 +212,5 @@ public class ZipWithIndexFormat {
         }
         index.put(JsonFields.KEY_ATTACHMENTS, jsonAttachments);
     }
+//</editor-fold>
 }
