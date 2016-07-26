@@ -81,14 +81,20 @@ public class ZipWithIndexFormat {
         FileHeader header = zip.getFileHeader(path);
         if (header == null)
             return "";
-        return IOUtil.stringFromStream(zip.getInputStream(header));
+        try (InputStream is = zip.getInputStream(header)) {
+            return IOUtil.stringFromStream(is);
+        }
     }
 
     private byte[] readBytes(String path) throws IOException, ZipException {
         FileHeader header = zip.getFileHeader(path);
-        if (header == null) return new byte[0];
+        if (header == null)
+            return new byte[0];
+
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        IOUtil.copy(zip.getInputStream(header), baos);
+        try (InputStream is = zip.getInputStream(header)) {
+            IOUtil.copy(is, baos);
+        }
         baos.flush();
         return baos.toByteArray();
     }
