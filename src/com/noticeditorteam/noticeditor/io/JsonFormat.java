@@ -30,11 +30,11 @@ public class JsonFormat {
 
         if (json.has(KEY_STATUSINFO)) {
             JSONArray statusList = json.getJSONArray(KEY_STATUSINFO);
-            if (statusList.length() > 0) {
+            final int length = statusList.length();
+            if (length > 0) {
                 NoticeStatusList.clear();
             }
-            // TODO refactor length const
-            for (int i = 0; i < statusList.length(); i++) {
+            for (int i = 0; i < length; i++) {
                 JSONObject obj = (JSONObject) statusList.get(i);
                 String name = obj.getString("name");
                 int code = obj.getInt("code");
