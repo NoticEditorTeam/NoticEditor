@@ -1,1 +1,2 @@
 com.noticeditorteam.noticeditor.plugin.attachments.FromURLImporter
+com.noticeditorteam.noticeditor.plugin.attachments.ClipboardImageImporter
