@@ -360,7 +360,9 @@ public class NoticeController {
     }
 
     public void onExit(WindowEvent we) {
-        Prefs.setLastDirectory(Chooser.getLastDirectory().getAbsolutePath());
+        if (Chooser.getLastDirectory() != null) {
+            Prefs.setLastDirectory(Chooser.getLastDirectory().getAbsolutePath());
+        }
     }
 
     private String beautify(String source) {
