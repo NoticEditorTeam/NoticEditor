@@ -9,14 +9,20 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.concurrent.Service;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.BorderPane;
 import javafx.util.StringConverter;
 
 /**
@@ -31,7 +37,7 @@ public class AttachmentImportController implements Initializable {
     private Button importButton;
 
     @FXML
-    private TextArea importDataArea;
+    private BorderPane container;
 
     @FXML
     private ProgressBar progressBar;
@@ -49,7 +55,7 @@ public class AttachmentImportController implements Initializable {
                 final Class<AttachmentImporter> clazz = (Class<AttachmentImporter>) Class.forName(pluginClass);
                 final Constructor<AttachmentImporter> constructor = clazz.getConstructor(ResourceBundle.class);
                 final AttachmentImporter plugin = constructor.newInstance(resources);
-                plugin.setImportDataArea(importDataArea);
+                plugin.setContainer(container);
                 plugin.setProgressBar(progressBar);
                 importers.add(plugin);
             } catch (Exception ex) {
@@ -82,12 +88,25 @@ public class AttachmentImportController implements Initializable {
                 return null;
             }
         });
+        importersBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue != null) {
+                oldValue.onDeactivated();
+            }
+            if (newValue != null) {
+                newValue.onActivated();
+
+                // Setup bindings
+                final BooleanBinding noSelectedImporters = Bindings.isNull(importersBox.valueProperty());
+                final Optional<BooleanBinding> binding = newValue.importButtonDisabled();
+                BooleanBinding importButtonDisable = noSelectedImporters;
+                if (binding.isPresent()) {
+                    importButtonDisable = Bindings.or(importButtonDisable, binding.get());
+                }
+                importButton.disableProperty().bind(importButtonDisable);
+            }
+        });
         importersBox.getItems().addAll(importers);
         importersBox.getSelectionModel().selectFirst();
-
-        importButton.disableProperty().bind(Bindings.or(
-                Bindings.isEmpty(importDataArea.textProperty()),
-                Bindings.isNull(importersBox.valueProperty())));
     }
 
     @FXML

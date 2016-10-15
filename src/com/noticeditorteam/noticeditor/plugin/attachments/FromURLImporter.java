@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 import javafx.concurrent.Task;
 
-public final class FromURLImporter extends AttachmentImporter {
+public final class FromURLImporter extends TextBasedImporter {
 
     public FromURLImporter(ResourceBundle resources) {
         super(resources);

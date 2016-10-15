@@ -15,7 +15,7 @@
                 <Button fx:id="importButton" onAction="#handleImport" mnemonicParsing="false" text="%import" HBox.hgrow="NEVER" />
             </children>
         </HBox>
-        <TextArea fx:id="importDataArea" promptText="%prompt" VBox.vgrow="ALWAYS" />
+        <BorderPane fx:id="container" VBox.vgrow="ALWAYS" />
         <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0.0" VBox.vgrow="NEVER" />
     </children>
 </VBox>
