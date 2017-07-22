@@ -11,3 +11,5 @@
 /nbproject/build-impl.xml
 /.gradle/
 /.idea/
+/NoticEditor.iml
+out/

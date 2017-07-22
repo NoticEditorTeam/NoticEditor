@@ -38,11 +38,19 @@ public class SyntaxHighlighter {
      */
     public String highlight(String content, String codeCssName) {
         final Set<String> languages = getUsedLanguages(content);
-        if (languages == null || languages.isEmpty())
-            return content;
-
         final String path = "file://" + DIRECTORY.toURI().getPath();
         final String lang = path + "languages/";
+        if (languages == null || languages.isEmpty()) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("<html>\n<head>\n");
+            sb.append(initMathJax(path));
+            sb.append("</head>\n<body>\n");
+            sb.append(content);
+            sb.append("</body>\n</html>");
+
+            return sb.toString();
+        }
+
         if (codeCssName == null) {
             codeCssName = "vs.css";
         }
@@ -56,9 +64,21 @@ public class SyntaxHighlighter {
             sb.append("<script src=\"").append(lang).append(language).append(".js\"></script>\n");
         }
         sb.append("<script>hljs.initHighlightingOnLoad();</script>\n");
+        sb.append(initMathJax(path));
         sb.append("</head>\n<body>\n");
         sb.append(content);
         sb.append("</body>\n</html>");
+        return sb.toString();
+    }
+
+    private String initMathJax(String path) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<script type=\"text/x-mathjax-config\">\n");
+        sb.append("  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']]}});\n");
+        sb.append("</script>");
+        sb.append("<script type=\"text/javascript\" async\n");
+        sb.append("  src=\"").append(path).append("mathjax/MathJax.js?config=TeX-AMS_CHTML\">\n");
+        sb.append("</script>");
         return sb.toString();
     }
 
