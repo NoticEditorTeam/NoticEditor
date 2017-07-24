@@ -74,7 +74,7 @@ public class HtmlExportStrategy implements ExportStrategy {
      * @param filename name of the file without extension
      */
     private void exportToHtmlPages(NoticeTree tree, File dir, String filename) throws IOException {
-        exportToHtmlPages((NoticeTreeItem) tree.getRoot(), dir, filename);
+        exportToHtmlPages(tree.getRoot(), dir, filename);
     }
 
     private void generatePage(NoticeTreeItem note, Document doc) {

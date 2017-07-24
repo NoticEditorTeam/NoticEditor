@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.noticeditorteam.noticeditor.controller.NoticeController">
+<VBox onKeyPressed="#handleKey" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.noticeditorteam.noticeditor.controller.NoticeController">
     <children>
         <MenuBar>
             <menus>
@@ -21,6 +21,7 @@
                         <MenuItem onAction="#handleSave" text="%menu.file.save" />
                         <MenuItem onAction="#handleSaveAs" text="%menu.file.saveas" />
                         <MenuItem onAction="#handleExportHtml" text="%menu.file.exporthtml" />
+                        <MenuItem onAction="#handleExportSingleHtml" text="%menu.file.exportsinglehtml" />
                         <Menu mnemonicParsing="false" text="%menu.file.import">
                             <items>
                                 <MenuItem onAction="#handleImportUrl" text="%menu.file.import.url" />

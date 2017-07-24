@@ -298,6 +298,25 @@ public class NoticeController {
     }
 
     @FXML
+    private void handleExportSingleHtml(ActionEvent event) {
+        File destDir = Chooser.directory()
+                .title(resources.getString("exportsinglehtml"))
+                .show(main.getPrimaryStage());
+        if (destDir == null) {
+            return;
+        }
+
+        try {
+            ExportStrategyHolder.SINGLE_HTML.setProcessor(noticeViewController.processor);
+            ExportStrategyHolder.SINGLE_HTML.export(destDir, noticeTreeViewController.getNoticeTree());
+            Notification.success(resources.getString("exporthtml.success"));
+        } catch (ExportException e) {
+            logger.log(Level.SEVERE, null, e);
+            Notification.error(resources.getString("exporthtml.fail"));
+        }
+    }
+
+    @FXML
     private void handleExit(ActionEvent event) {
         Platform.exit();
     }
