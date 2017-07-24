@@ -1,13 +1,15 @@
 package com.noticeditorteam.noticeditor.io;
 
 import com.noticeditorteam.noticeditor.exceptions.ExportException;
-import com.noticeditorteam.noticeditor.model.NoticeItem;
-import com.noticeditorteam.noticeditor.model.NoticeTree;
-import com.noticeditorteam.noticeditor.model.NoticeTreeItem;
+import com.noticeditorteam.noticeditor.model.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javafx.scene.control.TreeItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +25,7 @@ public class HtmlExportStrategy implements ExportStrategy {
 
     private PegDownProcessor processor;
     private Map<NoticeTreeItem, String> filenames;
+    private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
 
     public void setProcessor(PegDownProcessor processor) {
         this.processor = processor;
@@ -57,6 +60,10 @@ public class HtmlExportStrategy implements ExportStrategy {
                 exportToHtmlPages(child, dir, generateFilename(child));
             }
         }
+        for(Attachment attachment : item.getAttachments()) {
+            File attachFile = new File(dir, attachment.getName());
+            IOUtil.writeContent(attachFile, attachment.getData());
+        }
     }
 
     /**
@@ -87,7 +94,7 @@ public class HtmlExportStrategy implements ExportStrategy {
             }
             data.appendChild(list);
         } else {
-            data.html(processor.markdownToHtml(note.getContent()));
+            data.html(processAttachments(processor.markdownToHtml(note.getContent()), note.getAttachments()));
         }
     }
 
@@ -122,5 +129,18 @@ public class HtmlExportStrategy implements ExportStrategy {
         }
         filenames.put(item, filename);
         return filename;
+    }
+
+    private String processAttachments(String content, Attachments attachments) {
+        final Matcher matcher = ATTACHMENT_PATTERN.matcher(content);
+        String newContent = matcher.replaceAll("<img src=\"$1\" />");
+        StringBuilder sb = new StringBuilder(newContent);
+        for(Attachment attachment : attachments) {
+            if(!attachment.isImage()) {
+                sb.append("<a href=\"").append(attachment.getName()).append("\" >")
+                        .append(attachment.getName()).append("</a>");
+            }
+        }
+        return sb.toString();
     }
 }
