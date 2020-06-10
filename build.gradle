@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
@@ -14,6 +15,10 @@ application {
     ]
 }
 
+repositories {
+    mavenCentral()
+}
+
 sourceSets {
     main {
         java {
@@ -23,10 +28,17 @@ sourceSets {
             srcDirs = ['src']
         }
     }
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
 }
 
-dependencies{
-    compile fileTree(dir: 'libs', include: '*.jar')
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
 }
 
 javafx {
@@ -35,4 +47,16 @@ javafx {
         'javafx.controls', 'javafx.fxml',
         'javafx.swing', 'javafx.web'
     ]
+}
+
+dependencies{
+    implementation fileTree(dir: 'libs', include: '*.jar')
+    implementation 'net.lingala.zip4j:zip4j:1.3.3' // upgradeable to 2.6.1
+    implementation 'org.jsoup:jsoup:1.13.1'
+    implementation 'org.json:json:20200518'
+    implementation 'org.pegdown:pegdown:1.6.0' // todo replace with flexmark
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.hamcrest:hamcrest-core:1.3'
+    testImplementation 'com.carrotsearch:junit-benchmarks:0.7.2'
 }
