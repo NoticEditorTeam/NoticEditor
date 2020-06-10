@@ -1,17 +1,26 @@
-apply plugin: "java"
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+}
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-project.ext.mainClassName = "com.noticeditorteam.noticeditor.Main"
+application {
+    mainClass = 'com.noticeditorteam.noticeditor.Main'
+    applicationDefaultJvmArgs = [
+        '--add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED'
+    ]
+}
 
 sourceSets {
     main {
         java {
-            srcDir "src/"
+            srcDirs = ['src']
         }
         resources {
-            srcDir 'src/'
-            exclude 'com/**'
+            srcDirs = ['src']
         }
     }
 }
@@ -20,20 +29,10 @@ dependencies{
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 
-task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
-    classpath = sourceSets.main.runtimeClasspath
-    standardInput = System.in
-    ignoreExitValue = true
-}
-
-task dist(dependsOn: classes, type: Jar) {
-    from files(sourceSets.main.output.classesDir)
-    from {configurations.compile.collect {zipTree(it)}}
-    from files(sourceSets.main.resources)
-    libsDirName = "$rootProject.projectDir/dist"
-    
-    manifest {
-        attributes 'Main-Class': project.mainClassName
-    }
+javafx {
+    version = '14'
+    modules = [
+        'javafx.controls', 'javafx.fxml',
+        'javafx.swing', 'javafx.web'
+    ]
 }
