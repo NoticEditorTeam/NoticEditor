@@ -8,6 +8,8 @@ plugins {
 sourceCompatibility = 11
 targetCompatibility = 11
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+mainClassName = 'com.noticeditorteam.noticeditor.Main'
+version '1.3-SNAPSHOT'
 application {
     mainClass = 'com.noticeditorteam.noticeditor.Main'
     applicationDefaultJvmArgs = [
