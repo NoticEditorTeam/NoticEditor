@@ -2,23 +2,32 @@ package com.noticeditorteam.noticeditor.io;
 
 import com.noticeditorteam.noticeditor.exceptions.ExportException;
 import com.noticeditorteam.noticeditor.model.*;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import java.io.File;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.scene.control.TreeItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
-import org.pegdown.PegDownProcessor;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SingleHtmlExportStrategy implements ExportStrategy {
 
     private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
 
-    private PegDownProcessor processor;
+    private Parser mdParser;
+    private HtmlRenderer htmlRenderer;
+
+    public void setMarkdownParser(Parser parser) {
+        this.mdParser = parser;
+    }
+
+    public void setHtmlRenderer(HtmlRenderer renderer) {
+        this.htmlRenderer = renderer;
+    }
 
     @Override
     public boolean export(File destDir, NoticeTree tree) throws ExportException {
@@ -81,8 +90,9 @@ public class SingleHtmlExportStrategy implements ExportStrategy {
     private Node generateContents(Document doc, NoticeTreeItem root, String path) {
         Element item = doc.createElement("li");
         String pathPart = IOUtil.sanitizeFilename(root.getTitle());
-        item.appendElement("a").attr("href", "#" + path + "." + pathPart)
-        .text(root.getTitle());
+        item.appendElement("a")
+                .attr("href", "#" + path + "." + pathPart)
+                .text(root.getTitle());
         if(root.isBranch()) {
             Element list = doc.createElement("ul");
             for(TreeItem<NoticeItem> notice : root.getInternalChildren()) {
@@ -114,8 +124,9 @@ public class SingleHtmlExportStrategy implements ExportStrategy {
                 data.appendChild(generateContent(doc, child, path + "." + noticeName));
             }
         } else {
-            data.append(processAttachments(processor.markdownToHtml(root.getContent()),
-                    path + "." + noticeName, root.getAttachments()));
+            final var flexmarkDoc = mdParser.parse(root.getContent());
+            final String html = htmlRenderer.render(flexmarkDoc);
+            data.append(processAttachments(html, path + "." + noticeName, root.getAttachments()));
         }
         return data;
     }
@@ -133,9 +144,5 @@ public class SingleHtmlExportStrategy implements ExportStrategy {
             }
         }
         return sb.toString();
-    }
-
-    public void setProcessor(PegDownProcessor processor) {
-        this.processor = processor;
     }
 }

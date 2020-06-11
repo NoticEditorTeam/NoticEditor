@@ -5,7 +5,6 @@ import com.noticeditorteam.noticeditor.io.importers.FileImporter;
 import com.noticeditorteam.noticeditor.model.NoticeTree;
 import java.io.File;
 import java.io.IOException;
-import net.lingala.zip4j.exception.ZipException;
 import org.json.JSONException;
 
 /**
@@ -22,7 +21,7 @@ public final class DocumentFormat {
                 return ZipWithIndexFormat.with(file).importDocument();
             }
             return JsonFormat.with(file).importDocument();
-        } catch (ZipException | IOException | JSONException e) {
+        } catch (IOException | JSONException e) {
             if (isZip) {
                 // Prevent to open binary files as text
                 PasswordManager.resetPassword();

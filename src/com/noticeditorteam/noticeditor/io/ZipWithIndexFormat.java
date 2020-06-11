@@ -9,11 +9,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import javafx.scene.control.TreeItem;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
 import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.CompressionMethod;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +34,11 @@ public class ZipWithIndexFormat {
     private static final String NOTE_PREFIX = "note_";
 
     public static ZipWithIndexFormat with(File file) throws ZipException {
-        return new ZipWithIndexFormat(file);
+        return new ZipWithIndexFormat(file, null);
+    }
+
+    public static ZipWithIndexFormat with(File file, String password) throws ZipException {
+        return new ZipWithIndexFormat(file, password.toCharArray());
     }
 
     private final Set<String> paths;
@@ -39,17 +46,16 @@ public class ZipWithIndexFormat {
     private final ZipParameters parameters;
     private String zipPassword;
 
-    private ZipWithIndexFormat(File file) throws ZipException {
+    private ZipWithIndexFormat(File file, char[] password) throws ZipException {
         paths = new HashSet<>();
-        zip = new ZipFile(file);
+        zip = new ZipFile(file, password);
         parameters = new ZipParameters();
     }
 
-    public ZipWithIndexFormat encrypted(String password) {
+    public ZipWithIndexFormat encrypted() {
         parameters.setEncryptFiles(true);
-        parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-        parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-        parameters.setPassword(password);
+        parameters.setEncryptionMethod(EncryptionMethod.AES);
+        parameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
         return this;
     }
 
@@ -61,7 +67,7 @@ public class ZipWithIndexFormat {
                 zipPassword = PasswordManager.askPassword(zip.getFile().getAbsolutePath()).orElse("");
             }
             if (zipPassword.isEmpty()) throw new DismissException();
-            zip.setPassword(zipPassword);
+            zip.setPassword(zipPassword.toCharArray());
         }
     }
 
@@ -140,9 +146,8 @@ public class ZipWithIndexFormat {
 
     //<editor-fold defaultstate="collapsed" desc="Export">
     public void export(NoticeTreeItem notice) throws IOException, JSONException, ZipException {
-        parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-        parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-        parameters.setSourceExternalStream(true);
+        parameters.setCompressionMethod(CompressionMethod.DEFLATE);
+        parameters.setCompressionLevel(CompressionLevel.NORMAL);
 
         JSONObject index = new JSONObject();
         writeNoticesAndFillIndex("", notice, index);

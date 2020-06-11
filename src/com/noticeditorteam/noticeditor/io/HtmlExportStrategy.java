@@ -2,6 +2,8 @@ package com.noticeditorteam.noticeditor.io;
 
 import com.noticeditorteam.noticeditor.exceptions.ExportException;
 import com.noticeditorteam.noticeditor.model.*;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +16,6 @@ import javafx.scene.control.TreeItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.pegdown.PegDownProcessor;
 
 /**
  * Export notices to html.
@@ -23,12 +24,17 @@ import org.pegdown.PegDownProcessor;
  */
 public class HtmlExportStrategy implements ExportStrategy {
 
-    private PegDownProcessor processor;
+    private Parser mdParser;
+    private HtmlRenderer htmlRenderer;
     private Map<NoticeTreeItem, String> filenames;
     private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
 
-    public void setProcessor(PegDownProcessor processor) {
-        this.processor = processor;
+    public void setMarkdownParser(Parser parser) {
+        this.mdParser = parser;
+    }
+
+    public void setHtmlRenderer(HtmlRenderer renderer) {
+        this.htmlRenderer = renderer;
     }
 
     @Override
@@ -94,7 +100,9 @@ public class HtmlExportStrategy implements ExportStrategy {
             }
             data.appendChild(list);
         } else {
-            data.html(processAttachments(processor.markdownToHtml(note.getContent()), note.getAttachments()));
+            final var flexmarkDoc = mdParser.parse(note.getContent());
+            final String html = htmlRenderer.render(flexmarkDoc);
+            data.html(processAttachments(html, note.getAttachments()));
         }
     }
 

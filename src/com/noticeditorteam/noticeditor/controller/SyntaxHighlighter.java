@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 /**
@@ -15,7 +15,7 @@ import net.lingala.zip4j.exception.ZipException;
 public class SyntaxHighlighter {
 
     private static final File DIRECTORY = new File(System.getProperty("user.home"), ".noticeditor");
-    private static final Pattern PATTERN_CODE = Pattern.compile("<code class=\"(\\w+)\">");
+    private static final Pattern PATTERN_CODE = Pattern.compile("<code class=\"language\\-(\\w+)\">");
 
     public void unpackHighlightJs() {
         if (DIRECTORY.exists())
@@ -102,7 +102,7 @@ public class SyntaxHighlighter {
             try {
                 copyZipTo(zipFile);
                 extractZip(zipFile);
-            } catch (IOException | ZipException ex) {
+            } catch (IOException ex) {
             } finally {
                 zipFile.delete();
             }

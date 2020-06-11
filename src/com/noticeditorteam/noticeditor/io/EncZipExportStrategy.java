@@ -6,7 +6,6 @@ import com.noticeditorteam.noticeditor.model.NoticeTree;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import net.lingala.zip4j.exception.ZipException;
 import org.json.JSONException;
 
 /**
@@ -23,11 +22,11 @@ public class EncZipExportStrategy implements ExportStrategy {
         try {
             if (file.exists())
                 file.delete();
-            ZipWithIndexFormat.with(file)
-                    .encrypted(password.get())
+            ZipWithIndexFormat.with(file, password.get())
+                    .encrypted()
                     .export(notice);
             return true;
-        } catch (ZipException | IOException | JSONException e) {
+        } catch (IOException | JSONException e) {
             throw new ExportException(e);
         }
     }
