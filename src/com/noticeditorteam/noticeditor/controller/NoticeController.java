@@ -288,7 +288,8 @@ public class NoticeController {
         }
 
         try {
-            ExportStrategyHolder.HTML.setProcessor(noticeViewController.processor);
+            ExportStrategyHolder.HTML.setMarkdownParser(noticeViewController.mdParser);
+            ExportStrategyHolder.HTML.setHtmlRenderer(noticeViewController.htmlRenderer);
             ExportStrategyHolder.HTML.export(destDir, noticeTreeViewController.getNoticeTree());
             Notification.success(resources.getString("exporthtml.success"));
         } catch (ExportException e) {
@@ -307,7 +308,8 @@ public class NoticeController {
         }
 
         try {
-            ExportStrategyHolder.SINGLE_HTML.setProcessor(noticeViewController.processor);
+            ExportStrategyHolder.SINGLE_HTML.setMarkdownParser(noticeViewController.mdParser);
+            ExportStrategyHolder.SINGLE_HTML.setHtmlRenderer(noticeViewController.htmlRenderer);
             ExportStrategyHolder.SINGLE_HTML.export(destDir, noticeTreeViewController.getNoticeTree());
             Notification.success(resources.getString("exporthtml.success"));
         } catch (ExportException e) {

@@ -15,7 +15,7 @@ import net.lingala.zip4j.exception.ZipException;
 public class SyntaxHighlighter {
 
     private static final File DIRECTORY = new File(System.getProperty("user.home"), ".noticeditor");
-    private static final Pattern PATTERN_CODE = Pattern.compile("<code class=\"(\\w+)\">");
+    private static final Pattern PATTERN_CODE = Pattern.compile("<code class=\"language\\-(\\w+)\">");
 
     public void unpackHighlightJs() {
         if (DIRECTORY.exists())

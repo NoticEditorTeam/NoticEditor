@@ -5,9 +5,16 @@ import com.noticeditorteam.noticeditor.io.IOUtil;
 import com.noticeditorteam.noticeditor.model.*;
 import com.noticeditorteam.noticeditor.view.Chooser;
 import com.noticeditorteam.noticeditor.view.Notification;
+import com.vladsch.flexmark.ext.autolink.AutolinkExtension;
+import com.vladsch.flexmark.ext.gfm.tasklist.TaskListExtension;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -32,8 +39,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import static org.pegdown.Extensions.*;
-import org.pegdown.PegDownProcessor;
 
 /**
  * @author Edward Minasyan <mrEDitor@mail.ru>
@@ -59,7 +64,8 @@ public class NoticeViewController implements Initializable {
 
     private final ObjectProperty<Attachment> currentAttachmentProperty = new SimpleObjectProperty<>(null);
 
-    protected final PegDownProcessor processor;
+    protected final Parser mdParser;
+    protected final HtmlRenderer htmlRenderer;
     protected final SyntaxHighlighter highlighter;
     private WebEngine engine;
     private Main main;
@@ -68,7 +74,17 @@ public class NoticeViewController implements Initializable {
 
 
     public NoticeViewController() {
-        processor = new PegDownProcessor(AUTOLINKS | TABLES | FENCED_CODE_BLOCKS);
+        final MutableDataSet options = new MutableDataSet();
+        options.set(Parser.MATCH_CLOSING_FENCE_CHARACTERS, false);
+        options.set(TablesExtension.TRIM_CELL_WHITESPACE, false);
+        options.set(TablesExtension.HEADER_SEPARATOR_COLUMN_MATCH, false);
+        options.set(Parser.EXTENSIONS, List.of(
+                AutolinkExtension.create(),
+                TablesExtension.create(),
+                TaskListExtension.create()
+        ));
+        mdParser = Parser.builder(options).build();
+        htmlRenderer = HtmlRenderer.builder(options).build();
         highlighter = new SyntaxHighlighter();
     }
 
@@ -92,7 +108,7 @@ public class NoticeViewController implements Initializable {
 
     private void changeContent(String newContent) {
         final NoticeTreeItem current = getCurrentNotice();
-        String parsed = processor.markdownToHtml(newContent);
+        String parsed = htmlRenderer.render(mdParser.parse(newContent));
         if (current != null) {
             current.changeContent(newContent);
             parsed = parseAttachments(parsed, current.getAttachments());
