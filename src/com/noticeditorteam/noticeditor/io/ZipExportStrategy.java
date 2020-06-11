@@ -4,7 +4,6 @@ import com.noticeditorteam.noticeditor.exceptions.ExportException;
 import com.noticeditorteam.noticeditor.model.NoticeTree;
 import java.io.File;
 import java.io.IOException;
-import net.lingala.zip4j.exception.ZipException;
 import org.json.JSONException;
 
 /**
@@ -21,7 +20,7 @@ public class ZipExportStrategy implements ExportStrategy {
                 file.delete();
             ZipWithIndexFormat.with(file).export(notice);
             return true;
-        } catch (ZipException | IOException | JSONException e) {
+        } catch (IOException | JSONException e) {
             throw new ExportException(e);
         }
     }
