@@ -16,12 +16,12 @@ RESOUT=$(BUILD)/resources
 
 MANIFEST=manifest.mf
 OUTPUT=NoticEditor.jar
-MAIN_CLASS=com/noticeditorteam/noticeditor/Main.java
+MAIN_CLASS=com/noticeditorteam/noticeditor/Launcher.java
 
 all: build
 
 build:
-	gradle dist
+	gradle jar
 
 tests:
 	gradle test

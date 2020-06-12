@@ -19,19 +19,12 @@ A hierarchical note editor with markdown support.
 
 ## Build
 
-### Netbeans IDE
-
-1. `git clone https://github.com/NoticEditorTeam/NoticEditor.git`
-2. Open project in NetBeans
-3. Press *Shift + F11* for clean and build. You can find jar executable in `dist/` dir.
-4. For build single-jar (with libs) launch *package-single* task in build.xml.
-
-
 ### Gradle-based (Cross-platform)
 
 1. `git clone https://github.com/NoticEditorTeam/NoticEditor.git`
-2. `gradlew dist` â€” this will put jar into `./dist/`.
-3. `gradlew run` â€” this will run the app w/o building a jar.
+2. `gradlew jar` — this will put jar into `./build/libs/`.
+3. `gradlew run` — this will run the app w/o building a jar.
+4. To build platform specific jar, set `os.name` system property: `gradlew jar -Dos.name=linux`. Available options: 'windows', 'linux', 'osx'
 
 ### Makefile (Unix)
 
