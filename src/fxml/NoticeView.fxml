@@ -9,17 +9,19 @@
             <Tab closable="false" text="%editor"> 
                 <TextArea fx:id="editor" />
             </Tab>
-            <Tab closable="false" onSelectionChanged="#onAttachsFocused" text="%attachments">
+            <Tab closable="false" onSelectionChanged="#onAttachmentsFocused" text="%attachments">
                 <content>
-                    <ListView fx:id="attachsView" prefHeight="200.0" prefWidth="200.0">
+                    <ListView fx:id="attachmentsView" prefHeight="200.0" prefWidth="200.0">
                         <contextMenu>
                             <ContextMenu>
                                 <items>
-                                    <MenuItem fx:id="importAttachFromUrlItem" mnemonicParsing="false"
+                                    <MenuItem fx:id="itemCopyAttachmentTag" mnemonicParsing="false"
+                                              onAction="#handleContextMenu" text="%contextmenu.attachments.copyTag"/>
+                                    <MenuItem fx:id="itemImportAttachment" mnemonicParsing="false"
                                               onAction="#handleContextMenu" text="%contextmenu.attachments.import"/>
-                                    <MenuItem fx:id="exportAttachItem" mnemonicParsing="false"
+                                    <MenuItem fx:id="itemExportAttachment" mnemonicParsing="false"
                                               onAction="#handleContextMenu" text="%contextmenu.attachments.export"/>
-                                    <MenuItem fx:id="deleteAttachItem" mnemonicParsing="false"
+                                    <MenuItem fx:id="itemDeleteAttachment" mnemonicParsing="false"
                                               onAction="#handleContextMenu" text="%contextmenu.attachments.delete"/>
                                 </items>
                             </ContextMenu>
