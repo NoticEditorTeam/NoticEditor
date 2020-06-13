@@ -166,8 +166,8 @@ public class NoticeTreeItem extends FilterableTreeItem<NoticeItem> {
         final int caret = NoticeController.getNoticeViewController()
                 .getEditor().getCaretPosition();
         final String allContent = getContent();
-        final String newContent = allContent.substring(0, caret)
-                + "\n@att:" + name + "\n"
+        final String newContent = allContent.substring(0, caret) + "\n"
+                + Attachment.PREFIX + name + "\n"
                 + allContent.substring(caret);
         changeContent(newContent);
     }

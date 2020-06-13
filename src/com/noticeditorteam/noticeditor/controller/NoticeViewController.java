@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -46,9 +45,6 @@ import javafx.stage.Stage;
  * @author Edward Minasyan <mrEDitor@mail.ru>
  */
 public class NoticeViewController implements Initializable {
-
-    // @att:filename.png
-    private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
 
     @FXML
     private MenuItem itemCopyAttachmentTag;
@@ -128,7 +124,7 @@ public class NoticeViewController implements Initializable {
     private String parseAttachments(String text, Attachments attachments) {
         if (attachments.isEmpty()) return text;
 
-        final Matcher m = ATTACHMENT_PATTERN.matcher(text);
+        final Matcher m = Attachment.PATTERN.matcher(text);
         final StringBuffer sb = new StringBuffer();
         while (m.find()) {
             final String name = m.group(1);
@@ -197,7 +193,7 @@ public class NoticeViewController implements Initializable {
             final var attachment = currentAttachmentProperty.get();
             if (attachment == null) return;
             final var content = new ClipboardContent();
-            content.putString("@att:" + attachment.getName());
+            content.putString(Attachment.PREFIX + attachment.getName());
             Clipboard.getSystemClipboard().setContent(content);
             return;
         }
