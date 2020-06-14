@@ -9,7 +9,7 @@
             <Tab closable="false" text="%editor"> 
                 <TextArea fx:id="editor" />
             </Tab>
-            <Tab closable="false" onSelectionChanged="#onAttachmentsFocused" text="%attachments">
+            <Tab fx:id="attachmentsTab" closable="false" onSelectionChanged="#onAttachmentsFocused" text="%attachments">
                 <content>
                     <ListView fx:id="attachmentsView" prefHeight="200.0" prefWidth="200.0">
                         <contextMenu>

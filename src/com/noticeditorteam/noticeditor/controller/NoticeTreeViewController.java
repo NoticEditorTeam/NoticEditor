@@ -147,14 +147,17 @@ public class NoticeTreeViewController implements Initializable {
      */
     public void open() {
         boolean isCurrentBranch = currentTreeItem == null || currentTreeItem.isBranch();
+        final var noticeViewController = NoticeController.getNoticeViewController();
         if (isCurrentBranch) {
-            NoticeController.getNoticeViewController().getEditor().setDisable(true);
-            NoticeController.getNoticeViewController().getEditor().setText("");
+            noticeViewController.getEditor().setDisable(true);
+            noticeViewController.getEditor().setText("");
+            noticeViewController.getAttachmentsTab().setDisable(true);
             statusSelectButton.setText(null);
             statusSelectButton.setDisable(true);
         } else {
-            NoticeController.getNoticeViewController().getEditor().setDisable(false);
-            NoticeController.getNoticeViewController().getEditor().setText(currentTreeItem.getContent());
+            noticeViewController.getEditor().setDisable(false);
+            noticeViewController.getEditor().setText(currentTreeItem.getContent());
+            noticeViewController.getAttachmentsTab().setDisable(false);
             statusSelectButton.setText(NoticeStatusList.getStatus(currentTreeItem.getStatus()).getName());
             statusSelectButton.setDisable(false);
         }

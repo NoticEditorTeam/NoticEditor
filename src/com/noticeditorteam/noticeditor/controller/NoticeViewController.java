@@ -33,6 +33,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import static javafx.scene.control.SelectionMode.SINGLE;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -61,6 +62,9 @@ public class NoticeViewController implements Initializable {
     private ListView<Attachment> attachmentsView;
 
     private ResourceBundle resources;
+
+    @FXML
+    private Tab attachmentsTab;
 
     @FXML
     private TextArea editor;
@@ -107,6 +111,10 @@ public class NoticeViewController implements Initializable {
         itemExportAttachment.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
         itemDeleteAttachment.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
         resources = rb;
+    }
+
+    public Tab getAttachmentsTab() {
+        return attachmentsTab;
     }
 
     public TextArea getEditor() {
