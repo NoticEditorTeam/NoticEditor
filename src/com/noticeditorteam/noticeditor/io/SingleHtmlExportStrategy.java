@@ -7,7 +7,6 @@ import com.vladsch.flexmark.parser.Parser;
 import java.io.File;
 import java.io.IOException;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javafx.scene.control.TreeItem;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,8 +14,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
 public class SingleHtmlExportStrategy implements ExportStrategy {
-
-    private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
 
     private Parser mdParser;
     private HtmlRenderer htmlRenderer;
@@ -132,7 +129,7 @@ public class SingleHtmlExportStrategy implements ExportStrategy {
     }
 
     private String processAttachments(String content, String path, Attachments attachments) {
-        final Matcher matcher = ATTACHMENT_PATTERN.matcher(content);
+        final Matcher matcher = Attachment.PATTERN.matcher(content);
         String filename = path.replaceAll("\\.", "-");
         filename = filename.substring(1);
         String newContent = matcher.replaceAll("<img src=\"" + filename + "-$1\" />");

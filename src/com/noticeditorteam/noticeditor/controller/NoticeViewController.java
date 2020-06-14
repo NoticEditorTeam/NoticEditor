@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -34,7 +33,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import static javafx.scene.control.SelectionMode.SINGLE;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
@@ -45,16 +47,24 @@ import javafx.stage.Stage;
  */
 public class NoticeViewController implements Initializable {
 
-    // @att:filename.png
-    private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
+    @FXML
+    private MenuItem itemCopyAttachmentTag;
+    @FXML
+    private MenuItem itemAttachFile;
+    @FXML
+    private MenuItem itemImportAttachment;
+    @FXML
+    private MenuItem itemExportAttachment;
+    @FXML
+    private MenuItem itemDeleteAttachment;
 
     @FXML
-    private MenuItem importAttachFromUrlItem, exportAttachItem, deleteAttachItem;
-
-    @FXML
-    private ListView<Attachment> attachsView;
+    private ListView<Attachment> attachmentsView;
 
     private ResourceBundle resources;
+
+    @FXML
+    private Tab attachmentsTab;
 
     @FXML
     private TextArea editor;
@@ -93,13 +103,18 @@ public class NoticeViewController implements Initializable {
         highlighter.unpackHighlightJs();
         engine = viewer.getEngine();
         editor.textProperty().addListener((o, oldValue, newValue) -> changeContent(newValue));
-        attachsView.getSelectionModel().setSelectionMode(SINGLE);
-        attachsView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
+        attachmentsView.getSelectionModel().setSelectionMode(SINGLE);
+        attachmentsView.getSelectionModel().selectedItemProperty().addListener((o, oldValue, newValue) -> {
             currentAttachmentProperty.setValue((Attachment) newValue);
         });
-        exportAttachItem.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
-        deleteAttachItem.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
+        itemCopyAttachmentTag.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
+        itemExportAttachment.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
+        itemDeleteAttachment.disableProperty().bind(Bindings.isNull(currentAttachmentProperty));
         resources = rb;
+    }
+
+    public Tab getAttachmentsTab() {
+        return attachmentsTab;
     }
 
     public TextArea getEditor() {
@@ -119,7 +134,7 @@ public class NoticeViewController implements Initializable {
     private String parseAttachments(String text, Attachments attachments) {
         if (attachments.isEmpty()) return text;
 
-        final Matcher m = ATTACHMENT_PATTERN.matcher(text);
+        final Matcher m = Attachment.PATTERN.matcher(text);
         final StringBuffer sb = new StringBuffer();
         while (m.find()) {
             final String name = m.group(1);
@@ -171,10 +186,95 @@ public class NoticeViewController implements Initializable {
     };
 
     public void rebuildAttachsView() {
-        onAttachsFocused(null);
+        onAttachmentsFocused(null);
     }
 
-    private void exportAttachment(File file, Attachment attachment) {
+    @FXML
+    private void handleContextMenu(ActionEvent event) {
+        final Object source = event.getSource();
+
+        if (source == itemImportAttachment) {
+            if (!canAddAttachments()) return;
+            openAttachmentImporter();
+            return;
+        }
+
+        if (source == itemAttachFile) {
+            if (!canAddAttachments()) return;
+            attachFile();
+            return;
+        }
+
+        if (source == itemCopyAttachmentTag) {
+            final var attachment = currentAttachmentProperty.get();
+            if (attachment == null) return;
+            final var content = new ClipboardContent();
+            content.putString(Attachment.PREFIX + attachment.getName());
+            Clipboard.getSystemClipboard().setContent(content);
+            return;
+        }
+
+        if (source == itemExportAttachment) {
+            final var attachment = currentAttachmentProperty.get();
+            if (attachment == null) return;
+            exportAttachment(attachment);
+            return;
+        }
+
+        if (source == itemDeleteAttachment) {
+            final var attachment = currentAttachmentProperty.get();
+            if (attachment == null) return;
+            final NoticeTreeItem current = getCurrentNotice();
+            current.getAttachments().remove(attachment);
+            rebuildAttachsView();
+        }
+    }
+
+    public void attachFile() {
+        File file = Chooser.file().open()
+                .filter(Chooser.ALL)
+                .title(resources.getString("openfile"))
+                .show(main.getPrimaryStage());
+        if (file != null) {
+            try {
+                getCurrentNotice().addAttachment(file);
+            } catch (Exception e) {
+                NoticeController.getLogger().log(Level.SEVERE, "addFile", e);
+            }
+        }
+        rebuildAttachsView();
+    }
+
+    private void openAttachmentImporter() {
+        try {
+            var resource = ResourceBundle.getBundle(
+                    "resources.i18n.AttachmentImport", Locale.getDefault());
+
+            final Stage stage = new Stage();
+            stage.setTitle(resource.getString("title"));
+            stage.initOwner(main.getPrimaryStage());
+            stage.initModality(Modality.WINDOW_MODAL);
+
+            var loader = new FXMLLoader(getClass().getResource("/fxml/AttachmentImport.fxml"), resource);
+            Scene scene = new Scene(loader.load());
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException ex) {
+            NoticeController.getLogger().log(Level.SEVERE, "importAttachmentContextMenu", ex);
+        }
+    }
+
+    private void exportAttachment(Attachment attachment) {
+        File fileSaved = Chooser.file().save()
+                .filter(Chooser.ALL)
+                .title(resources.getString("exportfile"))
+                .show(main.getPrimaryStage());
+        if (fileSaved != null) {
+            exportAttachmentAs(attachment, fileSaved);
+        }
+    }
+
+    private void exportAttachmentAs(Attachment attachment, File file) {
         try {
             IOUtil.writeContent(file, attachment.getData());
             Notification.success(resources.getString("export.success"));
@@ -185,58 +285,19 @@ public class NoticeViewController implements Initializable {
     }
 
     @FXML
-    private void handleContextMenu(ActionEvent event) {
-        final Object source = event.getSource();
-
-        if (source == importAttachFromUrlItem) {
-            if (getCurrentNotice() == null) return;
-            try {
-                final ResourceBundle resource = ResourceBundle.getBundle(
-                        "resources.i18n.AttachmentImport", Locale.getDefault());
-
-                final Stage stage = new Stage();
-                stage.setTitle(resource.getString("title"));
-                stage.initOwner(main.getPrimaryStage());
-                stage.initModality(Modality.WINDOW_MODAL);
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AttachmentImport.fxml"), resource);
-                Scene scene = new Scene(loader.load());
-                stage.setScene(scene);
-                stage.show();
-            } catch (Exception ex) {
-                NoticeController.getLogger().log(Level.SEVERE, "importAttachmentContextMenu", ex);
+    private void onAttachmentsFocused(Event event) {
+        final NoticeTreeItem current = getCurrentNotice();
+        attachmentsView.getItems().clear();
+        if (current != null && current.isLeaf()) {
+            for (Attachment attachment : current.getAttachments()) {
+                attachmentsView.getItems().add(attachment);
             }
-            return;
-        }
-
-        if (source == exportAttachItem) {
-            if (currentAttachmentProperty.get() == null) return;
-            File fileSaved = Chooser.file().save()
-                    .filter(Chooser.ALL)
-                    .title(resources.getString("exportfile"))
-                    .show(main.getPrimaryStage());
-            if (fileSaved == null) return;
-            exportAttachment(fileSaved, currentAttachmentProperty.get());
-            return;
-        }
-
-        if (source == deleteAttachItem) {
-            if (currentAttachmentProperty.get() == null) return;
-            final NoticeTreeItem current = getCurrentNotice();
-            current.getAttachments().remove(currentAttachmentProperty.get());
-            rebuildAttachsView();
         }
     }
 
-    @FXML
-    private void onAttachsFocused(Event event) {
-        final NoticeTreeItem current = getCurrentNotice();
-        attachsView.getItems().clear();
-        if (current != null && current.isLeaf()) {
-            for (Attachment attachment : current.getAttachments()) {
-                attachsView.getItems().add(attachment);
-            }
-        }
+    private boolean canAddAttachments() {
+        final var note = getCurrentNotice();
+        return (note != null) && (!note.isBranch());
     }
 
     public void setMain(Main main) {

@@ -2,10 +2,15 @@ package com.noticeditorteam.noticeditor.model;
 
 import java.util.Base64;
 import java.util.Locale;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class Attachment {
 
     public static final Attachment EMPTY = new Attachment("", new byte[0]);
+
+    public static final String PREFIX = "@att:";
+    public static final Pattern PATTERN = Pattern.compile(PREFIX + "([a-zA-Z0-9._\\(\\)]+)");
 
     private final String name;
     private final byte[] data;
@@ -16,9 +21,8 @@ public class Attachment {
         this.name = name;
         this.data = data;
         final String nameLowerCase = name.toLowerCase(Locale.ENGLISH);
-        isImage = nameLowerCase.endsWith(".jpg") ||
-                nameLowerCase.endsWith(".gif") ||
-                nameLowerCase.endsWith(".png");
+        isImage = Stream.of("jpg", "jpeg", "png", "gif")
+                .anyMatch(ext -> nameLowerCase.endsWith("." + ext));
         base64data = isImage ? toBase64(data) : "";
     }
 

@@ -52,7 +52,6 @@ public class NoticeTreeViewController implements Initializable {
     private NoticeTreeItem currentTreeItem;
     private String newnotice;
     private String newbranch;
-    private String openfile;
     private String searcherror;
     private String erroraddfile;
 
@@ -88,7 +87,6 @@ public class NoticeTreeViewController implements Initializable {
         noticeTreeView.setCellFactory(p -> new EditNoticeTreeCell());
         newnotice = resources.getString("newnotice");
         newbranch = resources.getString("newbranch");
-        openfile = resources.getString("openfile");
         searcherror = resources.getString("errors.search");
         erroraddfile = resources.getString("errors.addfiletobranch");
     }
@@ -149,14 +147,17 @@ public class NoticeTreeViewController implements Initializable {
      */
     public void open() {
         boolean isCurrentBranch = currentTreeItem == null || currentTreeItem.isBranch();
+        final var noticeViewController = NoticeController.getNoticeViewController();
         if (isCurrentBranch) {
-            NoticeController.getNoticeViewController().getEditor().setDisable(true);
-            NoticeController.getNoticeViewController().getEditor().setText("");
+            noticeViewController.getEditor().setDisable(true);
+            noticeViewController.getEditor().setText("");
+            noticeViewController.getAttachmentsTab().setDisable(true);
             statusSelectButton.setText(null);
             statusSelectButton.setDisable(true);
         } else {
-            NoticeController.getNoticeViewController().getEditor().setDisable(false);
-            NoticeController.getNoticeViewController().getEditor().setText(currentTreeItem.getContent());
+            noticeViewController.getEditor().setDisable(false);
+            noticeViewController.getEditor().setText(currentTreeItem.getContent());
+            noticeViewController.getAttachmentsTab().setDisable(false);
             statusSelectButton.setText(NoticeStatusList.getStatus(currentTreeItem.getStatus()).getName());
             statusSelectButton.setDisable(false);
         }
@@ -222,18 +223,7 @@ public class NoticeTreeViewController implements Initializable {
         if (isCurrentBranch)
             Notification.error(erroraddfile);
         else {
-            File fileInjected = Chooser.file().open()
-                    .filter(Chooser.ALL)
-                    .title(openfile)
-                    .show(main.getPrimaryStage());
-            if (fileInjected != null) {
-                try {
-                    currentTreeItem.addAttachment(fileInjected);
-                } catch (Exception e) {
-                    NoticeController.getLogger().log(Level.SEVERE, "addFile", e);
-                }
-            }
-            NoticeController.getNoticeViewController().rebuildAttachsView();
+            NoticeController.getNoticeViewController().attachFile();
         }
     }
 

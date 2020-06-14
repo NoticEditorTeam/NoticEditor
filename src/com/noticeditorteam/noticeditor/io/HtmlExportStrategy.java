@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javafx.scene.control.TreeItem;
 import org.jsoup.Jsoup;
@@ -27,7 +26,6 @@ public class HtmlExportStrategy implements ExportStrategy {
     private Parser mdParser;
     private HtmlRenderer htmlRenderer;
     private Map<NoticeTreeItem, String> filenames;
-    private static final Pattern ATTACHMENT_PATTERN = Pattern.compile("@att\\:([a-zA-Z0-9._\\(\\)]+)");
 
     public void setMarkdownParser(Parser parser) {
         this.mdParser = parser;
@@ -140,7 +138,7 @@ public class HtmlExportStrategy implements ExportStrategy {
     }
 
     private String processAttachments(String content, Attachments attachments) {
-        final Matcher matcher = ATTACHMENT_PATTERN.matcher(content);
+        final Matcher matcher = Attachment.PATTERN.matcher(content);
         String newContent = matcher.replaceAll("<img src=\"$1\" />");
         StringBuilder sb = new StringBuilder(newContent);
         for(Attachment attachment : attachments) {
