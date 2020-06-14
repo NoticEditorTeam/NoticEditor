@@ -186,13 +186,13 @@ public class NoticeViewController implements Initializable {
         final Object source = event.getSource();
 
         if (source == itemImportAttachment) {
-            if (getCurrentNotice() == null) return;
+            if (!canAddAttachments()) return;
             openAttachmentImporter();
             return;
         }
 
         if (source == itemAttachFile) {
-            if (getCurrentNotice() == null) return;
+            if (!canAddAttachments()) return;
             attachFile();
             return;
         }
@@ -285,6 +285,11 @@ public class NoticeViewController implements Initializable {
                 attachmentsView.getItems().add(attachment);
             }
         }
+    }
+
+    private boolean canAddAttachments() {
+        final var note = getCurrentNotice();
+        return (note != null) && (!note.isBranch());
     }
 
     public void setMain(Main main) {
