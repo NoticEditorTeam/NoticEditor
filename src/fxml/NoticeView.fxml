@@ -17,6 +17,8 @@
                                 <items>
                                     <MenuItem fx:id="itemCopyAttachmentTag" mnemonicParsing="false"
                                               onAction="#handleContextMenu" text="%contextmenu.attachments.copyTag"/>
+                                    <MenuItem fx:id="itemAttachFile" mnemonicParsing="false"
+                                              onAction="#handleContextMenu" text="%attach"/>
                                     <MenuItem fx:id="itemImportAttachment" mnemonicParsing="false"
                                               onAction="#handleContextMenu" text="%contextmenu.attachments.import"/>
                                     <MenuItem fx:id="itemExportAttachment" mnemonicParsing="false"

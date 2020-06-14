@@ -51,7 +51,7 @@ public final class ClipboardImageImporter extends AttachmentImporter {
 
     private final EventHandler<KeyEvent> keyHandler;
     private final EventHandler<MouseEvent> mouseHandler;
-    
+
     public ClipboardImageImporter(ResourceBundle resources) {
         super(resources);
         filenameField = new TextField(defaultFilename());
@@ -88,7 +88,7 @@ public final class ClipboardImageImporter extends AttachmentImporter {
                 final Attachments result = new Attachments();
                 final Image image = imageView.getImage();
                 if (image == null) return result;
-                
+
                 final BufferedImage swingImage = SwingFXUtils.fromFXImage(imageView.getImage(), null);
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 final ImageFormat format = formatComboBox.getValue();

@@ -90,7 +90,7 @@
                 </ImageView>
             </graphic>
             <tooltip>
-                <Tooltip text="\%add"/>
+                <Tooltip text="%attach"/>
             </tooltip>
         </Button>
         <Button fx:id="deleteButton" onAction="#handleDelete">

@@ -49,6 +49,8 @@ public class NoticeViewController implements Initializable {
     @FXML
     private MenuItem itemCopyAttachmentTag;
     @FXML
+    private MenuItem itemAttachFile;
+    @FXML
     private MenuItem itemImportAttachment;
     @FXML
     private MenuItem itemExportAttachment;
@@ -189,6 +191,12 @@ public class NoticeViewController implements Initializable {
             return;
         }
 
+        if (source == itemAttachFile) {
+            if (getCurrentNotice() == null) return;
+            attachFile();
+            return;
+        }
+
         if (source == itemCopyAttachmentTag) {
             final var attachment = currentAttachmentProperty.get();
             if (attachment == null) return;
@@ -212,6 +220,21 @@ public class NoticeViewController implements Initializable {
             current.getAttachments().remove(attachment);
             rebuildAttachsView();
         }
+    }
+
+    public void attachFile() {
+        File file = Chooser.file().open()
+                .filter(Chooser.ALL)
+                .title(resources.getString("openfile"))
+                .show(main.getPrimaryStage());
+        if (file != null) {
+            try {
+                getCurrentNotice().addAttachment(file);
+            } catch (Exception e) {
+                NoticeController.getLogger().log(Level.SEVERE, "addFile", e);
+            }
+        }
+        rebuildAttachsView();
     }
 
     private void openAttachmentImporter() {

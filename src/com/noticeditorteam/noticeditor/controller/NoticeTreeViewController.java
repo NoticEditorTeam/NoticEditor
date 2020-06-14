@@ -52,7 +52,6 @@ public class NoticeTreeViewController implements Initializable {
     private NoticeTreeItem currentTreeItem;
     private String newnotice;
     private String newbranch;
-    private String openfile;
     private String searcherror;
     private String erroraddfile;
 
@@ -88,7 +87,6 @@ public class NoticeTreeViewController implements Initializable {
         noticeTreeView.setCellFactory(p -> new EditNoticeTreeCell());
         newnotice = resources.getString("newnotice");
         newbranch = resources.getString("newbranch");
-        openfile = resources.getString("openfile");
         searcherror = resources.getString("errors.search");
         erroraddfile = resources.getString("errors.addfiletobranch");
     }
@@ -222,18 +220,7 @@ public class NoticeTreeViewController implements Initializable {
         if (isCurrentBranch)
             Notification.error(erroraddfile);
         else {
-            File fileInjected = Chooser.file().open()
-                    .filter(Chooser.ALL)
-                    .title(openfile)
-                    .show(main.getPrimaryStage());
-            if (fileInjected != null) {
-                try {
-                    currentTreeItem.addAttachment(fileInjected);
-                } catch (Exception e) {
-                    NoticeController.getLogger().log(Level.SEVERE, "addFile", e);
-                }
-            }
-            NoticeController.getNoticeViewController().rebuildAttachsView();
+            NoticeController.getNoticeViewController().attachFile();
         }
     }
 
