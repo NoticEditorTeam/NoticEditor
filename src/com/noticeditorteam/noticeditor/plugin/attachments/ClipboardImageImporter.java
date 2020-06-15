@@ -17,7 +17,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -52,10 +51,12 @@ public final class ClipboardImageImporter extends AttachmentImporter {
     private final EventHandler<KeyEvent> keyHandler;
     private final EventHandler<MouseEvent> mouseHandler;
 
+    private final ClipboardImageHelper clipboardHelper;
+
     public ClipboardImageImporter(ResourceBundle resources) {
         super(resources);
         filenameField = new TextField(defaultFilename());
-        formatComboBox = new ComboBox<ImageFormat>();
+        formatComboBox = new ComboBox<>();
         formatComboBox.getItems().addAll(ImageFormat.values());
         formatComboBox.getSelectionModel().selectFirst();
         imageView = new ImageView();
@@ -73,6 +74,7 @@ public final class ClipboardImageImporter extends AttachmentImporter {
                 onPaste();
             }
         };
+        clipboardHelper = new ClipboardImageHelper();
     }
 
     @Override
@@ -132,19 +134,24 @@ public final class ClipboardImageImporter extends AttachmentImporter {
     }
 
     private void onPaste() {
-        final Clipboard clipboard = Clipboard.getSystemClipboard();
-        if (!clipboard.hasImage()) return;
-
-        final Image image = clipboard.getImage();
-        imageView.setImage(image);
-        imageView.setFitWidth(0);
-        imageView.setFitHeight(0);
-        if (image.getWidth() > container.getWidth()) {
-            imageView.setFitWidth(container.getWidth());
-        }
-        if (image.getHeight() > container.getHeight()) {
-            imageView.setFitHeight(container.getHeight());
-        }
+        // Bitmap DIB seems to be buggy in FX Clipboard, so we prefer png,
+        // then jpeg, then AWT Clipboard and finally the platform specific format
+        clipboardHelper
+                .findImageByMime("image/png")
+                .or(() -> clipboardHelper.findImageByMime("image/jpeg"))
+                .or(() -> clipboardHelper.findImageInAWTClipboard())
+                .or(() -> clipboardHelper.findImageInFXClipboard())
+                .ifPresent(image -> {
+                    imageView.setImage(image);
+                    imageView.setFitWidth(0);
+                    imageView.setFitHeight(0);
+                    if (image.getWidth() > container.getWidth()) {
+                        imageView.setFitWidth(container.getWidth());
+                    }
+                    if (image.getHeight() > container.getHeight()) {
+                        imageView.setFitHeight(container.getHeight());
+                    }
+                });
     }
 
     private String defaultFilename() {
